@@ -1,7 +1,9 @@
 package com.example.mapadointercambista;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
+import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,8 +14,9 @@ import androidx.viewpager2.widget.ViewPager2;
 
 
 public class MainActivity extends AppCompatActivity {
-
-
+    Handler handler = new Handler();
+    Runnable runnable;
+    ViewPager2 carrossel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d("Ciclo de vida", "onCreate()chamado");
 
         // Carrossel
-        ViewPager2 carrossel = findViewById(R.id.carrossel);
+        carrossel = findViewById(R.id.carrossel);
 
         int[] imagens = {
                 R.drawable.banner1,
@@ -48,6 +51,65 @@ public class MainActivity extends AppCompatActivity {
 
         CarrosselAdapter adapter = new CarrosselAdapter(imagens);
         carrossel.setAdapter(adapter);
+
+        ImageView setaEsquerda = findViewById(R.id.setaEsquerda);
+        ImageView setaDireita = findViewById(R.id.setaDireita);
+
+        setaDireita.setOnClickListener(v -> {
+
+            int current = carrossel.getCurrentItem();
+            int total = carrossel.getAdapter().getItemCount();
+
+            if(current == total - 1){
+                carrossel.setCurrentItem(0);
+            }else{
+                carrossel.setCurrentItem(current + 1);
+            }
+
+        });
+
+        setaEsquerda.setOnClickListener(v -> {
+
+            int current = carrossel.getCurrentItem();
+            int total = carrossel.getAdapter().getItemCount();
+
+            if(current == 0){
+                carrossel.setCurrentItem(total - 1);
+            }else{
+                carrossel.setCurrentItem(current - 1);
+            }
+
+        });
+
+        iniciarAutoSlide();
+    }
+
+    private void iniciarAutoSlide(){
+
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+
+                int current = carrossel.getCurrentItem();
+                int total = carrossel.getAdapter().getItemCount();
+
+                if(current == total - 1){
+
+                    // volta para o início sem animação
+                    carrossel.setCurrentItem(0, false);
+
+                }else{
+
+                    // avança normal
+                    carrossel.setCurrentItem(current + 1, true);
+
+                }
+
+                handler.postDelayed(this, 4000);
+            }
+        };
+
+        handler.postDelayed(runnable, 4000);
     }
 
     @Override
@@ -66,12 +128,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume(){
         super.onResume();
         Log.d("Ciclo de vida", "onResume()chamado");
+        handler.postDelayed(runnable, 4000);
     }
 
     @Override
     protected void onPause(){
         super.onPause();
         Log.d("Ciclo de vida", "onPause()chamado");
+        handler.removeCallbacks(runnable);
     }
 
     @Override
