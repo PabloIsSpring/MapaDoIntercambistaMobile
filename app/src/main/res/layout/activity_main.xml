@@ -9,7 +9,7 @@
     android:layout_height="match_parent"
     tools:context=".activity.MainActivity">
 
-    <!-- MENU SUPERIOR QUE SOME AO SCROLL -->
+    <!-- Menu Superior -->
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -40,7 +40,7 @@
     </com.google.android.material.appbar.AppBarLayout>
 
 
-    <!-- CONTEÚDO QUE ROLA -->
+    <!-- Conteúdo -->
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -55,7 +55,7 @@
             android:paddingBottom="80dp">
 
 
-            <!-- CARROSSEL -->
+            <!-- Carrossel -->
 
             <FrameLayout
                 android:id="@+id/carrosselContainer"
@@ -71,8 +71,9 @@
                     android:id="@+id/setaEsquerda"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_gravity="start|center_vertical"
+                    android:layout_gravity="start|bottom"
                     android:layout_marginStart="10dp"
+                    android:layout_marginTop="15dp"
                     android:src="@drawable/ic_arrow_left"
                     app:tint="#FFFFFF"/>
 
@@ -80,15 +81,16 @@
                     android:id="@+id/setaDireita"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_gravity="end|center_vertical"
+                    android:layout_gravity="end|bottom"
                     android:layout_marginEnd="10dp"
+                    android:layout_marginTop="15dp"
                     android:src="@drawable/ic_arrow_right"
                     app:tint="#FFFFFF"/>
 
             </FrameLayout>
 
 
-            <!-- PESQUISA -->
+            <!-- Barra de pesquisa -->
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
@@ -110,7 +112,7 @@
             </androidx.cardview.widget.CardView>
 
 
-            <!-- DESTINOS -->
+            <!-- Destinos -->
 
             <TextView
                 android:layout_width="wrap_content"
@@ -127,7 +129,7 @@
                 android:paddingStart="16dp"/>
 
 
-            <!-- FÓRUM -->
+            <!-- Fórum -->
 
             <TextView
                 android:layout_width="wrap_content"
@@ -148,7 +150,7 @@
     </androidx.core.widget.NestedScrollView>
 
 
-    <!-- MENU INFERIOR FIXO -->
+    <!-- Menu Inferior -->
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
