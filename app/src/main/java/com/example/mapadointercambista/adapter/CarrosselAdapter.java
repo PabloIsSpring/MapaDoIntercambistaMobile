@@ -1,4 +1,4 @@
-package com.example.mapadointercambista;
+package com.example.mapadointercambista.adapter;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,6 +7,8 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.mapadointercambista.R;
 
 public class CarrosselAdapter extends RecyclerView.Adapter<CarrosselAdapter.ViewHolder> {
 

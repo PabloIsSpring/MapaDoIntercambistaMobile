@@ -1,8 +1,9 @@
-package com.example.mapadointercambista;
+package com.example.mapadointercambista.activity;
 
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
@@ -10,7 +11,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
+
+import com.example.mapadointercambista.adapter.CarrosselAdapter;
+import com.example.mapadointercambista.adapter.PostForumAdapter;
+import com.example.mapadointercambista.model.Destino;
+import com.example.mapadointercambista.adapter.DestinoAdapter;
+import com.example.mapadointercambista.R;
+import com.example.mapadointercambista.model.PostForum;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -23,6 +37,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+        getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+        );
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -82,6 +104,83 @@ public class MainActivity extends AppCompatActivity {
         });
 
         iniciarAutoSlide();
+
+        // Cards
+        RecyclerView listaDestinos = findViewById(R.id.listaDestinos);
+
+        listaDestinos.setLayoutManager(
+                new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        );
+
+        List<Destino> destinos = new ArrayList<>();
+
+        destinos.add(new Destino("Inglaterra - Oxford", R.drawable.inglaterra, 4.8f, 120));
+        destinos.add(new Destino("Japão - Kyoto", R.drawable.japao, 4.9f, 210));
+        destinos.add(new Destino("Alemanha - Berlim", R.drawable.alemanha, 4.7f, 98));
+
+        DestinoAdapter adapterDestinos = new DestinoAdapter(destinos);
+        listaDestinos.setAdapter(adapterDestinos);
+
+        // Fóruns
+        RecyclerView listaForum = findViewById(R.id.listaForum);
+
+        listaForum.setLayoutManager(
+                new LinearLayoutManager(this)
+        );
+
+        List<PostForum> posts = new ArrayList<>();
+
+        posts.add(new PostForum(
+                "Associação MarkitoLivre",
+                "Gostei hein, top demais",
+                R.drawable.logo,
+                4.5f,
+                21
+        ));
+
+        posts.add(new PostForum(
+                "Juninho Mandelão",
+                "Show de bola esse aplicativo!",
+                R.drawable.logo,
+                5.0f,
+                5
+        ));
+
+        posts.add(new PostForum(
+                "XD",
+                "Aplicativo ficou muito bom!",
+                R.drawable.logo,
+                4.7f,
+                15
+        ));
+
+        PostForumAdapter adapterForum = new PostForumAdapter(posts);
+        listaForum.setAdapter(adapterForum);
+
+        // Barra Inferior
+
+        BottomNavigationView bottomNav = findViewById(R.id.bottomNavigation);
+
+        bottomNav.setOnItemSelectedListener(item -> {
+
+            if(item.getItemId() == R.id.nav_home){
+                return true;
+            }
+
+            if(item.getItemId() == R.id.nav_forum){
+                return true;
+            }
+
+            if(item.getItemId() == R.id.nav_mundo){
+                return true;
+            }
+
+            if(item.getItemId() == R.id.nav_perfil){
+                return true;
+            }
+
+            return false;
+        });
     }
 
     private void iniciarAutoSlide(){
@@ -125,10 +224,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onResume(){
+    protected void onResume() {
         super.onResume();
-        Log.d("Ciclo de vida", "onResume()chamado");
-        handler.postDelayed(runnable, 4000);
+
+        getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+        );
     }
 
     @Override
