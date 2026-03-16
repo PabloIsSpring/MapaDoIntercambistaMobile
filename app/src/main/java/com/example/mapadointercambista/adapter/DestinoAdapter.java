@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -60,6 +61,14 @@ public class DestinoAdapter extends RecyclerView.Adapter<DestinoAdapter.ViewHold
         holder.rating.setRating(destino.getAvaliacao());
 
         holder.reviews.setText(destino.getAvaliacao() + " (" + destino.getReviews() + " avaliações)");
+
+        holder.itemView.setOnClickListener(v -> {
+
+            Toast.makeText(v.getContext(),
+                    destino.getNome(),
+                    Toast.LENGTH_SHORT).show();
+
+        });
     }
 
     @Override

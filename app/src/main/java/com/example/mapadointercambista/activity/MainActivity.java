@@ -1,10 +1,12 @@
 package com.example.mapadointercambista.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -104,6 +106,17 @@ public class MainActivity extends AppCompatActivity {
         });
 
         iniciarAutoSlide();
+
+        // Ver todos os destinos
+
+        TextView verTodos = findViewById(R.id.verTodosDestinos);
+
+        verTodos.setOnClickListener(v -> {
+
+            Intent intent = new Intent(MainActivity.this, DestinosActivity.class);
+            startActivity(intent);
+
+        });
 
         // Cards
         RecyclerView listaDestinos = findViewById(R.id.listaDestinos);
