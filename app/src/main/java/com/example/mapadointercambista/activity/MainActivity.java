@@ -135,6 +135,14 @@ public class MainActivity extends AppCompatActivity {
         listaDestinos.setAdapter(adapterDestinos);
 
         // Fóruns
+
+        TextView verTodosForum = findViewById(R.id.verTodosForum);
+
+        verTodosForum.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, ForumActivity.class);
+            startActivity(intent);
+        });
+
         RecyclerView listaForum = findViewById(R.id.listaForum);
 
         listaForum.setLayoutManager(
@@ -147,24 +155,30 @@ public class MainActivity extends AppCompatActivity {
                 "Associação MarkitoLivre",
                 "Gostei hein, top demais",
                 R.drawable.logo,
-                4.5f,
-                21
+                21,
+                3,
+                "há 2h",
+                8
         ));
 
         posts.add(new PostForum(
                 "Juninho Mandelão",
                 "Show de bola esse aplicativo!",
                 R.drawable.logo,
-                5.0f,
-                5
+                5,
+                0,
+                "há 5h",
+                3
         ));
 
         posts.add(new PostForum(
                 "XD",
                 "Aplicativo ficou muito bom!",
                 R.drawable.logo,
-                4.7f,
-                15
+                15,
+                1,
+                "há 8h",
+                6
         ));
 
         PostForumAdapter adapterForum = new PostForumAdapter(posts);
@@ -174,21 +188,31 @@ public class MainActivity extends AppCompatActivity {
 
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavigation);
 
+        bottomNav.setSelectedItemId(R.id.nav_home);
+
         bottomNav.setOnItemSelectedListener(item -> {
 
-            if(item.getItemId() == R.id.nav_home){
+            int itemId = item.getItemId();
+
+            if (itemId == R.id.nav_home) {
                 return true;
             }
 
-            if(item.getItemId() == R.id.nav_forum){
+            if (itemId == R.id.nav_forum) {
+                startActivity(new Intent(MainActivity.this, ForumActivity.class));
+                overridePendingTransition(0, 0);
+                finish();
                 return true;
             }
 
-            if(item.getItemId() == R.id.nav_mundo){
+            if (itemId == R.id.nav_mundo) {
+                startActivity(new Intent(MainActivity.this, DestinosActivity.class));
+                overridePendingTransition(0, 0);
+                finish();
                 return true;
             }
 
-            if(item.getItemId() == R.id.nav_perfil){
+            if (itemId == R.id.nav_perfil) {
                 return true;
             }
 

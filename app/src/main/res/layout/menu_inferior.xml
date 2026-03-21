@@ -8,8 +8,8 @@
     android:layout_height="76dp"
     android:layout_gravity="bottom"
     android:background="#4A80E0"
-    app:itemIconTint="@android:color/white"
-    app:itemTextColor="@android:color/white"
+    app:itemIconTint="@color/bottom_nav_colors"
+    app:itemTextColor="@color/bottom_nav_colors"
     app:itemIconSize="20dp"
     app:labelVisibilityMode="unlabeled"
     app:menu="@menu/bottom_menu"/>

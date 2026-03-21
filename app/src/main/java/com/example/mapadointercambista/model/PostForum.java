@@ -1,19 +1,25 @@
 package com.example.mapadointercambista.model;
 
-public class PostForum {
+import java.io.Serializable;
+
+public class PostForum implements Serializable {
 
     private String usuario;
     private String mensagem;
     private int fotoPerfil;
-    private float avaliacao;
-    private int reviews;
+    private int likes;
+    private int dislikes;
+    private String tempoPostagem;
+    private int quantidadeRespostas;
 
-    public PostForum(String usuario, String mensagem, int fotoPerfil, float avaliacao, int reviews) {
+    public PostForum(String usuario, String mensagem, int fotoPerfil, int likes, int dislikes, String tempoPostagem, int quantidadeRespostas) {
         this.usuario = usuario;
         this.mensagem = mensagem;
         this.fotoPerfil = fotoPerfil;
-        this.avaliacao = avaliacao;
-        this.reviews = reviews;
+        this.likes = likes;
+        this.dislikes = dislikes;
+        this.tempoPostagem = tempoPostagem;
+        this.quantidadeRespostas = quantidadeRespostas;
     }
 
     public String getUsuario() {
@@ -28,11 +34,19 @@ public class PostForum {
         return fotoPerfil;
     }
 
-    public float getAvaliacao() {
-        return avaliacao;
+    public int getLikes() {
+        return likes;
     }
 
-    public int getReviews() {
-        return reviews;
+    public int getDislikes() {
+        return dislikes;
+    }
+
+    public String getTempoPostagem() {
+        return tempoPostagem;
+    }
+
+    public int getQuantidadeRespostas() {
+        return quantidadeRespostas;
     }
 }
