@@ -22,7 +22,9 @@ import com.example.mapadointercambista.adapter.PostForumAdapter;
 import com.example.mapadointercambista.model.Destino;
 import com.example.mapadointercambista.adapter.DestinoAdapter;
 import com.example.mapadointercambista.R;
+import com.example.mapadointercambista.model.NavigationHelper;
 import com.example.mapadointercambista.model.PostForum;
+import com.example.mapadointercambista.model.SessionManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
@@ -187,37 +189,7 @@ public class MainActivity extends AppCompatActivity {
         // Barra Inferior
 
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavigation);
-
-        bottomNav.setSelectedItemId(R.id.nav_home);
-
-        bottomNav.setOnItemSelectedListener(item -> {
-
-            int itemId = item.getItemId();
-
-            if (itemId == R.id.nav_home) {
-                return true;
-            }
-
-            if (itemId == R.id.nav_forum) {
-                startActivity(new Intent(MainActivity.this, ForumActivity.class));
-                overridePendingTransition(0, 0);
-                finish();
-                return true;
-            }
-
-            if (itemId == R.id.nav_mundo) {
-                startActivity(new Intent(MainActivity.this, DestinosActivity.class));
-                overridePendingTransition(0, 0);
-                finish();
-                return true;
-            }
-
-            if (itemId == R.id.nav_perfil) {
-                return true;
-            }
-
-            return false;
-        });
+        NavigationHelper.configurarBottomNavigation(this, bottomNav, R.id.nav_home);
     }
 
     private void iniciarAutoSlide(){
@@ -300,5 +272,13 @@ public class MainActivity extends AppCompatActivity {
         savedIntanceState.putInt("valor2", 55);
         //Invoca a super classe, para que seja possível salvar o estado
         super.onSaveInstanceState(savedIntanceState);
+    }
+
+    private void atualizarIconePerfil(BottomNavigationView bottomNav, SessionManager sessionManager) {
+        if (sessionManager.estaLogado()) {
+            bottomNav.getMenu().findItem(R.id.nav_perfil).setIcon(R.drawable.ic_user);
+        } else {
+            bottomNav.getMenu().findItem(R.id.nav_perfil).setIcon(R.drawable.ic_user);
+        }
     }
 }

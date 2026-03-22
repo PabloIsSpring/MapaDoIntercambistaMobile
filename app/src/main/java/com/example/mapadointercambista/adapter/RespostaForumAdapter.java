@@ -20,9 +20,11 @@ import java.util.List;
 public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdapter.ViewHolder> {
 
     private final List<RespostaForum> lista;
+    private final boolean usuarioLogado;
 
-    public RespostaForumAdapter(List<RespostaForum> lista) {
+    public RespostaForumAdapter(List<RespostaForum> lista, boolean usuarioLogado) {
         this.lista = lista;
+        this.usuarioLogado = usuarioLogado;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -111,17 +113,29 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
             holder.linhaThread.setVisibility(View.VISIBLE);
         }
 
-        holder.botaoLike.setOnClickListener(v ->
-                Toast.makeText(v.getContext(), "Você não entrou em sua conta", Toast.LENGTH_SHORT).show()
-        );
+        holder.botaoLike.setOnClickListener(v -> {
+            if (!usuarioLogado) {
+                Toast.makeText(v.getContext(), "Você não entrou em sua conta", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(v.getContext(), "Like realizado", Toast.LENGTH_SHORT).show();
+            }
+        });
 
-        holder.botaoDislike.setOnClickListener(v ->
-                Toast.makeText(v.getContext(), "Você não entrou em sua conta", Toast.LENGTH_SHORT).show()
-        );
+        holder.botaoDislike.setOnClickListener(v -> {
+            if (!usuarioLogado) {
+                Toast.makeText(v.getContext(), "Você não entrou em sua conta", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(v.getContext(), "Dislike realizado", Toast.LENGTH_SHORT).show();
+            }
+        });
 
-        holder.botaoResponder.setOnClickListener(v ->
-                Toast.makeText(v.getContext(), "Você não entrou em sua conta", Toast.LENGTH_SHORT).show()
-        );
+        holder.botaoResponder.setOnClickListener(v -> {
+            if (!usuarioLogado) {
+                Toast.makeText(v.getContext(), "Você não entrou em sua conta", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(v.getContext(), "Responder será implementado depois", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         if (resposta.isTemRespostas()) {
             holder.blocoResposta.setOnClickListener(v ->

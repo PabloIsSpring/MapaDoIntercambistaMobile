@@ -13,6 +13,7 @@ import com.example.mapadointercambista.R;
 import com.example.mapadointercambista.adapter.DestinoAdapter;
 import com.example.mapadointercambista.model.Destino;
 import com.example.mapadointercambista.model.GridSpacingItemDecoration;
+import com.example.mapadointercambista.model.NavigationHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
@@ -60,37 +61,9 @@ public class DestinosActivity extends AppCompatActivity {
 
         listaTodosDestinos.setAdapter(adapter);
 
+        // Barra Inferior
+
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavigation);
-
-        bottomNav.setSelectedItemId(R.id.nav_mundo);
-
-        bottomNav.setOnItemSelectedListener(item -> {
-
-            int itemId = item.getItemId();
-
-            if (itemId == R.id.nav_home) {
-                startActivity(new Intent(DestinosActivity.this, MainActivity.class));
-                overridePendingTransition(0, 0);
-                finish();
-                return true;
-            }
-
-            if (itemId == R.id.nav_forum) {
-                startActivity(new Intent(DestinosActivity.this, ForumActivity.class));
-                overridePendingTransition(0, 0);
-                finish();
-                return true;
-            }
-
-            if (itemId == R.id.nav_mundo) {
-                return true;
-            }
-
-            if (itemId == R.id.nav_perfil) {
-                return true;
-            }
-
-            return false;
-        });
+        NavigationHelper.configurarBottomNavigation(this, bottomNav, R.id.nav_mundo);
     }
 }

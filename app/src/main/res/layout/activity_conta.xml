@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#568FF9">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:paddingBottom="100dp">
+
+        <ImageView
+            android:id="@+id/botaoVoltarConta"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_arrow_left"
+            android:visibility="gone"
+            app:tint="@android:color/white" />
+
+        <!-- Avatar -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="24dp">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/imagemPerfilConta"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:src="@drawable/ic_user"
+                android:scaleType="centerCrop"
+                android:padding="6dp"
+                android:contentDescription="Foto de perfil"
+                android:backgroundTint="#6E9AF5"
+                app:shapeAppearanceOverlay="@style/CircleImageView"
+                app:strokeColor="#FFFFFF"
+                app:strokeWidth="2dp" />
+
+            <TextView
+                android:id="@+id/textoAlterarFoto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Toque para alterar a foto"
+                android:textColor="@android:color/white"
+                android:textSize="13sp"
+                android:layout_marginTop="8dp"/>
+
+            <TextView
+                android:id="@+id/textoNomeUsuarioConta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nome do usuário"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
+                android:layout_marginTop="14dp"/>
+
+            <TextView
+                android:id="@+id/textoEmailUsuarioConta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="email@teste.com"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:layout_marginTop="6dp"/>
+
+        </LinearLayout>
+
+        <!-- Card com informações -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="6dp"
+            app:cardBackgroundColor="@android:color/white">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="18dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Informações da conta"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:textColor="#2D2D2D" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Nome"
+                    android:textStyle="bold"
+                    android:textColor="#666666"
+                    android:layout_marginTop="14dp" />
+
+                <TextView
+                    android:id="@+id/textoNomeCardConta"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="William"
+                    android:textColor="#2D2D2D"
+                    android:textSize="16sp"
+                    android:layout_marginTop="4dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="E-mail"
+                    android:textStyle="bold"
+                    android:textColor="#666666"
+                    android:layout_marginTop="14dp" />
+
+                <TextView
+                    android:id="@+id/textoEmailCardConta"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="email@teste.com"
+                    android:textColor="#2D2D2D"
+                    android:textSize="16sp"
+                    android:layout_marginTop="4dp" />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <!-- Botão sair -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/botaoSairConta"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:text="Sair da conta"
+            android:textAllCaps="false"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="#568FF9"
+            app:backgroundTint="@android:color/white"
+            app:cornerRadius="18dp"
+            app:icon="@drawable/ic_logout"
+            app:iconPadding="10dp"
+            app:iconTint="#568FF9" />
+
+    </LinearLayout>
+
+    <include
+        layout="@layout/menu_inferior"
+        android:layout_gravity="bottom"/>
+
+</FrameLayout>

@@ -12,6 +12,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MapaDoIntercambista">
         <activity
+            android:name=".activity.ContaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.CadastroActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.LoginActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.RespostasForumActivity"
             android:exported="false" />
         <activity

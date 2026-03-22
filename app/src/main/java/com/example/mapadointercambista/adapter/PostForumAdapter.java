@@ -41,6 +41,9 @@ public class PostForumAdapter extends RecyclerView.Adapter<PostForumAdapter.View
         LinearLayout botaoRespostas;
         TextView textoRespostas;
 
+        LinearLayout botaoLikeContainer;
+        LinearLayout botaoDislikeContainer;
+
         public ViewHolder(View itemView) {
             super(itemView);
 
@@ -56,6 +59,9 @@ public class PostForumAdapter extends RecyclerView.Adapter<PostForumAdapter.View
 
             botaoRespostas = itemView.findViewById(R.id.botaoRespostas);
             textoRespostas = itemView.findViewById(R.id.textoRespostas);
+
+            botaoLikeContainer = itemView.findViewById(R.id.botaoLikeContainer);
+            botaoDislikeContainer = itemView.findViewById(R.id.botaoDislikeContainer);
         }
     }
 
@@ -75,19 +81,19 @@ public class PostForumAdapter extends RecyclerView.Adapter<PostForumAdapter.View
         holder.usuario.setText(post.getUsuario());
         holder.mensagem.setText(post.getMensagem());
         holder.fotoPerfil.setImageResource(post.getFotoPerfil());
-        holder.textoTempoPostagem.setText(post.getTempoPostagem());
+        holder.textoTempoPostagem.setText("· " + post.getTempoPostagem());
 
         holder.textoLikes.setText(String.valueOf(post.getLikes()));
         holder.textoDislikes.setText(String.valueOf(post.getDislikes()));
         holder.textoRespostas.setText(post.getQuantidadeRespostas() + " respostas");
 
-        holder.iconeLike.setOnClickListener(v -> {
+        holder.botaoLikeContainer.setOnClickListener(v -> {
             Toast.makeText(v.getContext(),
                     "Você não entrou em sua conta",
                     Toast.LENGTH_SHORT).show();
         });
 
-        holder.iconeDislike.setOnClickListener(v -> {
+        holder.botaoDislikeContainer.setOnClickListener(v -> {
             Toast.makeText(v.getContext(),
                     "Você não entrou em sua conta",
                     Toast.LENGTH_SHORT).show();

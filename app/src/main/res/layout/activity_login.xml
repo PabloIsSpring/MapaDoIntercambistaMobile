@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#568FF9"
+    android:padding="20dp">
+
+    <!-- Botão Voltar -->
+    <ImageView
+        android:id="@+id/botaoVoltar"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_arrow_left"
+        app:tint="@android:color/white" />
+
+    <!-- Bloco Central -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="20dp">
+
+        <!-- Logo -->
+
+        <!-- Texto -->
+
+        <ImageView
+            android:layout_width="300dp"
+            android:layout_height="140dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/logo" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Bem-vindo de volta 👋"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Faça login para continuar"
+            android:textColor="@android:color/white"
+            android:layout_marginTop="2dp"/>
+
+    </LinearLayout>
+
+    <!-- Email -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Email"
+        android:textColor="@android:color/white"/>
+
+    <EditText
+        android:id="@+id/inputEmail"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:hint="Digite seu email"
+        android:background="@drawable/bg_input"
+        android:padding="10dp"
+        android:inputType="textEmailAddress"
+        android:layout_marginBottom="12dp"/>
+
+    <!-- Senha -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Senha"
+        android:textColor="@android:color/white"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/bg_input"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingEnd="10dp">
+
+        <EditText
+            android:id="@+id/inputSenha"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:hint="Digite sua senha"
+            android:inputType="textPassword"
+            android:padding="10dp"/>
+
+        <ImageView
+            android:id="@+id/iconeOlhoSenhaLogin"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:src="@drawable/ic_eye"/>
+    </LinearLayout>
+
+    <!-- Entrar -->
+    <Button
+        android:id="@+id/botaoEntrar"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="Entrar"
+        android:backgroundTint="#FFFFFF"
+        android:textColor="#568FF9"/>
+
+    <!-- Esquecer a Senha -->
+    <TextView
+        android:id="@+id/textoEsqueceuSenha"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Esqueceu a senha?"
+        android:textColor="@android:color/white"
+        android:gravity="center"
+        android:layout_marginTop="10dp"/>
+
+    <!-- Criar a Conta -->
+    <TextView
+        android:id="@+id/textoCriarConta"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Não tem conta? Crie uma"
+        android:textColor="@android:color/white"
+        android:gravity="center"
+        android:layout_marginTop="30dp"/>
+
+</LinearLayout>

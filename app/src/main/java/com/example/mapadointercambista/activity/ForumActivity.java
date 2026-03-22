@@ -1,6 +1,5 @@
 package com.example.mapadointercambista.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -12,6 +11,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mapadointercambista.R;
 import com.example.mapadointercambista.adapter.PostForumAdapter;
+import com.example.mapadointercambista.model.ForumStorage;
+import com.example.mapadointercambista.model.NavigationHelper;
 import com.example.mapadointercambista.model.PostForum;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -40,37 +41,44 @@ public class ForumActivity extends AppCompatActivity {
         listaTodosForuns = findViewById(R.id.listaTodosForuns);
         listaTodosForuns.setLayoutManager(new LinearLayoutManager(this));
 
-        List<PostForum> posts = new ArrayList<>();
+        ForumStorage forumStorage = new ForumStorage(this);
+        List<PostForum> posts = forumStorage.carregarPosts();
 
-        posts.add(new PostForum(
-                "Associação MarkitoLivre",
-                "Gostei hein, top demais",
-                R.drawable.logo,
-                21,
-                3,
-                "há 2h",
-                8
-        ));
+        if (posts.isEmpty()) {
+            posts = new ArrayList<>();
 
-        posts.add(new PostForum(
-                "Juninho Mandelão",
-                "Show de bola esse aplicativo!",
-                R.drawable.logo,
-                5,
-                0,
-                "há 5h",
-                3
-        ));
+            posts.add(new PostForum(
+                    "Associação MarkitoLivre",
+                    "Gostei hein, top demais",
+                    R.drawable.logo,
+                    21,
+                    3,
+                    "há 2h",
+                    8
+            ));
 
-        posts.add(new PostForum(
-                "XD",
-                "Aplicativo ficou muito bom!",
-                R.drawable.logo,
-                15,
-                1,
-                "há 8h",
-                6
-        ));
+            posts.add(new PostForum(
+                    "Juninho Mandelão",
+                    "Show de bola esse aplicativo!",
+                    R.drawable.logo,
+                    5,
+                    0,
+                    "há 5h",
+                    3
+            ));
+
+            posts.add(new PostForum(
+                    "XD",
+                    "Aplicativo ficou muito bom!",
+                    R.drawable.logo,
+                    15,
+                    1,
+                    "há 8h",
+                    6
+            ));
+
+            forumStorage.salvarPosts(posts);
+        }
 
         PostForumAdapter adapter = new PostForumAdapter(posts);
         listaTodosForuns.setAdapter(adapter);
@@ -79,39 +87,7 @@ public class ForumActivity extends AppCompatActivity {
                 Toast.makeText(this, "Funcionalidade de novo post virá depois", Toast.LENGTH_SHORT).show()
         );
 
-        // Navegação
-
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavigation);
-
-        bottomNav.setSelectedItemId(R.id.nav_forum);
-
-        bottomNav.setOnItemSelectedListener(item -> {
-
-            int itemId = item.getItemId();
-
-            if (itemId == R.id.nav_home) {
-                startActivity(new Intent(ForumActivity.this, MainActivity.class));
-                overridePendingTransition(0, 0);
-                finish();
-                return true;
-            }
-
-            if (itemId == R.id.nav_forum) {
-                return true;
-            }
-
-            if (itemId == R.id.nav_mundo) {
-                startActivity(new Intent(ForumActivity.this, DestinosActivity.class));
-                overridePendingTransition(0, 0);
-                finish();
-                return true;
-            }
-
-            if (itemId == R.id.nav_perfil) {
-                return true;
-            }
-
-            return false;
-        });
+        NavigationHelper.configurarBottomNavigation(this, bottomNav, R.id.nav_forum);
     }
 }

@@ -2,79 +2,83 @@
 
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/containerResposta"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:paddingEnd="8dp"
-    android:paddingTop="4dp"
-    android:paddingBottom="4dp">
+    android:paddingStart="12dp"
+    android:paddingEnd="12dp"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp">
 
-    <!-- Linha da thread -->
+    <!-- Linha do Comentário -->
     <View
         android:id="@+id/linhaThread"
         android:layout_width="2dp"
         android:layout_height="match_parent"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="6dp"
         android:layout_marginEnd="10dp"
-        android:background="#D6D6D6" />
+        android:background="#D7E1E8" />
 
-    <!-- Conteúdo da resposta -->
+    <!-- Fot de Perfil -->
+    <ImageView
+        android:id="@+id/fotoPerfilResposta"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
+        android:layout_marginEnd="10dp"
+        android:src="@drawable/ic_user"
+        android:background="@drawable/bg_avatar_circle"
+        android:padding="2dp"
+        android:scaleType="centerCrop" />
+
+    <!-- Conteúdo -->
     <LinearLayout
         android:id="@+id/blocoResposta"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:orientation="vertical"
-        android:paddingTop="4dp"
-        android:paddingBottom="8dp">
+        android:orientation="vertical">
 
-        <!-- topo -->
+        <!-- Topo -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical">
 
-            <ImageView
-                android:id="@+id/fotoPerfilResposta"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_marginEnd="8dp"
-                android:src="@drawable/ic_launcher_foreground" />
-
             <TextView
                 android:id="@+id/nomeUsuarioResposta"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:textStyle="bold"
-                android:textSize="14sp"
-                android:textColor="#222222" />
+                android:textSize="16sp"
+                android:textColor="#111111" />
 
             <TextView
                 android:id="@+id/textoTempoResposta"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="há 1h"
-                android:textColor="#777777"
-                android:textSize="12sp" />
+                android:layout_marginStart="8dp"
+                android:textColor="#66757F"
+                android:textSize="14sp" />
         </LinearLayout>
 
-        <!-- mensagem -->
+        <!-- Mensagem -->
         <TextView
             android:id="@+id/textoMensagemResposta"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:textSize="14sp"
-            android:textColor="#333333" />
+            android:layout_marginTop="4dp"
+            android:textSize="17sp"
+            android:textColor="#111111"
+            android:lineSpacingExtra="2dp" />
 
-        <!-- ações -->
+        <!-- Ações -->
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:orientation="horizontal"
             android:gravity="center_vertical">
 
@@ -87,11 +91,10 @@
 
                 <ImageView
                     android:id="@+id/iconeLikeResposta"
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
+                    android:layout_width="17dp"
+                    android:layout_height="17dp"
                     android:src="@drawable/ic_like"
-                    app:tint="#4CAF50"
-                    xmlns:app="http://schemas.android.com/apk/res-auto" />
+                    app:tint="#4CAF50" />
 
                 <TextView
                     android:id="@+id/textoLikesResposta"
@@ -100,24 +103,23 @@
                     android:layout_marginStart="4dp"
                     android:text="0"
                     android:textColor="#4CAF50"
-                    android:textSize="12sp" />
+                    android:textSize="13sp" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/botaoDislikeResposta"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="18dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical">
 
                 <ImageView
                     android:id="@+id/iconeDislikeResposta"
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
+                    android:layout_width="17dp"
+                    android:layout_height="17dp"
                     android:src="@drawable/ic_dislike"
-                    app:tint="#F44336"
-                    xmlns:app="http://schemas.android.com/apk/res-auto" />
+                    app:tint="#F44336" />
 
                 <TextView
                     android:id="@+id/textoDislikesResposta"
@@ -126,23 +128,22 @@
                     android:layout_marginStart="4dp"
                     android:text="0"
                     android:textColor="#F44336"
-                    android:textSize="12sp" />
+                    android:textSize="13sp" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/botaoResponderResposta"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="18dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical">
 
                 <ImageView
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
+                    android:layout_width="17dp"
+                    android:layout_height="17dp"
                     android:src="@drawable/ic_chat"
-                    app:tint="#3F51B5"
-                    xmlns:app="http://schemas.android.com/apk/res-auto" />
+                    app:tint="#3F51B5" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -150,28 +151,27 @@
                     android:layout_marginStart="4dp"
                     android:text="Responder"
                     android:textColor="#3F51B5"
-                    android:textSize="12sp" />
+                    android:textSize="13sp" />
             </LinearLayout>
 
             <TextView
                 android:id="@+id/textoToggleRespostas"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="18dp"
                 android:text="Ver respostas"
                 android:textColor="#2962FF"
                 android:textStyle="bold"
-                android:textSize="12sp"
-                android:layout_marginTop="6dp"
-                android:visibility="gone"/>
+                android:textSize="13sp"
+                android:visibility="gone" />
 
         </LinearLayout>
 
-        <!-- divisor -->
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginTop="10dp"
-            android:background="#E7E7E7" />
+            android:background="#E6ECF0" />
 
     </LinearLayout>
 
