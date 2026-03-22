@@ -1,4 +1,4 @@
-package com.example.mapadointercambista.activity;
+package com.example.mapadointercambista.activity.auth;
 
 import android.os.Bundle;
 import android.text.InputFilter;
@@ -12,10 +12,10 @@ import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.mapadointercambista.R;
-import com.example.mapadointercambista.model.EmailUtils;
-import com.example.mapadointercambista.model.FiltroSenha;
-import com.example.mapadointercambista.model.SenhaUtils;
-import com.example.mapadointercambista.model.SessionManager;
+import com.example.mapadointercambista.util.EmailUtils;
+import com.example.mapadointercambista.util.FiltroSenha;
+import com.example.mapadointercambista.util.SenhaUtils;
+import com.example.mapadointercambista.model.user.SessionManager;
 
 public class CadastroActivity extends AppCompatActivity {
 
@@ -132,7 +132,12 @@ public class CadastroActivity extends AppCompatActivity {
                 return;
             }
 
-            sessionManager.cadastrarUsuario(nome, email, senha);
+            boolean cadastrado = sessionManager.cadastrarUsuario(nome, email, senha);
+
+            if (!cadastrado) {
+                Toast.makeText(this, "Já existe uma conta com este e-mail", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
             Toast.makeText(this, "Cadastro realizado com sucesso!", Toast.LENGTH_SHORT).show();
             finish();

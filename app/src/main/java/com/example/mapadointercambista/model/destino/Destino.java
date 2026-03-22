@@ -1,4 +1,4 @@
-package com.example.mapadointercambista.model;
+package com.example.mapadointercambista.model.destino;
 
 public class Destino {
 

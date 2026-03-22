@@ -1,15 +1,15 @@
-package com.example.mapadointercambista.model;
+package com.example.mapadointercambista.navigation;
 
 import android.app.Activity;
 import android.content.Intent;
 
 import com.example.mapadointercambista.R;
-import com.example.mapadointercambista.activity.ContaActivity;
-import com.example.mapadointercambista.activity.DestinosActivity;
-import com.example.mapadointercambista.activity.ForumActivity;
-import com.example.mapadointercambista.activity.LoginActivity;
-import com.example.mapadointercambista.activity.MainActivity;
-import com.example.mapadointercambista.model.SessionManager;
+import com.example.mapadointercambista.activity.perfil.ContaActivity;
+import com.example.mapadointercambista.activity.destinos.DestinosActivity;
+import com.example.mapadointercambista.activity.forum.ForumActivity;
+import com.example.mapadointercambista.activity.auth.LoginActivity;
+import com.example.mapadointercambista.activity.main.MainActivity;
+import com.example.mapadointercambista.model.user.SessionManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class NavigationHelper {

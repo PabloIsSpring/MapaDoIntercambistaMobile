@@ -1,4 +1,4 @@
-package com.example.mapadointercambista.activity;
+package com.example.mapadointercambista.activity.auth;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,10 +13,11 @@ import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.mapadointercambista.R;
-import com.example.mapadointercambista.model.EmailUtils;
-import com.example.mapadointercambista.model.FiltroSenha;
-import com.example.mapadointercambista.model.SenhaUtils;
-import com.example.mapadointercambista.model.SessionManager;
+import com.example.mapadointercambista.activity.perfil.ContaActivity;
+import com.example.mapadointercambista.util.EmailUtils;
+import com.example.mapadointercambista.util.FiltroSenha;
+import com.example.mapadointercambista.util.SenhaUtils;
+import com.example.mapadointercambista.model.user.SessionManager;
 
 public class LoginActivity extends AppCompatActivity {
 

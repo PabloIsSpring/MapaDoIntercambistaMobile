@@ -41,7 +41,7 @@
                 android:padding="6dp"
                 android:contentDescription="Foto de perfil"
                 android:backgroundTint="#6E9AF5"
-                app:shapeAppearanceOverlay="@style/CircleImageView"
+                app:shapeAppearanceOverlay="@style/CircleImageShape"
                 app:strokeColor="#FFFFFF"
                 app:strokeWidth="2dp" />
 

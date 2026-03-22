@@ -25,6 +25,15 @@
             android:paddingTop="16dp"
             android:paddingBottom="10dp">
 
+            <ImageView
+                android:id="@+id/botaoVoltarRespostas"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_arrow_left"
+                android:contentDescription="Voltar"
+                android:layout_marginBottom="12dp"
+                app:tint="#111111" />
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -56,15 +65,16 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <ImageView
+                <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/fotoPerfilPostOriginal"
                     android:layout_width="46dp"
                     android:layout_height="46dp"
                     android:layout_marginEnd="10dp"
                     android:src="@drawable/ic_user"
-                    android:background="@drawable/bg_avatar_circle"
-                    android:padding="2dp"
-                    android:scaleType="centerCrop" />
+                    android:scaleType="centerCrop"
+                    app:shapeAppearanceOverlay="@style/CircleImageShape"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="#D9D9D9" />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -87,12 +97,37 @@
                             android:textColor="#111111" />
 
                         <TextView
+                            android:id="@+id/textoBadgeVocePostOriginal"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:background="#E8F0FE"
+                            android:paddingStart="8dp"
+                            android:paddingEnd="8dp"
+                            android:paddingTop="2dp"
+                            android:paddingBottom="2dp"
+                            android:text="Você"
+                            android:textColor="#2962FF"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:visibility="gone" />
+
+                        <TextView
                             android:id="@+id/tempoPostOriginal"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
                             android:textColor="#66757F"
                             android:textSize="14sp" />
+
+                        <ImageView
+                            android:id="@+id/botaoOpcoesPostOriginal"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_marginStart="8dp"
+                            android:src="@drawable/ic_more_vert"
+                            android:visibility="gone"
+                            app:tint="#66757F" />
                     </LinearLayout>
 
                     <TextView
@@ -113,12 +148,14 @@
                         android:gravity="center_vertical">
 
                         <LinearLayout
+                            android:id="@+id/botaoLikePostOriginal"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
                             android:gravity="center_vertical">
 
                             <ImageView
+                                android:id="@+id/iconeLikePostOriginal"
                                 android:layout_width="18dp"
                                 android:layout_height="18dp"
                                 android:src="@drawable/ic_like"
@@ -135,6 +172,7 @@
                         </LinearLayout>
 
                         <LinearLayout
+                            android:id="@+id/botaoDislikePostOriginal"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="22dp"
@@ -142,6 +180,7 @@
                             android:gravity="center_vertical">
 
                             <ImageView
+                                android:id="@+id/iconeDislikePostOriginal"
                                 android:layout_width="18dp"
                                 android:layout_height="18dp"
                                 android:src="@drawable/ic_dislike"
@@ -205,15 +244,16 @@
             android:paddingTop="14dp"
             android:paddingBottom="14dp">
 
-            <ImageView
+            <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/iconeAvatarResponder"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_marginEnd="10dp"
                 android:src="@drawable/ic_user"
-                android:background="@drawable/bg_avatar_circle"
-                android:padding="3dp"
                 android:scaleType="centerCrop"
+                app:shapeAppearanceOverlay="@style/CircleImageShape"
+                app:strokeWidth="1dp"
+                app:strokeColor="#D9D9D9"
                 app:tint="@android:color/white" />
 
             <TextView

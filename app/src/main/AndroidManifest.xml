@@ -12,25 +12,31 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MapaDoIntercambista">
         <activity
-            android:name=".activity.ContaActivity"
+            android:name=".activity.forum.NovaRespostaActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.CadastroActivity"
+            android:name=".activity.forum.NovaPublicacaoActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.LoginActivity"
+            android:name=".activity.perfil.ContaActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.RespostasForumActivity"
+            android:name=".activity.auth.CadastroActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.ForumActivity"
+            android:name=".activity.auth.LoginActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.DestinosActivity"
+            android:name=".activity.forum.RespostasForumActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.MainActivity"
+            android:name=".activity.forum.ForumActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.destinos.DestinosActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.main.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

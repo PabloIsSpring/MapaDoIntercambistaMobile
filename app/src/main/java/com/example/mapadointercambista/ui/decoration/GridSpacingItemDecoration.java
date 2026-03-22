@@ -1,4 +1,4 @@
-package com.example.mapadointercambista.model;
+package com.example.mapadointercambista.ui.decoration;
 
 import android.graphics.Rect;
 import android.view.View;

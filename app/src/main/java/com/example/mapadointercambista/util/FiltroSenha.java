@@ -1,4 +1,4 @@
-package com.example.mapadointercambista.model;
+package com.example.mapadointercambista.util;
 
 import android.text.InputFilter;
 import android.text.Spanned;

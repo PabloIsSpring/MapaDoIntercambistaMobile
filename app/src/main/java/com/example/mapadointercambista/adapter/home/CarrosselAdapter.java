@@ -1,4 +1,4 @@
-package com.example.mapadointercambista.adapter;
+package com.example.mapadointercambista.adapter.home;
 
 import android.view.LayoutInflater;
 import android.view.View;

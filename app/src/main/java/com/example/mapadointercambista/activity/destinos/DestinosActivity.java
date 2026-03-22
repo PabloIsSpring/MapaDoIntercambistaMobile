@@ -1,6 +1,5 @@
-package com.example.mapadointercambista.activity;
+package com.example.mapadointercambista.activity.destinos;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
@@ -10,10 +9,10 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mapadointercambista.R;
-import com.example.mapadointercambista.adapter.DestinoAdapter;
-import com.example.mapadointercambista.model.Destino;
-import com.example.mapadointercambista.model.GridSpacingItemDecoration;
-import com.example.mapadointercambista.model.NavigationHelper;
+import com.example.mapadointercambista.adapter.destino.DestinoAdapter;
+import com.example.mapadointercambista.model.destino.Destino;
+import com.example.mapadointercambista.ui.decoration.GridSpacingItemDecoration;
+import com.example.mapadointercambista.navigation.NavigationHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;

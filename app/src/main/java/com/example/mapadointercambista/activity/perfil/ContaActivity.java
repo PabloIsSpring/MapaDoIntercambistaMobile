@@ -1,4 +1,4 @@
-package com.example.mapadointercambista.activity;
+package com.example.mapadointercambista.activity.perfil;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -14,8 +14,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.example.mapadointercambista.R;
-import com.example.mapadointercambista.model.NavigationHelper;
-import com.example.mapadointercambista.model.SessionManager;
+import com.example.mapadointercambista.activity.main.MainActivity;
+import com.example.mapadointercambista.navigation.NavigationHelper;
+import com.example.mapadointercambista.model.user.SessionManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.imageview.ShapeableImageView;
 
