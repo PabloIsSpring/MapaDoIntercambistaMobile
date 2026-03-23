@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MapaDoIntercambista">
         <activity
+            android:name=".activity.destinos.DetalheDestinoActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.forum.NovaRespostaActivity"
             android:exported="false" />
         <activity

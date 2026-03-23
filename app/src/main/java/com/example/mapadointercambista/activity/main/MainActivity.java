@@ -24,6 +24,8 @@ import com.example.mapadointercambista.adapter.home.CarrosselAdapter;
 import com.example.mapadointercambista.adapter.destino.DestinoAdapter;
 import com.example.mapadointercambista.adapter.forum.PostForumAdapter;
 import com.example.mapadointercambista.model.destino.Destino;
+import com.example.mapadointercambista.model.destino.DestinoRepository;
+import com.example.mapadointercambista.model.destino.DestinoStorage;
 import com.example.mapadointercambista.model.forum.ForumRepository;
 import com.example.mapadointercambista.model.forum.ForumStorage;
 import com.example.mapadointercambista.navigation.NavigationHelper;
@@ -111,10 +113,17 @@ public class MainActivity extends AppCompatActivity {
                 new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         );
 
-        List<Destino> destinos = new ArrayList<>();
-        destinos.add(new Destino("Inglaterra - Oxford", R.drawable.inglaterra, 4.8f, 120));
-        destinos.add(new Destino("Japão - Kyoto", R.drawable.japao, 4.9f, 210));
-        destinos.add(new Destino("Alemanha - Berlim", R.drawable.alemanha, 4.7f, 98));
+        DestinoStorage destinoStorage = new DestinoStorage(this);
+        List<Destino> destinos = destinoStorage.carregarDestinos();
+
+        if (destinos.isEmpty()) {
+            destinos = DestinoRepository.getDestinos();
+            destinoStorage.salvarDestinos(destinos);
+        }
+
+        if (destinos.size() > 3) {
+            destinos = destinos.subList(0, 3);
+        }
 
         DestinoAdapter adapterDestinos = new DestinoAdapter(destinos);
         listaDestinos.setAdapter(adapterDestinos);
