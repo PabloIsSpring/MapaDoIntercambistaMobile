@@ -20,13 +20,15 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.mapadointercambista.R;
 import com.example.mapadointercambista.activity.forum.RespostasForumActivity;
-import com.example.mapadointercambista.util.AvatarUtils;
 import com.example.mapadointercambista.model.forum.ForumStorage;
 import com.example.mapadointercambista.model.forum.PostForum;
 import com.example.mapadointercambista.model.user.SessionManager;
+import com.example.mapadointercambista.util.AvatarUtils;
 import com.google.android.material.imageview.ShapeableImageView;
+import android.util.LruCache;
 
 import java.util.List;
 
@@ -37,6 +39,7 @@ public class PostForumAdapter extends RecyclerView.Adapter<PostForumAdapter.View
     private final boolean modoCompleto;
     private final SessionManager sessionManager;
     private final ForumStorage forumStorage;
+    private final LruCache<String, Bitmap> avatarCache = new LruCache<>(50);
 
     public PostForumAdapter(Context context, List<PostForum> lista, boolean modoCompleto) {
         this.context = context;
@@ -44,6 +47,7 @@ public class PostForumAdapter extends RecyclerView.Adapter<PostForumAdapter.View
         this.modoCompleto = modoCompleto;
         this.sessionManager = new SessionManager(context);
         this.forumStorage = new ForumStorage(context);
+        setHasStableIds(true);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -83,6 +87,12 @@ public class PostForumAdapter extends RecyclerView.Adapter<PostForumAdapter.View
         }
     }
 
+    @Override
+    public long getItemId(int position) {
+        String id = lista.get(position).getId();
+        return id != null ? id.hashCode() : position;
+    }
+
     @NonNull
     @Override
     public PostForumAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -106,6 +116,7 @@ public class PostForumAdapter extends RecyclerView.Adapter<PostForumAdapter.View
         aplicarAvatar(holder.fotoPerfil, post.getAutorFotoUri(), post.getAutorNome());
 
         boolean ehAutor = sessionManager.estaLogado()
+                && sessionManager.getEmailUsuario() != null
                 && sessionManager.getEmailUsuario().equals(post.getAutorEmail())
                 && modoCompleto;
 
@@ -124,9 +135,14 @@ public class PostForumAdapter extends RecyclerView.Adapter<PostForumAdapter.View
             animarClique(holder.botaoLikeContainer);
 
             boolean sucesso = forumStorage.toggleLikePost(post.getId(), sessionManager.getEmailUsuario());
-
             if (sucesso) {
-                atualizarLista();
+                int posicao = holder.getAdapterPosition();
+                PostForum atualizado = buscarPostAtualizado(post.getId());
+
+                if (posicao != RecyclerView.NO_POSITION && atualizado != null) {
+                    lista.set(posicao, atualizado);
+                    notifyItemChanged(posicao);
+                }
             }
         });
 
@@ -139,9 +155,14 @@ public class PostForumAdapter extends RecyclerView.Adapter<PostForumAdapter.View
             animarClique(holder.botaoDislikeContainer);
 
             boolean sucesso = forumStorage.toggleDislikePost(post.getId(), sessionManager.getEmailUsuario());
-
             if (sucesso) {
-                atualizarLista();
+                int posicao = holder.getAdapterPosition();
+                PostForum atualizado = buscarPostAtualizado(post.getId());
+
+                if (posicao != RecyclerView.NO_POSITION && atualizado != null) {
+                    lista.set(posicao, atualizado);
+                    notifyItemChanged(posicao);
+                }
             }
         });
 
@@ -153,31 +174,54 @@ public class PostForumAdapter extends RecyclerView.Adapter<PostForumAdapter.View
     }
 
     private void animarClique(View view) {
-        ObjectAnimator diminuirX = ObjectAnimator.ofFloat(view, "scaleX", 1f, 0.92f, 1f);
-        ObjectAnimator diminuirY = ObjectAnimator.ofFloat(view, "scaleY", 1f, 0.92f, 1f);
-        diminuirX.setDuration(180);
-        diminuirY.setDuration(180);
+        ObjectAnimator diminuirX = ObjectAnimator.ofFloat(view, "scaleX", 1f, 0.96f, 1f);
+        ObjectAnimator diminuirY = ObjectAnimator.ofFloat(view, "scaleY", 1f, 0.96f, 1f);
+        diminuirX.setDuration(120);
+        diminuirY.setDuration(120);
         diminuirX.start();
         diminuirY.start();
     }
 
     private void aplicarAvatar(ShapeableImageView imageView, String fotoUri, String nomeAutor) {
+        imageView.setImageTintList(null);
+
         if (fotoUri != null && !fotoUri.isEmpty()) {
-            imageView.setImageURI(Uri.parse(fotoUri));
-            imageView.setImageTintList(null);
-        } else {
-            Bitmap avatar = AvatarUtils.criarAvatarComInicial(context, nomeAutor, 120);
+            Glide.with(context)
+                    .load(Uri.parse(fotoUri))
+                    .placeholder(R.drawable.ic_user)
+                    .error(R.drawable.ic_user)
+                    .circleCrop()
+                    .into(imageView);
+            return;
+        }
+
+        String chaveCache = nomeAutor != null && !nomeAutor.trim().isEmpty()
+                ? nomeAutor.trim().toLowerCase()
+                : "avatar_padrao";
+
+        Bitmap avatar = avatarCache.get(chaveCache);
+
+        if (avatar == null) {
+            avatar = AvatarUtils.criarAvatarComInicial(context, nomeAutor, 72);
+            if (avatar != null) {
+                avatarCache.put(chaveCache, avatar);
+            }
+        }
+
+        if (avatar != null) {
             imageView.setImageBitmap(avatar);
-            imageView.setImageTintList(null);
+        } else {
+            imageView.setImageResource(R.drawable.ic_user);
         }
     }
 
     private void atualizarEstadoVisualReacoes(ViewHolder holder, PostForum post) {
-        if (!sessionManager.estaLogado()) {
+        if (!sessionManager.estaLogado() || sessionManager.getEmailUsuario() == null) {
             holder.iconeLike.setAlpha(1f);
             holder.iconeDislike.setAlpha(1f);
             holder.textoLikes.setAlpha(1f);
             holder.textoDislikes.setAlpha(1f);
+
             holder.iconeLike.setColorFilter(ContextCompat.getColor(context, R.color.green_like));
             holder.iconeDislike.setColorFilter(ContextCompat.getColor(context, R.color.red_dislike));
             return;
@@ -186,10 +230,10 @@ public class PostForumAdapter extends RecyclerView.Adapter<PostForumAdapter.View
         boolean curtiu = post.usuarioCurtiu(sessionManager.getEmailUsuario());
         boolean descurtiu = post.usuarioDescurtiu(sessionManager.getEmailUsuario());
 
-        holder.iconeLike.setAlpha(curtiu ? 1f : 0.55f);
-        holder.textoLikes.setAlpha(curtiu ? 1f : 0.75f);
-        holder.iconeDislike.setAlpha(descurtiu ? 1f : 0.55f);
-        holder.textoDislikes.setAlpha(descurtiu ? 1f : 0.75f);
+        holder.iconeLike.setAlpha(curtiu ? 1f : 0.60f);
+        holder.textoLikes.setAlpha(curtiu ? 1f : 0.80f);
+        holder.iconeDislike.setAlpha(descurtiu ? 1f : 0.60f);
+        holder.textoDislikes.setAlpha(descurtiu ? 1f : 0.80f);
 
         holder.iconeLike.setColorFilter(ContextCompat.getColor(
                 context,
@@ -248,7 +292,7 @@ public class PostForumAdapter extends RecyclerView.Adapter<PostForumAdapter.View
 
                     if (sucesso) {
                         Toast.makeText(context, "Post editado com sucesso", Toast.LENGTH_SHORT).show();
-                        atualizarLista();
+                        atualizarListaCompleta();
                     } else {
                         Toast.makeText(context, "Erro ao editar post", Toast.LENGTH_SHORT).show();
                     }
@@ -266,7 +310,7 @@ public class PostForumAdapter extends RecyclerView.Adapter<PostForumAdapter.View
 
                     if (sucesso) {
                         Toast.makeText(context, "Post excluído com sucesso", Toast.LENGTH_SHORT).show();
-                        atualizarLista();
+                        atualizarListaCompleta();
                     } else {
                         Toast.makeText(context, "Erro ao excluir post", Toast.LENGTH_SHORT).show();
                     }
@@ -274,15 +318,33 @@ public class PostForumAdapter extends RecyclerView.Adapter<PostForumAdapter.View
                 .show();
     }
 
-    private void atualizarLista() {
+    private PostForum buscarPostAtualizado(String postId) {
+        List<PostForum> posts = forumStorage.carregarPosts();
+        if (posts == null) return null;
+
+        for (PostForum post : posts) {
+            if (postId.equals(post.getId())) {
+                return post;
+            }
+        }
+        return null;
+    }
+
+    private void atualizarListaCompleta() {
         List<PostForum> novosPosts = forumStorage.carregarPosts();
-        lista.clear();
-        lista.addAll(novosPosts);
-        notifyDataSetChanged();
+        atualizarDados(novosPosts);
     }
 
     @Override
     public int getItemCount() {
-        return lista.size();
+        return lista != null ? lista.size() : 0;
+    }
+
+    public void atualizarDados(List<PostForum> novosPosts) {
+        lista.clear();
+        if (novosPosts != null) {
+            lista.addAll(novosPosts);
+        }
+        notifyDataSetChanged();
     }
 }

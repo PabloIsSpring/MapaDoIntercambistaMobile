@@ -15,6 +15,8 @@ public class ForumStorage {
     private static final String PREF_NAME = "forum_storage";
     private static final String KEY_POSTS = "posts";
 
+    private static List<PostForum> cachePosts;
+
     private final SharedPreferences prefs;
     private final Gson gson;
 
@@ -23,35 +25,41 @@ public class ForumStorage {
         gson = new Gson();
     }
 
-    public void salvarPosts(List<PostForum> posts) {
-        String json = gson.toJson(posts);
-        prefs.edit().putString(KEY_POSTS, json).apply();
+    public synchronized void salvarPosts(List<PostForum> posts) {
+        cachePosts = posts != null ? new ArrayList<>(posts) : new ArrayList<>();
+        prefs.edit().putString(KEY_POSTS, gson.toJson(cachePosts)).apply();
     }
 
-    public List<PostForum> carregarPosts() {
-        String json = prefs.getString(KEY_POSTS, null);
+    public synchronized List<PostForum> carregarPosts() {
+        if (cachePosts != null) {
+            return new ArrayList<>(cachePosts);
+        }
 
+        String json = prefs.getString(KEY_POSTS, null);
         if (json == null) {
+            cachePosts = new ArrayList<>();
             return new ArrayList<>();
         }
 
         Type type = new TypeToken<List<PostForum>>() {}.getType();
         List<PostForum> posts = gson.fromJson(json, type);
+        cachePosts = posts != null ? posts : new ArrayList<>();
 
-        return posts != null ? posts : new ArrayList<>();
+        return new ArrayList<>(cachePosts);
     }
 
-    public void limparPosts() {
+    public synchronized void limparPosts() {
+        cachePosts = new ArrayList<>();
         prefs.edit().remove(KEY_POSTS).apply();
     }
 
-    public void adicionarPost(PostForum novoPost) {
+    public synchronized void adicionarPost(PostForum novoPost) {
         List<PostForum> posts = carregarPosts();
         posts.add(0, novoPost);
         salvarPosts(posts);
     }
 
-    public boolean editarPost(String postId, String novaMensagem) {
+    public synchronized boolean editarPost(String postId, String novaMensagem) {
         List<PostForum> posts = carregarPosts();
 
         for (PostForum post : posts) {
@@ -65,7 +73,7 @@ public class ForumStorage {
         return false;
     }
 
-    public boolean excluirPost(String postId) {
+    public synchronized boolean excluirPost(String postId) {
         List<PostForum> posts = carregarPosts();
 
         for (int i = 0; i < posts.size(); i++) {
@@ -79,7 +87,7 @@ public class ForumStorage {
         return false;
     }
 
-    public boolean adicionarResposta(String postId, RespostaForum novaResposta) {
+    public synchronized boolean adicionarResposta(String postId, RespostaForum novaResposta) {
         List<PostForum> posts = carregarPosts();
 
         for (PostForum post : posts) {
@@ -98,7 +106,7 @@ public class ForumStorage {
         return false;
     }
 
-    public boolean adicionarRespostaFilha(String postId, String respostaPaiId, RespostaForum novaResposta) {
+    public synchronized boolean adicionarRespostaFilha(String postId, String respostaPaiId, RespostaForum novaResposta) {
         List<PostForum> posts = carregarPosts();
 
         for (PostForum post : posts) {
@@ -144,7 +152,7 @@ public class ForumStorage {
         return false;
     }
 
-    public boolean editarResposta(String postId, String respostaId, String novaMensagem) {
+    public synchronized boolean editarResposta(String postId, String respostaId, String novaMensagem) {
         List<PostForum> posts = carregarPosts();
 
         for (PostForum post : posts) {
@@ -168,7 +176,7 @@ public class ForumStorage {
         return false;
     }
 
-    public boolean excluirResposta(String postId, String respostaId) {
+    public synchronized boolean excluirResposta(String postId, String respostaId) {
         List<PostForum> posts = carregarPosts();
 
         for (PostForum post : posts) {
@@ -223,7 +231,7 @@ public class ForumStorage {
         }
     }
 
-    public boolean toggleLikePost(String postId, String emailUsuario) {
+    public synchronized boolean toggleLikePost(String postId, String emailUsuario) {
         List<PostForum> posts = carregarPosts();
 
         for (PostForum post : posts) {
@@ -246,7 +254,7 @@ public class ForumStorage {
         return false;
     }
 
-    public boolean toggleDislikePost(String postId, String emailUsuario) {
+    public synchronized boolean toggleDislikePost(String postId, String emailUsuario) {
         List<PostForum> posts = carregarPosts();
 
         for (PostForum post : posts) {
@@ -269,7 +277,7 @@ public class ForumStorage {
         return false;
     }
 
-    public boolean toggleLikeResposta(String postId, String respostaId, String emailUsuario) {
+    public synchronized boolean toggleLikeResposta(String postId, String respostaId, String emailUsuario) {
         List<PostForum> posts = carregarPosts();
 
         for (PostForum post : posts) {
@@ -302,7 +310,7 @@ public class ForumStorage {
         return false;
     }
 
-    public boolean toggleDislikeResposta(String postId, String respostaId, String emailUsuario) {
+    public synchronized boolean toggleDislikeResposta(String postId, String respostaId, String emailUsuario) {
         List<PostForum> posts = carregarPosts();
 
         for (PostForum post : posts) {
@@ -335,7 +343,7 @@ public class ForumStorage {
         return false;
     }
 
-    public PostForum buscarPostPorId(String postId) {
+    public synchronized PostForum buscarPostPorId(String postId) {
         List<PostForum> posts = carregarPosts();
 
         for (PostForum post : posts) {

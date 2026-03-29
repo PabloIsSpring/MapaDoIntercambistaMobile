@@ -6,8 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="4dp"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="4dp">
+    style="@style/CardDefault">
 
     <LinearLayout
         android:orientation="vertical"
@@ -24,19 +23,20 @@
             android:id="@+id/nomeDestino"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textStyle="bold"
-            android:textSize="14sp"
             android:paddingStart="8dp"
-            android:paddingTop="6dp"/>
+            android:paddingTop="6dp"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_primary"/>
 
         <TextView
             android:id="@+id/avaliacaoDestino"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#1A237E"
-            android:textSize="12sp"
             android:paddingStart="8dp"
-            android:paddingBottom="8dp"/>
+            android:paddingBottom="8dp"
+            android:textSize="12sp"
+            android:textColor="@color/color_accent"/>
 
     </LinearLayout>
 

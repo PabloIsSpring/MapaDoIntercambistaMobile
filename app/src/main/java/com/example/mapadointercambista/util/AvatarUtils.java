@@ -5,10 +5,20 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.util.LruCache;
 
 public class AvatarUtils {
 
+    private static final LruCache<String, Bitmap> avatarCache = new LruCache<>(60);
+
     public static Bitmap criarAvatarComInicial(Context context, String nome, int tamanhoPx) {
+        String chave = (nome != null ? nome.trim().toLowerCase() : "sem_nome") + "_" + tamanhoPx;
+
+        Bitmap emCache = avatarCache.get(chave);
+        if (emCache != null && !emCache.isRecycled()) {
+            return emCache;
+        }
+
         Bitmap bitmap = Bitmap.createBitmap(tamanhoPx, tamanhoPx, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
 
@@ -29,6 +39,7 @@ public class AvatarUtils {
 
         canvas.drawText(inicial, tamanhoPx / 2f, y, texto);
 
+        avatarCache.put(chave, bitmap);
         return bitmap;
     }
 
@@ -41,7 +52,7 @@ public class AvatarUtils {
     }
 
     private static int corPeloNome(String nome) {
-        int[] cores = new int[]{
+        int[] cores = new int[] {
                 Color.parseColor("#5C6BC0"),
                 Color.parseColor("#26A69A"),
                 Color.parseColor("#EF5350"),

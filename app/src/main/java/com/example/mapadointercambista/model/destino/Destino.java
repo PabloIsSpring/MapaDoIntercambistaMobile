@@ -8,7 +8,7 @@ public class Destino implements Serializable {
 
     private String id;
     private String nome;
-    private int imagem;
+    private String imagemNome;
 
     private String pais;
     private String idioma;
@@ -23,7 +23,7 @@ public class Destino implements Serializable {
 
     public Destino(String id,
                    String nome,
-                   int imagem,
+                   String imagemNome,
                    String pais,
                    String idioma,
                    String moeda,
@@ -33,7 +33,7 @@ public class Destino implements Serializable {
 
         this.id = id;
         this.nome = nome;
-        this.imagem = imagem;
+        this.imagemNome = imagemNome;
         this.pais = pais;
         this.idioma = idioma;
         this.moeda = moeda;
@@ -52,8 +52,8 @@ public class Destino implements Serializable {
         return nome;
     }
 
-    public int getImagem() {
-        return imagem;
+    public String getImagemNome() {
+        return imagemNome;
     }
 
     public String getPais() {

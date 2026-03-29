@@ -1,12 +1,10 @@
 package com.example.mapadointercambista.activity.forum;
 
 import android.animation.ObjectAnimator;
-import android.app.AlertDialog;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
@@ -19,15 +17,15 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.mapadointercambista.R;
 import com.example.mapadointercambista.adapter.forum.RespostaForumAdapter;
-import com.example.mapadointercambista.util.AvatarUtils;
 import com.example.mapadointercambista.model.forum.ForumStorage;
-import com.example.mapadointercambista.navigation.NavigationHelper;
 import com.example.mapadointercambista.model.forum.PostForum;
 import com.example.mapadointercambista.model.forum.RespostaForum;
 import com.example.mapadointercambista.model.user.SessionManager;
-import com.example.mapadointercambista.util.TimeUtils;
+import com.example.mapadointercambista.navigation.NavigationHelper;
+import com.example.mapadointercambista.util.AvatarUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.imageview.ShapeableImageView;
 
@@ -58,12 +56,48 @@ public class RespostasForumActivity extends AppCompatActivity {
     private ImageView iconeDislikePostOriginal;
     private TextView textoBadgeVocePostOriginal;
 
+    private RespostaForumAdapter adapter;
+    private final List<RespostaForum> respostasExibidas = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_respostas_forum);
 
+        aplicarModoImersivo();
+
+        forumStorage = new ForumStorage(this);
+        sessionManager = new SessionManager(this);
+
+        inicializarViews();
+        inicializarPost();
+        configurarLista();
+        configurarCaixaResponder();
+        configurarAcoesPostOriginal();
+        preencherPostOriginal();
+        carregarRespostas();
+
+        findViewById(R.id.botaoResponderAcao).setOnClickListener(v -> abrirTelaNovaResposta());
+        findViewById(R.id.cardResponder).setOnClickListener(v -> abrirTelaNovaResposta());
+        findViewById(R.id.botaoVoltarRespostas).setOnClickListener(v -> finish());
+
+        BottomNavigationView bottomNav = findViewById(R.id.bottomNavigation);
+        NavigationHelper.configurarBottomNavigation(this, bottomNav, R.id.nav_forum);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        aplicarModoImersivo();
+        sincronizarPostAtual();
+        configurarCaixaResponder();
+        configurarAcoesPostOriginal();
+        preencherPostOriginal();
+        carregarRespostas();
+    }
+
+    private void aplicarModoImersivo() {
         getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
                         | View.SYSTEM_UI_FLAG_FULLSCREEN
@@ -72,10 +106,9 @@ public class RespostasForumActivity extends AppCompatActivity {
                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
         );
+    }
 
-        forumStorage = new ForumStorage(this);
-        sessionManager = new SessionManager(this);
-
+    private void inicializarViews() {
         fotoPerfilPostOriginal = findViewById(R.id.fotoPerfilPostOriginal);
         iconeAvatarResponder = findViewById(R.id.iconeAvatarResponder);
 
@@ -92,16 +125,14 @@ public class RespostasForumActivity extends AppCompatActivity {
         botaoDislikePostOriginal = findViewById(R.id.botaoDislikePostOriginal);
         botaoOpcoesPostOriginal = findViewById(R.id.botaoOpcoesPostOriginal);
 
-        listaRespostas = findViewById(R.id.listaRespostas);
-        listaRespostas.setLayoutManager(new LinearLayoutManager(this));
-
         iconeLikePostOriginal = findViewById(R.id.iconeLikePostOriginal);
         iconeDislikePostOriginal = findViewById(R.id.iconeDislikePostOriginal);
 
         textoBadgeVocePostOriginal = findViewById(R.id.textoBadgeVocePostOriginal);
+        listaRespostas = findViewById(R.id.listaRespostas);
+    }
 
-
-
+    private void inicializarPost() {
         PostForum postRecebido = (PostForum) getIntent().getSerializableExtra("postSelecionado");
 
         if (postRecebido != null) {
@@ -110,38 +141,30 @@ public class RespostasForumActivity extends AppCompatActivity {
                 postAtual = postRecebido;
             }
         }
-
-        configurarCaixaResponder();
-        configurarAcoesPostOriginal();
-        preencherPostOriginal();
-        carregarRespostas();
-
-        findViewById(R.id.botaoResponderAcao).setOnClickListener(v -> abrirDialogNovaResposta());
-        findViewById(R.id.cardResponder).setOnClickListener(v -> abrirDialogNovaResposta());
-        findViewById(R.id.botaoVoltarRespostas).setOnClickListener(v -> finish());
-        findViewById(R.id.botaoResponderAcao).setOnClickListener(v -> abrirTelaNovaResposta());
-        findViewById(R.id.cardResponder).setOnClickListener(v -> abrirTelaNovaResposta());
-
-        BottomNavigationView bottomNav = findViewById(R.id.bottomNavigation);
-        NavigationHelper.configurarBottomNavigation(this, bottomNav, R.id.nav_forum);
-
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+    private void configurarLista() {
+        listaRespostas.setLayoutManager(new LinearLayoutManager(this));
+        listaRespostas.setHasFixedSize(false);
+        listaRespostas.setItemViewCacheSize(12);
 
+        adapter = new RespostaForumAdapter(
+                this,
+                postAtual != null ? postAtual.getId() : "",
+                respostasExibidas,
+                sessionManager.estaLogado()
+        );
+
+        listaRespostas.setAdapter(adapter);
+    }
+
+    private void sincronizarPostAtual() {
         if (postAtual != null) {
             PostForum recarregado = forumStorage.buscarPostPorId(postAtual.getId());
             if (recarregado != null) {
                 postAtual = recarregado;
             }
         }
-
-        configurarCaixaResponder();
-        configurarAcoesPostOriginal();
-        preencherPostOriginal();
-        carregarRespostas();
     }
 
     private void abrirTelaNovaResposta() {
@@ -165,13 +188,18 @@ public class RespostasForumActivity extends AppCompatActivity {
             textoResponder.setText("Postar sua resposta");
 
             String fotoUsuario = sessionManager.getFotoUsuario();
+            iconeAvatarResponder.setImageTintList(null);
+
             if (fotoUsuario != null && !fotoUsuario.isEmpty()) {
-                iconeAvatarResponder.setImageURI(Uri.parse(fotoUsuario));
-                iconeAvatarResponder.setImageTintList(null);
+                Glide.with(this)
+                        .load(Uri.parse(fotoUsuario))
+                        .placeholder(R.drawable.ic_user)
+                        .error(R.drawable.ic_user)
+                        .circleCrop()
+                        .into(iconeAvatarResponder);
             } else {
-                Bitmap avatar = AvatarUtils.criarAvatarComInicial(this, sessionManager.getNomeUsuario(), 120);
+                Bitmap avatar = AvatarUtils.criarAvatarComInicial(this, sessionManager.getNomeUsuario(), 72);
                 iconeAvatarResponder.setImageBitmap(avatar);
-                iconeAvatarResponder.setImageTintList(null);
             }
         } else {
             textoResponder.setText("Entre em sua conta para responder");
@@ -189,9 +217,7 @@ public class RespostasForumActivity extends AppCompatActivity {
                 return;
             }
 
-            if (postAtual == null) {
-                return;
-            }
+            if (postAtual == null) return;
 
             animarClique(botaoLikePostOriginal);
             boolean sucesso = forumStorage.toggleLikePost(postAtual.getId(), sessionManager.getEmailUsuario());
@@ -207,9 +233,7 @@ public class RespostasForumActivity extends AppCompatActivity {
                 return;
             }
 
-            if (postAtual == null) {
-                return;
-            }
+            if (postAtual == null) return;
 
             animarClique(botaoDislikePostOriginal);
             boolean sucesso = forumStorage.toggleDislikePost(postAtual.getId(), sessionManager.getEmailUsuario());
@@ -221,14 +245,13 @@ public class RespostasForumActivity extends AppCompatActivity {
 
         boolean ehAutor = postAtual != null
                 && sessionManager.estaLogado()
+                && sessionManager.getEmailUsuario() != null
                 && sessionManager.getEmailUsuario().equals(postAtual.getAutorEmail());
 
         botaoOpcoesPostOriginal.setVisibility(ehAutor ? View.VISIBLE : View.GONE);
 
         botaoOpcoesPostOriginal.setOnClickListener(v -> {
-            if (postAtual == null) {
-                return;
-            }
+            if (postAtual == null) return;
 
             PopupMenu popupMenu = new PopupMenu(this, v);
             popupMenu.getMenu().add("Editar");
@@ -237,12 +260,12 @@ public class RespostasForumActivity extends AppCompatActivity {
             popupMenu.setOnMenuItemClickListener(item -> {
                 String titulo = item.getTitle().toString();
 
-                if (titulo.equals("Editar")) {
+                if ("Editar".equals(titulo)) {
                     abrirDialogEditarPostOriginal();
                     return true;
                 }
 
-                if (titulo.equals("Excluir")) {
+                if ("Excluir".equals(titulo)) {
                     confirmarExclusaoPostOriginal();
                     return true;
                 }
@@ -255,38 +278,43 @@ public class RespostasForumActivity extends AppCompatActivity {
     }
 
     private void atualizarEstadoVisualPostOriginal() {
-        if (postAtual == null) {
-            return;
-        }
+        if (postAtual == null) return;
 
-        if (!sessionManager.estaLogado()) {
+        if (!sessionManager.estaLogado() || sessionManager.getEmailUsuario() == null) {
             iconeLikePostOriginal.setAlpha(1f);
             iconeDislikePostOriginal.setAlpha(1f);
             textoLikes.setAlpha(1f);
             textoDislikes.setAlpha(1f);
+
+            iconeLikePostOriginal.setColorFilter(ContextCompat.getColor(this, R.color.green_like));
+            iconeDislikePostOriginal.setColorFilter(ContextCompat.getColor(this, R.color.red_dislike));
             return;
         }
 
         boolean curtiu = postAtual.usuarioCurtiu(sessionManager.getEmailUsuario());
         boolean descurtiu = postAtual.usuarioDescurtiu(sessionManager.getEmailUsuario());
 
-        iconeLikePostOriginal.setAlpha(curtiu ? 1f : 0.55f);
-        textoLikes.setAlpha(curtiu ? 1f : 0.75f);
+        iconeLikePostOriginal.setAlpha(curtiu ? 1f : 0.60f);
+        textoLikes.setAlpha(curtiu ? 1f : 0.80f);
+        iconeDislikePostOriginal.setAlpha(descurtiu ? 1f : 0.60f);
+        textoDislikes.setAlpha(descurtiu ? 1f : 0.80f);
 
-        iconeDislikePostOriginal.setAlpha(descurtiu ? 1f : 0.55f);
-        textoDislikes.setAlpha(descurtiu ? 1f : 0.75f);
+        iconeLikePostOriginal.setColorFilter(ContextCompat.getColor(
+                this, curtiu ? R.color.green_like_active : R.color.green_like
+        ));
+
+        iconeDislikePostOriginal.setColorFilter(ContextCompat.getColor(
+                this, descurtiu ? R.color.red_dislike_active : R.color.red_dislike
+        ));
     }
 
     private void preencherPostOriginal() {
-        if (postAtual == null) {
-            return;
-        }
+        if (postAtual == null) return;
 
-        String fotoUri = postAtual.getAutorFotoUri();
         aplicarAvatar(fotoPerfilPostOriginal, postAtual.getAutorFotoUri(), postAtual.getAutorNome());
 
-        boolean ehAutor = postAtual != null
-                && sessionManager.estaLogado()
+        boolean ehAutor = sessionManager.estaLogado()
+                && sessionManager.getEmailUsuario() != null
                 && sessionManager.getEmailUsuario().equals(postAtual.getAutorEmail());
 
         textoBadgeVocePostOriginal.setVisibility(ehAutor ? View.VISIBLE : View.GONE);
@@ -294,7 +322,6 @@ public class RespostasForumActivity extends AppCompatActivity {
         nome.setText(postAtual.getAutorNome());
         tempo.setText("· " + postAtual.getTempoPostagem());
         mensagem.setText(postAtual.getMensagem());
-
         textoLikes.setText(String.valueOf(postAtual.getLikes()));
         textoDislikes.setText(String.valueOf(postAtual.getDislikes()));
         textoRespostas.setText(postAtual.getQuantidadeRespostas() + " respostas");
@@ -303,80 +330,22 @@ public class RespostasForumActivity extends AppCompatActivity {
     }
 
     private void carregarRespostas() {
-        List<RespostaForum> respostas = new ArrayList<>();
+        respostasExibidas.clear();
 
         if (postAtual != null && postAtual.getRespostas() != null) {
-            respostas = postAtual.getRespostas();
+            respostasExibidas.addAll(postAtual.getRespostas());
         }
 
-        RespostaForumAdapter adapter = new RespostaForumAdapter(
-                this,
-                postAtual != null ? postAtual.getId() : "",
-                respostas,
-                sessionManager.estaLogado()
-        );
-
-        listaRespostas.setAdapter(adapter);
-    }
-
-    private void abrirDialogNovaResposta() {
-        if (!sessionManager.estaLogado()) {
-            Toast.makeText(this, "Você não entrou em sua conta", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (postAtual == null) {
-            Toast.makeText(this, "Post não encontrado", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        EditText input = new EditText(this);
-        input.setHint("Digite sua resposta");
-        input.setMinLines(3);
-        input.setPadding(40, 30, 40, 30);
-
-        new AlertDialog.Builder(this)
-                .setTitle("Nova resposta")
-                .setView(input)
-                .setNegativeButton("Cancelar", null)
-                .setPositiveButton("Responder", (dialog, which) -> {
-                    String texto = input.getText().toString().trim();
-
-                    if (texto.isEmpty()) {
-                        Toast.makeText(this, "Digite uma resposta", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    RespostaForum novaResposta = new RespostaForum(
-                            sessionManager.getNomeUsuario(),
-                            sessionManager.getEmailUsuario(),
-                            sessionManager.getFotoUsuario(),
-                            texto,
-                            TimeUtils.agora(),
-                            0,
-                            true,
-                            false
-                    );
-
-                    boolean sucesso = forumStorage.adicionarResposta(postAtual.getId(), novaResposta);
-
-                    if (sucesso) {
-                        recarregarPostAtual();
-                        Toast.makeText(this, "Resposta publicada com sucesso", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(this, "Erro ao publicar resposta", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .show();
+        adapter.notifyDataSetChanged();
     }
 
     private void abrirDialogEditarPostOriginal() {
-        EditText input = new EditText(this);
+        android.widget.EditText input = new android.widget.EditText(this);
         input.setText(postAtual.getMensagem());
         input.setMinLines(3);
         input.setPadding(40, 30, 40, 30);
 
-        new AlertDialog.Builder(this)
+        new androidx.appcompat.app.AlertDialog.Builder(this)
                 .setTitle("Editar post")
                 .setView(input)
                 .setNegativeButton("Cancelar", null)
@@ -401,7 +370,7 @@ public class RespostasForumActivity extends AppCompatActivity {
     }
 
     private void confirmarExclusaoPostOriginal() {
-        new AlertDialog.Builder(this)
+        new androidx.appcompat.app.AlertDialog.Builder(this)
                 .setTitle("Excluir post")
                 .setMessage("Tem certeza que deseja excluir esta publicação?")
                 .setNegativeButton("Cancelar", null)
@@ -419,35 +388,34 @@ public class RespostasForumActivity extends AppCompatActivity {
     }
 
     private void recarregarPostAtual() {
-        if (postAtual != null) {
-            PostForum atualizado = forumStorage.buscarPostPorId(postAtual.getId());
-            if (atualizado != null) {
-                postAtual = atualizado;
-            }
-        }
-
+        sincronizarPostAtual();
         configurarAcoesPostOriginal();
         preencherPostOriginal();
         carregarRespostas();
     }
 
     private void animarClique(View view) {
-        ObjectAnimator diminuirX = ObjectAnimator.ofFloat(view, "scaleX", 1f, 0.92f, 1f);
-        ObjectAnimator diminuirY = ObjectAnimator.ofFloat(view, "scaleY", 1f, 0.92f, 1f);
-        diminuirX.setDuration(180);
-        diminuirY.setDuration(180);
+        ObjectAnimator diminuirX = ObjectAnimator.ofFloat(view, "scaleX", 1f, 0.96f, 1f);
+        ObjectAnimator diminuirY = ObjectAnimator.ofFloat(view, "scaleY", 1f, 0.96f, 1f);
+        diminuirX.setDuration(120);
+        diminuirY.setDuration(120);
         diminuirX.start();
         diminuirY.start();
     }
 
     private void aplicarAvatar(ShapeableImageView imageView, String fotoUri, String nomeAutor) {
+        imageView.setImageTintList(null);
+
         if (fotoUri != null && !fotoUri.isEmpty()) {
-            imageView.setImageURI(Uri.parse(fotoUri));
-            imageView.setImageTintList(null);
+            Glide.with(this)
+                    .load(Uri.parse(fotoUri))
+                    .placeholder(R.drawable.ic_user)
+                    .error(R.drawable.ic_user)
+                    .circleCrop()
+                    .into(imageView);
         } else {
-            Bitmap avatar = AvatarUtils.criarAvatarComInicial(this, nomeAutor, 120);
+            Bitmap avatar = AvatarUtils.criarAvatarComInicial(this, nomeAutor, 72);
             imageView.setImageBitmap(avatar);
-            imageView.setImageTintList(null);
         }
     }
 }

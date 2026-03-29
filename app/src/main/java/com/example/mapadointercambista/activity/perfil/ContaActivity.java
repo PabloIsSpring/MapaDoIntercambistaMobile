@@ -13,6 +13,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.bumptech.glide.Glide;
 import com.example.mapadointercambista.R;
 import com.example.mapadointercambista.activity.main.MainActivity;
 import com.example.mapadointercambista.navigation.NavigationHelper;
@@ -36,7 +37,10 @@ public class ContaActivity extends AppCompatActivity {
                     } catch (Exception ignored) {
                     }
 
-                    imagemPerfilConta.setImageURI(uri);
+                    Glide.with(this)
+                            .load(uri)
+                            .circleCrop()
+                            .into(imagemPerfilConta);
                     imagemPerfilConta.setImageTintList(null); // remove o tint branco
                     sessionManager.salvarFotoUsuario(uri.toString());
                 }
@@ -74,8 +78,10 @@ public class ContaActivity extends AppCompatActivity {
         String fotoSalva = sessionManager.getFotoUsuario();
 
         if (fotoSalva != null && !fotoSalva.isEmpty()) {
-            imagemPerfilConta.setImageURI(Uri.parse(fotoSalva));
-            imagemPerfilConta.setImageTintList(null); // foto real sem tint
+            Glide.with(this)
+                    .load(Uri.parse(fotoSalva))
+                    .circleCrop()
+                    .into(imagemPerfilConta);
         } else {
             imagemPerfilConta.setImageResource(R.drawable.ic_user);
             imagemPerfilConta.setImageTintList(

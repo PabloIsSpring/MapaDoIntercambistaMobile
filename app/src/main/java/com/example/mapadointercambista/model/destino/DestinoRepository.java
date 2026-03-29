@@ -1,7 +1,5 @@
 package com.example.mapadointercambista.model.destino;
 
-import com.example.mapadointercambista.R;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -32,7 +30,7 @@ public class DestinoRepository {
         lista.add(new Destino(
                 "destino_oxford",
                 "Inglaterra - Oxford",
-                R.drawable.inglaterra,
+                "inglaterra",
                 "Inglaterra",
                 "Inglês",
                 "Libra Esterlina",
@@ -55,7 +53,7 @@ public class DestinoRepository {
         lista.add(new Destino(
                 "destino_kyoto",
                 "Japão - Kyoto",
-                R.drawable.japao,
+                "japao",
                 "Japão",
                 "Japonês",
                 "Iene",
@@ -67,7 +65,7 @@ public class DestinoRepository {
         lista.add(new Destino(
                 "destino_berlim",
                 "Alemanha - Berlim",
-                R.drawable.alemanha,
+                "alemanha",
                 "Alemanha",
                 "Alemão",
                 "Euro",
@@ -79,7 +77,7 @@ public class DestinoRepository {
         lista.add(new Destino(
                 "destino_toronto",
                 "Canadá - Toronto",
-                R.drawable.toronto,
+                "toronto",
                 "Canadá",
                 "Inglês",
                 "Dólar Canadense",
@@ -91,7 +89,7 @@ public class DestinoRepository {
         lista.add(new Destino(
                 "destino_barcelona",
                 "Espanha - Barcelona",
-                R.drawable.barcelona,
+                "barcelona",
                 "Espanha",
                 "Espanhol",
                 "Euro",
@@ -103,7 +101,7 @@ public class DestinoRepository {
         lista.add(new Destino(
                 "destino_sydney",
                 "Austrália - Sydney",
-                R.drawable.boston,
+                "boston",
                 "Austrália",
                 "Inglês",
                 "Dólar Australiano",
@@ -115,7 +113,7 @@ public class DestinoRepository {
         lista.add(new Destino(
                 "destino_lisboa",
                 "Portugal - Lisboa",
-                R.drawable.boston,
+                "boston",
                 "Portugal",
                 "Português",
                 "Euro",

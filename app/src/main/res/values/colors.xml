@@ -1,9 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!-- Básicas -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Identidade visual -->
+    <color name="color_primary">#568FF9</color>
+    <color name="color_primary_dark">#4A80E0</color>
+    <color name="color_primary_light">#E8F0FE</color>
+    <color name="color_accent">#2962FF</color>
+
+    <!-- Fundos -->
+    <color name="background_primary">#FFFFFF</color>
+    <color name="background_secondary">#F2F5FA</color>
+    <color name="card_background">#FFFFFF</color>
+    <color name="surface_light">#F7F9FC</color>
+
+    <!-- Textos -->
+    <color name="text_primary">#111111</color>
+    <color name="text_secondary">#666666</color>
+    <color name="text_muted">#66757F</color>
+    <color name="text_on_primary">#FFFFFF</color>
+
+    <!-- Bordas e divisores -->
+    <color name="divider_color">#E6ECF0</color>
+    <color name="border_light">#D9D9D9</color>
+
+    <!-- Estados -->
     <color name="green_like">#4CAF50</color>
     <color name="green_like_active">#1B8E3E</color>
     <color name="red_dislike">#F44336</color>
     <color name="red_dislike_active">#C62828</color>
+
+    <!-- Apoio -->
+    <color name="filter_chip_bg">#EEEEEE</color>
+    <color name="filter_chip_text">#444444</color>
+    <color name="overlay_dark_soft">#55000000</color>
+    <color name="shadow_dark_soft">#80000000</color>
+    <color name="thread_line">#D7E1E8</color>
+
 </resources>

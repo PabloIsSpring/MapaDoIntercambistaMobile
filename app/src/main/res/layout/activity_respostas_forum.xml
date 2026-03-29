@@ -5,7 +5,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/background_primary">
 
     <include layout="@layout/menu_superior"/>
 
@@ -15,7 +16,6 @@
         android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <!-- Título -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -32,25 +32,22 @@
                 android:src="@drawable/ic_arrow_left"
                 android:contentDescription="Voltar"
                 android:layout_marginBottom="12dp"
-                app:tint="#111111" />
+                app:tint="@color/text_primary" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Respostas"
-                android:textSize="22sp"
-                android:textStyle="bold"
-                android:textColor="#111111" />
+                style="@style/TextScreenTitle" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Veja as respostas desta publicação"
-                android:textColor="#66757F"
+                android:textColor="@color/text_muted"
                 android:layout_marginTop="4dp" />
         </LinearLayout>
 
-        <!-- Post Original -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -74,7 +71,7 @@
                     android:scaleType="centerCrop"
                     app:shapeAppearanceOverlay="@style/CircleImageShape"
                     app:strokeWidth="1dp"
-                    app:strokeColor="#D9D9D9" />
+                    app:strokeColor="@color/border_light" />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -94,20 +91,20 @@
                             android:layout_height="wrap_content"
                             android:textStyle="bold"
                             android:textSize="17sp"
-                            android:textColor="#111111" />
+                            android:textColor="@color/text_primary" />
 
                         <TextView
                             android:id="@+id/textoBadgeVocePostOriginal"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
-                            android:background="#E8F0FE"
+                            android:background="@color/color_primary_light"
                             android:paddingStart="8dp"
                             android:paddingEnd="8dp"
                             android:paddingTop="2dp"
                             android:paddingBottom="2dp"
                             android:text="Você"
-                            android:textColor="#2962FF"
+                            android:textColor="@color/color_accent"
                             android:textSize="12sp"
                             android:textStyle="bold"
                             android:visibility="gone" />
@@ -117,7 +114,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
-                            android:textColor="#66757F"
+                            android:textColor="@color/text_muted"
                             android:textSize="14sp" />
 
                         <ImageView
@@ -127,7 +124,7 @@
                             android:layout_marginStart="8dp"
                             android:src="@drawable/ic_more_vert"
                             android:visibility="gone"
-                            app:tint="#66757F" />
+                            app:tint="@color/text_muted" />
                     </LinearLayout>
 
                     <TextView
@@ -136,10 +133,9 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="6dp"
                         android:textSize="19sp"
-                        android:textColor="#111111"
+                        android:textColor="@color/text_primary"
                         android:lineSpacingExtra="2dp" />
 
-                    <!-- Linha do Post -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -159,7 +155,7 @@
                                 android:layout_width="18dp"
                                 android:layout_height="18dp"
                                 android:src="@drawable/ic_like"
-                                app:tint="#4CAF50" />
+                                app:tint="@color/green_like" />
 
                             <TextView
                                 android:id="@+id/textoLikesPostOriginal"
@@ -167,7 +163,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="5dp"
                                 android:text="0"
-                                android:textColor="#4CAF50"
+                                android:textColor="@color/green_like"
                                 android:textSize="13sp" />
                         </LinearLayout>
 
@@ -184,7 +180,7 @@
                                 android:layout_width="18dp"
                                 android:layout_height="18dp"
                                 android:src="@drawable/ic_dislike"
-                                app:tint="#F44336" />
+                                app:tint="@color/red_dislike" />
 
                             <TextView
                                 android:id="@+id/textoDislikesPostOriginal"
@@ -192,7 +188,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="5dp"
                                 android:text="0"
-                                android:textColor="#F44336"
+                                android:textColor="@color/red_dislike"
                                 android:textSize="13sp" />
                         </LinearLayout>
 
@@ -207,7 +203,7 @@
                                 android:layout_width="18dp"
                                 android:layout_height="18dp"
                                 android:src="@drawable/ic_chat"
-                                app:tint="#3F51B5" />
+                                app:tint="@color/color_accent" />
 
                             <TextView
                                 android:id="@+id/textoQuantidadeRespostasPostOriginal"
@@ -215,7 +211,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="5dp"
                                 android:text="0 respostas"
-                                android:textColor="#3F51B5"
+                                android:textColor="@color/color_accent"
                                 android:textSize="13sp" />
                         </LinearLayout>
 
@@ -230,9 +226,8 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#E6ECF0" />
+            android:background="@color/divider_color" />
 
-        <!-- Caixa de Resposta -->
         <LinearLayout
             android:id="@+id/cardResponder"
             android:layout_width="match_parent"
@@ -253,7 +248,7 @@
                 android:scaleType="centerCrop"
                 app:shapeAppearanceOverlay="@style/CircleImageShape"
                 app:strokeWidth="1dp"
-                app:strokeColor="#D9D9D9"
+                app:strokeColor="@color/border_light"
                 app:tint="@android:color/white" />
 
             <TextView
@@ -262,7 +257,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Postar sua resposta"
-                android:textColor="#66757F"
+                android:textColor="@color/text_muted"
                 android:textSize="16sp" />
 
             <com.google.android.material.button.MaterialButton
@@ -272,8 +267,8 @@
                 android:text="Responder"
                 android:textAllCaps="false"
                 android:textStyle="bold"
-                android:textColor="@android:color/white"
-                app:backgroundTint="#7A7A7A"
+                android:textColor="@color/text_on_primary"
+                app:backgroundTint="@color/text_secondary"
                 app:cornerRadius="22dp" />
 
         </LinearLayout>
@@ -281,9 +276,8 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#E6ECF0" />
+            android:background="@color/divider_color" />
 
-        <!-- Lista de Respostas -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/listaRespostas"
             android:layout_width="match_parent"

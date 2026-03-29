@@ -20,12 +20,13 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.mapadointercambista.R;
-import com.example.mapadointercambista.util.AvatarUtils;
 import com.example.mapadointercambista.model.forum.ForumStorage;
 import com.example.mapadointercambista.model.forum.PostForum;
 import com.example.mapadointercambista.model.forum.RespostaForum;
 import com.example.mapadointercambista.model.user.SessionManager;
+import com.example.mapadointercambista.util.AvatarUtils;
 import com.example.mapadointercambista.util.TimeUtils;
 import com.google.android.material.imageview.ShapeableImageView;
 
@@ -47,6 +48,7 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
         this.usuarioLogado = usuarioLogado;
         this.sessionManager = new SessionManager(context);
         this.forumStorage = new ForumStorage(context);
+        setHasStableIds(true);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -97,6 +99,12 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
         }
     }
 
+    @Override
+    public long getItemId(int position) {
+        String id = lista.get(position).getId();
+        return id != null ? id.hashCode() : position;
+    }
+
     @NonNull
     @Override
     public RespostaForumAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -130,6 +138,7 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
         holder.textoDislikes.setText(String.valueOf(resposta.getDislikes()));
 
         boolean ehAutor = usuarioLogado
+                && sessionManager.getEmailUsuario() != null
                 && sessionManager.getEmailUsuario().equals(resposta.getAutorEmail());
 
         holder.textoBadgeVoceResposta.setVisibility(ehAutor ? View.VISIBLE : View.GONE);
@@ -141,11 +150,7 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
         params.setMarginStart(margemEsquerda);
         holder.containerResposta.setLayoutParams(params);
 
-        if (resposta.getNivel() == 0) {
-            holder.linhaThread.setVisibility(View.INVISIBLE);
-        } else {
-            holder.linhaThread.setVisibility(View.VISIBLE);
-        }
+        holder.linhaThread.setVisibility(resposta.getNivel() == 0 ? View.INVISIBLE : View.VISIBLE);
 
         atualizarEstadoVisualReacoes(holder, resposta);
 
@@ -164,7 +169,12 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
             );
 
             if (sucesso) {
-                atualizarLista();
+                int posicao = holder.getAdapterPosition();
+                PostForum atualizado = forumStorage.buscarPostPorId(postId);
+
+                if (posicao != RecyclerView.NO_POSITION && atualizado != null) {
+                    atualizarDados(atualizado.getRespostas());
+                }
             }
         });
 
@@ -183,7 +193,12 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
             );
 
             if (sucesso) {
-                atualizarLista();
+                int posicao = holder.getAdapterPosition();
+                PostForum atualizado = forumStorage.buscarPostPorId(postId);
+
+                if (posicao != RecyclerView.NO_POSITION && atualizado != null) {
+                    atualizarDados(atualizado.getRespostas());
+                }
             }
         });
 
@@ -191,19 +206,17 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
 
         if (resposta.isTemRespostas()) {
             holder.textoToggleRespostas.setVisibility(View.VISIBLE);
-            holder.textoToggleRespostas.setText(temFilhasVisiveis(position, resposta.getNivel())
-                    ? "Ocultar respostas"
-                    : "Ver respostas");
+            holder.textoToggleRespostas.setText(
+                    temFilhasVisiveis(position, resposta.getNivel()) ? "Ocultar respostas" : "Ver respostas"
+            );
 
-            holder.textoToggleRespostas.setOnClickListener(v -> {
+            View.OnClickListener toggleListener = v -> {
                 alternarRespostasFilhas(position, resposta.getNivel());
                 notifyDataSetChanged();
-            });
+            };
 
-            holder.blocoResposta.setOnClickListener(v -> {
-                alternarRespostasFilhas(position, resposta.getNivel());
-                notifyDataSetChanged();
-            });
+            holder.textoToggleRespostas.setOnClickListener(toggleListener);
+            holder.blocoResposta.setOnClickListener(toggleListener);
         } else {
             holder.textoToggleRespostas.setVisibility(View.GONE);
             holder.textoToggleRespostas.setOnClickListener(null);
@@ -212,27 +225,32 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
     }
 
     private void animarClique(View view) {
-        ObjectAnimator diminuirX = ObjectAnimator.ofFloat(view, "scaleX", 1f, 0.92f, 1f);
-        ObjectAnimator diminuirY = ObjectAnimator.ofFloat(view, "scaleY", 1f, 0.92f, 1f);
-        diminuirX.setDuration(180);
-        diminuirY.setDuration(180);
+        ObjectAnimator diminuirX = ObjectAnimator.ofFloat(view, "scaleX", 1f, 0.96f, 1f);
+        ObjectAnimator diminuirY = ObjectAnimator.ofFloat(view, "scaleY", 1f, 0.96f, 1f);
+        diminuirX.setDuration(120);
+        diminuirY.setDuration(120);
         diminuirX.start();
         diminuirY.start();
     }
 
     private void aplicarAvatar(ShapeableImageView imageView, String fotoUri, String nomeAutor) {
+        imageView.setImageTintList(null);
+
         if (fotoUri != null && !fotoUri.isEmpty()) {
-            imageView.setImageURI(Uri.parse(fotoUri));
-            imageView.setImageTintList(null);
+            Glide.with(context)
+                    .load(Uri.parse(fotoUri))
+                    .placeholder(R.drawable.ic_user)
+                    .error(R.drawable.ic_user)
+                    .circleCrop()
+                    .into(imageView);
         } else {
-            Bitmap avatar = AvatarUtils.criarAvatarComInicial(context, nomeAutor, 120);
+            Bitmap avatar = AvatarUtils.criarAvatarComInicial(context, nomeAutor, 72);
             imageView.setImageBitmap(avatar);
-            imageView.setImageTintList(null);
         }
     }
 
     private void atualizarEstadoVisualReacoes(ViewHolder holder, RespostaForum resposta) {
-        if (!usuarioLogado) {
+        if (!usuarioLogado || sessionManager.getEmailUsuario() == null) {
             holder.iconeLikeResposta.setAlpha(1f);
             holder.iconeDislikeResposta.setAlpha(1f);
             holder.textoLikes.setAlpha(1f);
@@ -245,11 +263,10 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
         boolean curtiu = resposta.usuarioCurtiu(sessionManager.getEmailUsuario());
         boolean descurtiu = resposta.usuarioDescurtiu(sessionManager.getEmailUsuario());
 
-        holder.iconeLikeResposta.setAlpha(curtiu ? 1f : 0.55f);
-        holder.textoLikes.setAlpha(curtiu ? 1f : 0.75f);
-
-        holder.iconeDislikeResposta.setAlpha(descurtiu ? 1f : 0.55f);
-        holder.textoDislikes.setAlpha(descurtiu ? 1f : 0.75f);
+        holder.iconeLikeResposta.setAlpha(curtiu ? 1f : 0.60f);
+        holder.textoLikes.setAlpha(curtiu ? 1f : 0.80f);
+        holder.iconeDislikeResposta.setAlpha(descurtiu ? 1f : 0.60f);
+        holder.textoDislikes.setAlpha(descurtiu ? 1f : 0.80f);
 
         holder.iconeLikeResposta.setColorFilter(ContextCompat.getColor(
                 context,
@@ -402,10 +419,8 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
 
     private void atualizarLista() {
         PostForum postAtualizado = forumStorage.buscarPostPorId(postId);
-        if (postAtualizado != null && postAtualizado.getRespostas() != null) {
-            lista.clear();
-            lista.addAll(postAtualizado.getRespostas());
-            notifyDataSetChanged();
+        if (postAtualizado != null) {
+            atualizarDados(postAtualizado.getRespostas());
         }
     }
 
@@ -440,8 +455,16 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
         }
     }
 
+    public void atualizarDados(List<RespostaForum> novasRespostas) {
+        lista.clear();
+        if (novasRespostas != null) {
+            lista.addAll(novasRespostas);
+        }
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getItemCount() {
-        return lista.size();
+        return lista != null ? lista.size() : 0;
     }
 }

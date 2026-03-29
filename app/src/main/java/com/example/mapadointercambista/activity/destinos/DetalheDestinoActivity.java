@@ -22,12 +22,14 @@ import com.example.mapadointercambista.model.destino.AvaliacaoDestino;
 import com.example.mapadointercambista.model.destino.Destino;
 import com.example.mapadointercambista.model.destino.DestinoStorage;
 import com.example.mapadointercambista.model.user.SessionManager;
-import com.example.mapadointercambista.util.TimeUtils;
 import com.example.mapadointercambista.navigation.NavigationHelper;
+import com.example.mapadointercambista.util.ImageUtils;
+import com.example.mapadointercambista.util.TimeUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class DetalheDestinoActivity extends AppCompatActivity {
 
@@ -45,8 +47,12 @@ public class DetalheDestinoActivity extends AppCompatActivity {
     private TextView textoResumoAvaliacoes;
     private RecyclerView listaAvaliacoes;
     private TextView textoVerMaisDescricao;
+
     private boolean descricaoExpandida = false;
     private String descricaoCompleta = "";
+
+    private final List<AvaliacaoDestino> avaliacoesExibidas = new ArrayList<>();
+    private AvaliacaoDestinoAdapter avaliacaoAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +74,6 @@ public class DetalheDestinoActivity extends AppCompatActivity {
         Destino destinoRecebido = (Destino) getIntent().getSerializableExtra("destino");
         if (destinoRecebido != null) {
             destinoAtual = destinoStorage.buscarDestinoPorId(destinoRecebido.getId());
-
             if (destinoAtual == null) {
                 destinoAtual = destinoRecebido;
             }
@@ -86,9 +91,18 @@ public class DetalheDestinoActivity extends AppCompatActivity {
         textoVerMaisDescricao = findViewById(R.id.textoVerMaisDescricao);
 
         listaAvaliacoes.setLayoutManager(new LinearLayoutManager(this));
+        listaAvaliacoes.setHasFixedSize(false);
+        listaAvaliacoes.setItemViewCacheSize(8);
+
+        avaliacaoAdapter = new AvaliacaoDestinoAdapter(
+                this,
+                destinoAtual != null ? destinoAtual.getId() : "",
+                destinoAtual != null ? destinoAtual.getAgencias() : new ArrayList<>(),
+                avaliacoesExibidas
+        );
+        listaAvaliacoes.setAdapter(avaliacaoAdapter);
 
         botaoVoltar.setOnClickListener(v -> finish());
-
         findViewById(R.id.botaoAvaliarDestino).setOnClickListener(v -> abrirDialogNovaAvaliacao());
 
         preencherCabecalho();
@@ -139,49 +153,45 @@ public class DetalheDestinoActivity extends AppCompatActivity {
             return;
         }
 
-        imagem.setImageResource(destinoAtual.getImagem());
+        int drawableId = ImageUtils.getDrawableId(this, destinoAtual.getImagemNome());
+        imagem.setImageResource(drawableId != 0 ? drawableId : R.drawable.ic_world);
+
         nome.setText(destinoAtual.getNome());
         pais.setText(destinoAtual.getPais());
         idioma.setText(destinoAtual.getIdioma());
         moeda.setText(destinoAtual.getMoeda());
+
         descricaoCompleta = destinoAtual.getDescricao();
         descricao.setText(descricaoCompleta);
 
         descricao.post(() -> {
             if (descricao.getLineCount() > 4) {
-                descricao.setMaxLines(4);
+                descricao.setMaxLines(descricaoExpandida ? Integer.MAX_VALUE : 4);
                 textoVerMaisDescricao.setVisibility(View.VISIBLE);
-                textoVerMaisDescricao.setText("Ver mais");
+                textoVerMaisDescricao.setText(descricaoExpandida ? "Ver menos" : "Ver mais");
             } else {
                 textoVerMaisDescricao.setVisibility(View.GONE);
             }
         });
 
         int quantidade = destinoAtual.getListaAvaliacoes() != null ? destinoAtual.getListaAvaliacoes().size() : 0;
-        String notaMedia = String.format(java.util.Locale.US, "%.1f", destinoAtual.getNota());
+        String notaMedia = String.format(Locale.getDefault(), "%.1f", destinoAtual.getNota());
 
-        if (quantidade == 1) {
-            textoResumoAvaliacoes.setText(notaMedia + " • 1 avaliação");
-        } else {
-            textoResumoAvaliacoes.setText(notaMedia + " • " + quantidade + " avaliações");
-        }
+        textoResumoAvaliacoes.setText(
+                quantidade == 1
+                        ? notaMedia + " • 1 avaliação"
+                        : notaMedia + " • " + quantidade + " avaliações"
+        );
     }
 
     private void carregarAvaliacoes() {
-        List<AvaliacaoDestino> avaliacoes = new ArrayList<>();
+        avaliacoesExibidas.clear();
 
         if (destinoAtual != null && destinoAtual.getListaAvaliacoes() != null) {
-            avaliacoes = destinoAtual.getListaAvaliacoes();
+            avaliacoesExibidas.addAll(destinoAtual.getListaAvaliacoes());
         }
 
-        AvaliacaoDestinoAdapter adapter = new AvaliacaoDestinoAdapter(
-                this,
-                destinoAtual != null ? destinoAtual.getId() : "",
-                destinoAtual != null ? destinoAtual.getAgencias() : new ArrayList<>(),
-                avaliacoes
-        );
-
-        listaAvaliacoes.setAdapter(adapter);
+        avaliacaoAdapter.notifyDataSetChanged();
     }
 
     private void abrirDialogNovaAvaliacao() {

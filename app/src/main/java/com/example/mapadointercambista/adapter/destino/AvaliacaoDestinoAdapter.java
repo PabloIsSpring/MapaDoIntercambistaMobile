@@ -8,13 +8,13 @@ import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.RatingBar;
 import android.widget.Spinner;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,13 +22,13 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.mapadointercambista.R;
-import com.example.mapadointercambista.util.AvatarUtils;
-import com.example.mapadointercambista.model.user.SessionManager;
-import com.example.mapadointercambista.util.TimeUtils;
 import com.example.mapadointercambista.model.destino.AvaliacaoDestino;
 import com.example.mapadointercambista.model.destino.Destino;
 import com.example.mapadointercambista.model.destino.DestinoStorage;
+import com.example.mapadointercambista.model.user.SessionManager;
+import com.example.mapadointercambista.util.AvatarUtils;
 import com.google.android.material.imageview.ShapeableImageView;
 
 import java.util.List;
@@ -49,6 +49,7 @@ public class AvaliacaoDestinoAdapter extends RecyclerView.Adapter<AvaliacaoDesti
         this.lista = lista;
         this.sessionManager = new SessionManager(context);
         this.destinoStorage = new DestinoStorage(context);
+        setHasStableIds(true);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -87,6 +88,12 @@ public class AvaliacaoDestinoAdapter extends RecyclerView.Adapter<AvaliacaoDesti
         }
     }
 
+    @Override
+    public long getItemId(int position) {
+        String id = lista.get(position).getId();
+        return id != null ? id.hashCode() : position;
+    }
+
     @NonNull
     @Override
     public AvaliacaoDestinoAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -108,18 +115,18 @@ public class AvaliacaoDestinoAdapter extends RecyclerView.Adapter<AvaliacaoDesti
         holder.textoDislikes.setText(String.valueOf(avaliacao.getDislikes()));
 
         String agencia = avaliacao.getAgenciaEscolhida();
-        if (agencia == null || agencia.trim().isEmpty() || agencia.equalsIgnoreCase("Nenhuma agência")) {
-            holder.textoAgencia.setText("Sem agência");
-        } else {
-            holder.textoAgencia.setText(agencia);
-        }
+        holder.textoAgencia.setText(
+                agencia == null || agencia.trim().isEmpty() || agencia.equalsIgnoreCase("Nenhuma agência")
+                        ? "Sem agência"
+                        : agencia
+        );
 
         boolean ehAutor = sessionManager.estaLogado()
+                && sessionManager.getEmailUsuario() != null
                 && sessionManager.getEmailUsuario().equals(avaliacao.getAutorEmail());
 
         holder.textoBadgeVoce.setVisibility(ehAutor ? View.VISIBLE : View.GONE);
         holder.botaoOpcoes.setVisibility(ehAutor ? View.VISIBLE : View.GONE);
-
         holder.botaoOpcoes.setOnClickListener(v -> abrirMenuAvaliacao(v, avaliacao));
 
         atualizarEstadoVisualReacoes(holder, avaliacao);
@@ -274,7 +281,7 @@ public class AvaliacaoDestinoAdapter extends RecyclerView.Adapter<AvaliacaoDesti
     }
 
     private void atualizarEstadoVisualReacoes(ViewHolder holder, AvaliacaoDestino avaliacao) {
-        if (!sessionManager.estaLogado()) {
+        if (!sessionManager.estaLogado() || sessionManager.getEmailUsuario() == null) {
             holder.iconeLike.setAlpha(1f);
             holder.iconeDislike.setAlpha(1f);
             holder.textoLikes.setAlpha(1f);
@@ -287,11 +294,10 @@ public class AvaliacaoDestinoAdapter extends RecyclerView.Adapter<AvaliacaoDesti
         boolean curtiu = avaliacao.usuarioCurtiu(sessionManager.getEmailUsuario());
         boolean descurtiu = avaliacao.usuarioDescurtiu(sessionManager.getEmailUsuario());
 
-        holder.iconeLike.setAlpha(curtiu ? 1f : 0.55f);
-        holder.textoLikes.setAlpha(curtiu ? 1f : 0.75f);
-
-        holder.iconeDislike.setAlpha(descurtiu ? 1f : 0.55f);
-        holder.textoDislikes.setAlpha(descurtiu ? 1f : 0.75f);
+        holder.iconeLike.setAlpha(curtiu ? 1f : 0.60f);
+        holder.textoLikes.setAlpha(curtiu ? 1f : 0.80f);
+        holder.iconeDislike.setAlpha(descurtiu ? 1f : 0.60f);
+        holder.textoDislikes.setAlpha(descurtiu ? 1f : 0.80f);
 
         holder.iconeLike.setColorFilter(ContextCompat.getColor(
                 context,
@@ -305,27 +311,32 @@ public class AvaliacaoDestinoAdapter extends RecyclerView.Adapter<AvaliacaoDesti
     }
 
     private void aplicarAvatar(ShapeableImageView imageView, String fotoUri, String nomeAutor) {
+        imageView.setImageTintList(null);
+
         if (fotoUri != null && !fotoUri.isEmpty()) {
-            imageView.setImageURI(Uri.parse(fotoUri));
-            imageView.setImageTintList(null);
+            Glide.with(context)
+                    .load(Uri.parse(fotoUri))
+                    .placeholder(R.drawable.ic_user)
+                    .error(R.drawable.ic_user)
+                    .circleCrop()
+                    .into(imageView);
         } else {
-            Bitmap avatar = AvatarUtils.criarAvatarComInicial(context, nomeAutor, 120);
+            Bitmap avatar = AvatarUtils.criarAvatarComInicial(context, nomeAutor, 72);
             imageView.setImageBitmap(avatar);
-            imageView.setImageTintList(null);
         }
     }
 
     private void animarClique(View view) {
-        ObjectAnimator diminuirX = ObjectAnimator.ofFloat(view, "scaleX", 1f, 0.92f, 1f);
-        ObjectAnimator diminuirY = ObjectAnimator.ofFloat(view, "scaleY", 1f, 0.92f, 1f);
-        diminuirX.setDuration(180);
-        diminuirY.setDuration(180);
+        ObjectAnimator diminuirX = ObjectAnimator.ofFloat(view, "scaleX", 1f, 0.96f, 1f);
+        ObjectAnimator diminuirY = ObjectAnimator.ofFloat(view, "scaleY", 1f, 0.96f, 1f);
+        diminuirX.setDuration(120);
+        diminuirY.setDuration(120);
         diminuirX.start();
         diminuirY.start();
     }
 
     @Override
     public int getItemCount() {
-        return lista.size();
+        return lista != null ? lista.size() : 0;
     }
 }

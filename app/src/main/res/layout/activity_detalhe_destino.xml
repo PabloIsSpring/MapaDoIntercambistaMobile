@@ -6,7 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F2F2F2">
+    android:background="@color/background_secondary">
 
     <include layout="@layout/menu_superior"/>
 
@@ -25,12 +25,12 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Banner com imagem, botão voltar e título -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="220dp"
                 app:cardCornerRadius="16dp"
-                app:cardElevation="6dp">
+                app:cardElevation="6dp"
+                app:cardBackgroundColor="@color/card_background">
 
                 <FrameLayout
                     android:layout_width="match_parent"
@@ -43,11 +43,10 @@
                         android:scaleType="centerCrop"
                         android:src="@drawable/inglaterra" />
 
-                    <!-- Overlay escuro leve para melhorar leitura -->
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="#35000000" />
+                        android:background="@color/overlay_dark_soft" />
 
                     <ImageView
                         android:id="@+id/botaoVoltarDestino"
@@ -59,7 +58,7 @@
                         android:padding="8dp"
                         android:src="@drawable/ic_arrow_left"
                         android:contentDescription="Voltar"
-                        app:tint="@android:color/white" />
+                        app:tint="@color/text_on_primary" />
 
                     <TextView
                         android:id="@+id/nomeDestino"
@@ -69,12 +68,12 @@
                         android:layout_marginStart="14dp"
                         android:layout_marginEnd="14dp"
                         android:layout_marginBottom="14dp"
-                        android:shadowColor="#80000000"
+                        android:shadowColor="@color/shadow_dark_soft"
                         android:shadowDx="0"
                         android:shadowDy="1"
                         android:shadowRadius="3"
                         android:text="Inglaterra - Oxford"
-                        android:textColor="@android:color/white"
+                        android:textColor="@color/text_on_primary"
                         android:textSize="28sp"
                         android:textStyle="bold" />
 
@@ -82,7 +81,6 @@
 
             </androidx.cardview.widget.CardView>
 
-            <!-- Cards de info -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -96,7 +94,8 @@
                     android:layout_weight="1"
                     android:layout_marginEnd="6dp"
                     app:cardCornerRadius="12dp"
-                    app:cardElevation="4dp">
+                    app:cardElevation="4dp"
+                    app:cardBackgroundColor="@color/card_background">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -108,7 +107,8 @@
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
-                            android:src="@drawable/ic_world" />
+                            android:src="@drawable/ic_world"
+                            app:tint="@color/color_accent" />
 
                         <LinearLayout
                             android:layout_width="wrap_content"
@@ -120,7 +120,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="País"
-                                android:textColor="#444444"
+                                android:textColor="@color/text_primary"
                                 android:textStyle="bold"
                                 android:textSize="15sp" />
 
@@ -129,7 +129,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Inglaterra"
-                                android:textColor="#666666"
+                                android:textColor="@color/text_secondary"
                                 android:textSize="14sp" />
                         </LinearLayout>
 
@@ -144,7 +144,8 @@
                     android:layout_marginStart="3dp"
                     android:layout_marginEnd="3dp"
                     app:cardCornerRadius="12dp"
-                    app:cardElevation="4dp">
+                    app:cardElevation="4dp"
+                    app:cardBackgroundColor="@color/card_background">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -156,7 +157,8 @@
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
-                            android:src="@drawable/ic_world" />
+                            android:src="@drawable/ic_world"
+                            app:tint="@color/color_accent" />
 
                         <LinearLayout
                             android:layout_width="wrap_content"
@@ -168,7 +170,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Idioma"
-                                android:textColor="#444444"
+                                android:textColor="@color/text_primary"
                                 android:textStyle="bold"
                                 android:textSize="15sp" />
 
@@ -177,7 +179,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Inglês"
-                                android:textColor="#666666"
+                                android:textColor="@color/text_secondary"
                                 android:textSize="14sp" />
                         </LinearLayout>
 
@@ -191,7 +193,8 @@
                     android:layout_weight="1"
                     android:layout_marginStart="6dp"
                     app:cardCornerRadius="12dp"
-                    app:cardElevation="4dp">
+                    app:cardElevation="4dp"
+                    app:cardBackgroundColor="@color/card_background">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -203,7 +206,8 @@
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
-                            android:src="@drawable/ic_world" />
+                            android:src="@drawable/ic_world"
+                            app:tint="@color/color_accent" />
 
                         <LinearLayout
                             android:layout_width="wrap_content"
@@ -215,7 +219,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Moeda"
-                                android:textColor="#444444"
+                                android:textColor="@color/text_primary"
                                 android:textStyle="bold"
                                 android:textSize="15sp" />
 
@@ -224,7 +228,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Libra Esterlina"
-                                android:textColor="#666666"
+                                android:textColor="@color/text_secondary"
                                 android:textSize="14sp" />
                         </LinearLayout>
 
@@ -234,13 +238,13 @@
 
             </LinearLayout>
 
-            <!-- Sobre -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
                 app:cardCornerRadius="12dp"
-                app:cardElevation="4dp">
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="@color/card_background">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -252,7 +256,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Sobre o destino"
-                        android:textColor="#555555"
+                        android:textColor="@color/text_primary"
                         android:textSize="22sp"
                         android:textStyle="bold" />
 
@@ -263,7 +267,7 @@
                         android:layout_marginTop="12dp"
                         android:maxLines="4"
                         android:text="Descrição do destino"
-                        android:textColor="#444444"
+                        android:textColor="@color/text_primary"
                         android:textSize="17sp" />
 
                     <TextView
@@ -272,7 +276,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="6dp"
                         android:text="Ver mais"
-                        android:textColor="#2962FF"
+                        android:textColor="@color/color_accent"
                         android:textStyle="bold"
                         android:visibility="gone" />
 
@@ -280,13 +284,13 @@
 
             </androidx.cardview.widget.CardView>
 
-            <!-- Agências -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
                 app:cardCornerRadius="12dp"
-                app:cardElevation="4dp">
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="@color/card_background">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -319,7 +323,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="6dp"
                             android:text="Explore Abroad"
-                            android:textColor="#333333"
+                            android:textColor="@color/text_primary"
                             android:textSize="13sp"
                             android:textStyle="bold"
                             android:gravity="center" />
@@ -348,7 +352,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="6dp"
                             android:text="Journey Hub"
-                            android:textColor="#333333"
+                            android:textColor="@color/text_primary"
                             android:textSize="13sp"
                             android:textStyle="bold"
                             android:gravity="center" />
@@ -377,7 +381,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="6dp"
                             android:text="Gateway Exchange"
-                            android:textColor="#333333"
+                            android:textColor="@color/text_primary"
                             android:textSize="13sp"
                             android:textStyle="bold"
                             android:gravity="center" />
@@ -387,13 +391,13 @@
 
             </androidx.cardview.widget.CardView>
 
-            <!-- Avaliações -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
                 app:cardCornerRadius="12dp"
-                app:cardElevation="4dp">
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="@color/card_background">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -412,7 +416,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="Avaliações"
-                            android:textColor="#555555"
+                            android:textColor="@color/text_primary"
                             android:textSize="22sp"
                             android:textStyle="bold" />
 
@@ -422,9 +426,9 @@
                             android:layout_height="42dp"
                             android:text="Avaliar"
                             android:textAllCaps="false"
-                            android:textColor="@android:color/white"
+                            android:textColor="@color/text_on_primary"
                             android:textStyle="bold"
-                            app:backgroundTint="#2962FF"
+                            app:backgroundTint="@color/color_accent"
                             app:cornerRadius="21dp" />
                     </LinearLayout>
 
@@ -434,7 +438,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:text="0 avaliações"
-                        android:textColor="#66757F"
+                        android:textColor="@color/text_muted"
                         android:textSize="14sp" />
 
                     <androidx.recyclerview.widget.RecyclerView

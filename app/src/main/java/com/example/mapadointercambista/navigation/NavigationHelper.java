@@ -4,11 +4,11 @@ import android.app.Activity;
 import android.content.Intent;
 
 import com.example.mapadointercambista.R;
-import com.example.mapadointercambista.activity.perfil.ContaActivity;
+import com.example.mapadointercambista.activity.auth.LoginActivity;
 import com.example.mapadointercambista.activity.destinos.DestinosActivity;
 import com.example.mapadointercambista.activity.forum.ForumActivity;
-import com.example.mapadointercambista.activity.auth.LoginActivity;
 import com.example.mapadointercambista.activity.main.MainActivity;
+import com.example.mapadointercambista.activity.perfil.ContaActivity;
 import com.example.mapadointercambista.model.user.SessionManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -21,7 +21,6 @@ public class NavigationHelper {
         SessionManager sessionManager = new SessionManager(activity);
 
         bottomNav.setSelectedItemId(itemSelecionado);
-        atualizarIconePerfil(bottomNav, sessionManager);
 
         bottomNav.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
@@ -31,6 +30,7 @@ public class NavigationHelper {
             }
 
             Intent intent = null;
+            boolean deveFinalizarTelaAtual = true;
 
             if (itemId == R.id.nav_home) {
                 intent = new Intent(activity, MainActivity.class);
@@ -43,26 +43,22 @@ public class NavigationHelper {
                     intent = new Intent(activity, ContaActivity.class);
                 } else {
                     intent = new Intent(activity, LoginActivity.class);
+                    deveFinalizarTelaAtual = false;
                 }
             }
 
             if (intent != null) {
                 activity.startActivity(intent);
                 activity.overridePendingTransition(0, 0);
-                activity.finish();
+
+                if (deveFinalizarTelaAtual) {
+                    activity.finish();
+                }
+
                 return true;
             }
 
             return false;
         });
-    }
-
-    private static void atualizarIconePerfil(BottomNavigationView bottomNav,
-                                             SessionManager sessionManager) {
-        if (sessionManager.estaLogado()) {
-            bottomNav.getMenu().findItem(R.id.nav_perfil).setIcon(R.drawable.ic_user);
-        } else {
-            bottomNav.getMenu().findItem(R.id.nav_perfil).setIcon(R.drawable.ic_user);
-        }
     }
 }

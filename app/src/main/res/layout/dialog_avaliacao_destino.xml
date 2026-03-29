@@ -5,14 +5,15 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="12dp">
+    android:padding="12dp"
+    android:background="@color/background_primary">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Sua nota"
         android:textStyle="bold"
-        android:textColor="#333333" />
+        android:textColor="@color/text_primary" />
 
     <RatingBar
         android:id="@+id/ratingNovaAvaliacao"
@@ -28,7 +29,7 @@
         android:layout_marginTop="14dp"
         android:text="Agência"
         android:textStyle="bold"
-        android:textColor="#333333" />
+        android:textColor="@color/text_primary" />
 
     <Spinner
         android:id="@+id/spinnerAgenciaAvaliacao"
@@ -42,7 +43,7 @@
         android:layout_marginTop="14dp"
         android:text="Comentário"
         android:textStyle="bold"
-        android:textColor="#333333" />
+        android:textColor="@color/text_primary" />
 
     <EditText
         android:id="@+id/inputMensagemAvaliacao"
@@ -52,6 +53,8 @@
         android:background="@drawable/bg_input"
         android:gravity="top|start"
         android:hint="Conte como foi sua experiência..."
+        android:textColor="@color/text_primary"
+        android:textColorHint="@color/text_secondary"
         android:padding="12dp"
         android:textSize="15sp" />
 

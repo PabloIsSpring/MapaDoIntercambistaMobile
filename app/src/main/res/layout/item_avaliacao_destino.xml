@@ -20,7 +20,7 @@
             android:layout_height="42dp"
             android:scaleType="centerCrop"
             app:shapeAppearanceOverlay="@style/CircleImageShape"
-            app:strokeColor="#D9D9D9"
+            app:strokeColor="@color/border_light"
             app:strokeWidth="1dp" />
 
         <LinearLayout
@@ -42,20 +42,20 @@
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
                     android:textSize="16sp"
-                    android:textColor="#222222" />
+                    android:textColor="@color/text_primary" />
 
                 <TextView
                     android:id="@+id/textoBadgeVoceAvaliacao"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:background="#E8F0FE"
+                    android:background="@color/color_primary_light"
                     android:paddingStart="8dp"
                     android:paddingEnd="8dp"
                     android:paddingTop="2dp"
                     android:paddingBottom="2dp"
                     android:text="Você"
-                    android:textColor="#2962FF"
+                    android:textColor="@color/color_accent"
                     android:textSize="12sp"
                     android:textStyle="bold"
                     android:visibility="gone" />
@@ -65,7 +65,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:textColor="#777777"
+                    android:textColor="@color/text_secondary"
                     android:textSize="13sp" />
 
                 <ImageView
@@ -75,7 +75,7 @@
                     android:layout_marginStart="8dp"
                     android:src="@drawable/ic_more_vert"
                     android:visibility="gone"
-                    app:tint="#777777" />
+                    app:tint="@color/text_secondary" />
             </LinearLayout>
 
             <TextView
@@ -83,7 +83,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:textColor="#2962FF"
+                android:textColor="@color/color_accent"
                 android:textSize="13sp"
                 android:textStyle="bold" />
 
@@ -104,7 +104,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:textColor="#333333"
+                android:textColor="@color/text_primary"
                 android:textSize="15sp" />
 
             <LinearLayout
@@ -173,6 +173,6 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="12dp"
-        android:background="#E6ECF0" />
+        android:background="@color/divider_color" />
 
 </LinearLayout>

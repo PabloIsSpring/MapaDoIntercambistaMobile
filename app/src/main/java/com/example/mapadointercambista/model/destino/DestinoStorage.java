@@ -15,6 +15,8 @@ public class DestinoStorage {
     private static final String PREF_NAME = "destino_storage";
     private static final String KEY_DESTINOS = "destinos";
 
+    private static List<Destino> cacheDestinos;
+
     private final SharedPreferences prefs;
     private final Gson gson;
 
@@ -23,24 +25,30 @@ public class DestinoStorage {
         gson = new Gson();
     }
 
-    public void salvarDestinos(List<Destino> destinos) {
-        prefs.edit().putString(KEY_DESTINOS, gson.toJson(destinos)).apply();
+    public synchronized void salvarDestinos(List<Destino> destinos) {
+        cacheDestinos = destinos != null ? new ArrayList<>(destinos) : new ArrayList<>();
+        prefs.edit().putString(KEY_DESTINOS, gson.toJson(cacheDestinos)).apply();
     }
 
-    public List<Destino> carregarDestinos() {
-        String json = prefs.getString(KEY_DESTINOS, null);
+    public synchronized List<Destino> carregarDestinos() {
+        if (cacheDestinos != null) {
+            return new ArrayList<>(cacheDestinos);
+        }
 
+        String json = prefs.getString(KEY_DESTINOS, null);
         if (json == null) {
+            cacheDestinos = new ArrayList<>();
             return new ArrayList<>();
         }
 
         Type type = new TypeToken<List<Destino>>() {}.getType();
         List<Destino> destinos = gson.fromJson(json, type);
+        cacheDestinos = destinos != null ? destinos : new ArrayList<>();
 
-        return destinos != null ? destinos : new ArrayList<>();
+        return new ArrayList<>(cacheDestinos);
     }
 
-    public Destino buscarDestinoPorId(String destinoId) {
+    public synchronized Destino buscarDestinoPorId(String destinoId) {
         List<Destino> destinos = carregarDestinos();
 
         for (Destino destino : destinos) {
@@ -52,7 +60,7 @@ public class DestinoStorage {
         return null;
     }
 
-    public boolean adicionarAvaliacao(String destinoId, AvaliacaoDestino novaAvaliacao) {
+    public synchronized boolean adicionarAvaliacao(String destinoId, AvaliacaoDestino novaAvaliacao) {
         List<Destino> destinos = carregarDestinos();
 
         for (Destino destino : destinos) {
@@ -73,8 +81,8 @@ public class DestinoStorage {
         return false;
     }
 
-    public boolean editarAvaliacao(String destinoId, String avaliacaoId, String novaMensagem,
-                                   float novaNota, String novaAgencia) {
+    public synchronized boolean editarAvaliacao(String destinoId, String avaliacaoId, String novaMensagem,
+                                                float novaNota, String novaAgencia) {
         List<Destino> destinos = carregarDestinos();
 
         for (Destino destino : destinos) {
@@ -95,7 +103,7 @@ public class DestinoStorage {
         return false;
     }
 
-    public boolean excluirAvaliacao(String destinoId, String avaliacaoId) {
+    public synchronized boolean excluirAvaliacao(String destinoId, String avaliacaoId) {
         List<Destino> destinos = carregarDestinos();
 
         for (Destino destino : destinos) {
@@ -117,7 +125,7 @@ public class DestinoStorage {
         return false;
     }
 
-    public boolean toggleLikeAvaliacao(String destinoId, String avaliacaoId, String emailUsuario) {
+    public synchronized boolean toggleLikeAvaliacao(String destinoId, String avaliacaoId, String emailUsuario) {
         List<Destino> destinos = carregarDestinos();
 
         for (Destino destino : destinos) {
@@ -144,7 +152,7 @@ public class DestinoStorage {
         return false;
     }
 
-    public boolean toggleDislikeAvaliacao(String destinoId, String avaliacaoId, String emailUsuario) {
+    public synchronized boolean toggleDislikeAvaliacao(String destinoId, String avaliacaoId, String emailUsuario) {
         List<Destino> destinos = carregarDestinos();
 
         for (Destino destino : destinos) {

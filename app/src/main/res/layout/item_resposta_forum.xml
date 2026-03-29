@@ -7,21 +7,20 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
+    android:background="@color/background_primary"
     android:paddingStart="12dp"
     android:paddingEnd="12dp"
     android:paddingTop="10dp"
     android:paddingBottom="10dp">
 
-    <!-- Linha do Comentário -->
     <View
         android:id="@+id/linhaThread"
         android:layout_width="2dp"
         android:layout_height="match_parent"
         android:layout_marginStart="6dp"
         android:layout_marginEnd="10dp"
-        android:background="#D7E1E8" />
+        android:background="@color/thread_line"/>
 
-    <!-- Fot de Perfil -->
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/fotoPerfilResposta"
         android:layout_width="38dp"
@@ -31,9 +30,8 @@
         android:scaleType="centerCrop"
         app:shapeAppearanceOverlay="@style/CircleImageShape"
         app:strokeWidth="1dp"
-        app:strokeColor="#D9D9D9" />
+        app:strokeColor="@color/border_light" />
 
-    <!-- Conteúdo -->
     <LinearLayout
         android:id="@+id/blocoResposta"
         android:layout_width="0dp"
@@ -41,7 +39,6 @@
         android:layout_weight="1"
         android:orientation="vertical">
 
-        <!-- Topo -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -54,20 +51,20 @@
                 android:layout_height="wrap_content"
                 android:textStyle="bold"
                 android:textSize="16sp"
-                android:textColor="#111111" />
+                android:textColor="@color/text_primary" />
 
             <TextView
                 android:id="@+id/textoBadgeVoceResposta"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:background="#E8F0FE"
+                android:background="@color/color_primary_light"
                 android:paddingStart="8dp"
                 android:paddingEnd="8dp"
                 android:paddingTop="2dp"
                 android:paddingBottom="2dp"
                 android:text="Você"
-                android:textColor="#2962FF"
+                android:textColor="@color/color_accent"
                 android:textSize="12sp"
                 android:textStyle="bold"
                 android:visibility="gone" />
@@ -77,7 +74,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:textColor="#66757F"
+                android:textColor="@color/text_muted"
                 android:textSize="14sp" />
 
             <ImageView
@@ -87,20 +84,18 @@
                 android:layout_marginStart="8dp"
                 android:src="@drawable/ic_more_vert"
                 android:visibility="gone"
-                app:tint="#66757F" />
+                app:tint="@color/text_muted" />
         </LinearLayout>
 
-        <!-- Mensagem -->
         <TextView
             android:id="@+id/textoMensagemResposta"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:textSize="17sp"
-            android:textColor="#111111"
+            android:textColor="@color/text_primary"
             android:lineSpacingExtra="2dp" />
 
-        <!-- Ações -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -120,7 +115,7 @@
                     android:layout_width="17dp"
                     android:layout_height="17dp"
                     android:src="@drawable/ic_like"
-                    app:tint="#4CAF50" />
+                    app:tint="@color/green_like" />
 
                 <TextView
                     android:id="@+id/textoLikesResposta"
@@ -128,7 +123,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
                     android:text="0"
-                    android:textColor="#4CAF50"
+                    android:textColor="@color/green_like"
                     android:textSize="13sp" />
             </LinearLayout>
 
@@ -145,7 +140,7 @@
                     android:layout_width="17dp"
                     android:layout_height="17dp"
                     android:src="@drawable/ic_dislike"
-                    app:tint="#F44336" />
+                    app:tint="@color/red_dislike" />
 
                 <TextView
                     android:id="@+id/textoDislikesResposta"
@@ -153,7 +148,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
                     android:text="0"
-                    android:textColor="#F44336"
+                    android:textColor="@color/red_dislike"
                     android:textSize="13sp" />
             </LinearLayout>
 
@@ -169,14 +164,14 @@
                     android:layout_width="17dp"
                     android:layout_height="17dp"
                     android:src="@drawable/ic_chat"
-                    app:tint="#3F51B5" />
+                    app:tint="@color/color_accent" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
                     android:text="Responder"
-                    android:textColor="#3F51B5"
+                    android:textColor="@color/color_accent"
                     android:textSize="13sp" />
             </LinearLayout>
 
@@ -186,7 +181,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="18dp"
                 android:text="Ver respostas"
-                android:textColor="#2962FF"
+                android:textColor="@color/color_accent"
                 android:textStyle="bold"
                 android:textSize="13sp"
                 android:visibility="gone" />
@@ -197,7 +192,7 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginTop="10dp"
-            android:background="#E6ECF0" />
+            android:background="@color/divider_color" />
 
     </LinearLayout>
 

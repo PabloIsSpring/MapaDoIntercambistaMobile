@@ -5,13 +5,10 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <!-- Menu superior -->
+    android:layout_height="match_parent"
+    android:background="@color/background_primary">
 
     <include layout="@layout/menu_superior"/>
-
-    <!-- Conteúdo -->
 
     <LinearLayout
         android:orientation="vertical"
@@ -20,30 +17,23 @@
         android:padding="16dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <!-- Título -->
-
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Destinos de Intercâmbio"
-            android:textSize="22sp"
-            android:textStyle="bold"/>
+            style="@style/TextScreenTitle"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Explore os melhores lugares para estudar"
-            android:textColor="#666"
-            android:layout_marginBottom="12dp"/>
-
-
-        <!-- Barra de pesquisa -->
+            android:layout_marginBottom="12dp"
+            style="@style/TextBodySecondary"/>
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp">
+            style="@style/CardDefault">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -56,7 +46,8 @@
                 <ImageView
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:src="@android:drawable/ic_menu_search"/>
+                    android:src="@android:drawable/ic_menu_search"
+                    app:tint="@color/text_secondary"/>
 
                 <EditText
                     android:id="@+id/barraPesquisa"
@@ -64,20 +55,18 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:hint="Pesquisar destino..."
-                    android:background="@null"
-                    android:paddingStart="10dp"/>
+                    android:paddingStart="10dp"
+                    style="@style/EditTextSearch"/>
 
                 <ImageView
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:src="@drawable/ic_filter"/>
+                    android:src="@drawable/ic_filter"
+                    app:tint="@color/text_secondary"/>
 
             </LinearLayout>
 
         </androidx.cardview.widget.CardView>
-
-
-        <!-- Filtros -->
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -86,38 +75,33 @@
             android:layout_marginTop="10dp">
 
             <Button
+                android:id="@+id/botaoFiltroIdioma"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
                 android:text="Idioma"
                 android:textAllCaps="false"
-                android:backgroundTint="#EEEEEE"
-                android:textColor="#444"/>
+                android:backgroundTint="@color/filter_chip_bg"
+                android:textColor="@color/filter_chip_text"/>
 
             <Button
+                android:id="@+id/botaoFiltroContinente"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
                 android:text="Continente"
                 android:textAllCaps="false"
                 android:layout_marginStart="10dp"
-                android:backgroundTint="#EEEEEE"
-                android:textColor="#444"/>
+                android:backgroundTint="@color/filter_chip_bg"
+                android:textColor="@color/filter_chip_text"/>
 
         </LinearLayout>
-
-
-        <!-- Título destinos -->
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Destinos populares"
-            android:textSize="18sp"
-            android:textStyle="bold"
             android:layout_marginTop="18dp"
-            android:layout_marginBottom="8dp"/>
-
-
-        <!-- Lista -->
+            android:layout_marginBottom="8dp"
+            style="@style/TextSectionTitle"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/listaTodosDestinos"
@@ -128,8 +112,6 @@
             android:paddingBottom="90dp"/>
 
     </LinearLayout>
-
-    <!-- Menu inferior -->
 
     <include layout="@layout/menu_inferior"/>
 
