@@ -15,6 +15,12 @@ public class SessionManager {
     private static final String PREF_NAME = "mapa_intercambista_session";
     private static final String KEY_USUARIOS = "usuarios";
     private static final String KEY_EMAIL_LOGADO = "email_logado";
+    private static final String KEY_TOKEN = "token";
+    private static final String KEY_TOKEN_EXPIRATION = "token_expiration";
+    private static final String KEY_AUTH_MODE = "auth_mode";
+
+    private static final String AUTH_MODE_API = "api";
+    private static final String AUTH_MODE_LOCAL = "local";
 
     private final SharedPreferences prefs;
     private final SharedPreferences.Editor editor;
@@ -50,6 +56,9 @@ public class SessionManager {
         for (Usuario usuario : usuarios) {
             if (usuario.getEmail().equalsIgnoreCase(email) && usuario.getSenha().equals(senha)) {
                 editor.putString(KEY_EMAIL_LOGADO, usuario.getEmail());
+                editor.putString(KEY_AUTH_MODE, AUTH_MODE_LOCAL);
+                editor.remove(KEY_TOKEN);
+                editor.remove(KEY_TOKEN_EXPIRATION);
                 editor.apply();
                 return true;
             }
@@ -58,13 +67,58 @@ public class SessionManager {
         return false;
     }
 
-    public void logout() {
-        editor.remove(KEY_EMAIL_LOGADO);
+    public void salvarLoginApi(String email, String token, long duracaoMillis) {
+        long expirationTime = System.currentTimeMillis() + duracaoMillis;
+
+        editor.putString(KEY_EMAIL_LOGADO, email);
+        editor.putString(KEY_TOKEN, token);
+        editor.putLong(KEY_TOKEN_EXPIRATION, expirationTime);
+        editor.putString(KEY_AUTH_MODE, AUTH_MODE_API);
         editor.apply();
     }
 
     public boolean estaLogado() {
-        return getUsuarioLogado() != null;
+        String modo = prefs.getString(KEY_AUTH_MODE, "");
+
+        if (AUTH_MODE_API.equals(modo)) {
+            return isTokenValido() && getUsuarioLogado() != null;
+        }
+
+        if (AUTH_MODE_LOCAL.equals(modo)) {
+            return getUsuarioLogado() != null;
+        }
+
+        return false;
+    }
+
+    public boolean isTokenValido() {
+        long expiration = prefs.getLong(KEY_TOKEN_EXPIRATION, 0);
+        return expiration > 0 && System.currentTimeMillis() < expiration;
+    }
+
+    public boolean sessaoApiExpirada() {
+        String modo = prefs.getString(KEY_AUTH_MODE, "");
+        return AUTH_MODE_API.equals(modo) && !isTokenValido();
+    }
+
+    public String getToken() {
+        return prefs.getString(KEY_TOKEN, null);
+    }
+
+    public boolean isModoApi() {
+        return AUTH_MODE_API.equals(prefs.getString(KEY_AUTH_MODE, ""));
+    }
+
+    public boolean isModoLocal() {
+        return AUTH_MODE_LOCAL.equals(prefs.getString(KEY_AUTH_MODE, ""));
+    }
+
+    public void logout() {
+        editor.remove(KEY_EMAIL_LOGADO);
+        editor.remove(KEY_TOKEN);
+        editor.remove(KEY_TOKEN_EXPIRATION);
+        editor.remove(KEY_AUTH_MODE);
+        editor.apply();
     }
 
     public Usuario getUsuarioLogado() {
@@ -119,6 +173,19 @@ public class SessionManager {
         return usuario != null ? usuario.getFotoUri() : "";
     }
 
+    public void salvarUsuarioLocalSeNaoExistir(String nome, String email, String senha) {
+        List<Usuario> usuarios = carregarUsuarios();
+
+        for (Usuario usuario : usuarios) {
+            if (usuario.getEmail().equalsIgnoreCase(email)) {
+                return;
+            }
+        }
+
+        usuarios.add(new Usuario(nome, email, senha, ""));
+        salvarUsuarios(usuarios);
+    }
+
     private List<Usuario> carregarUsuarios() {
         String json = prefs.getString(KEY_USUARIOS, null);
 
@@ -134,5 +201,11 @@ public class SessionManager {
     private void salvarUsuarios(List<Usuario> usuarios) {
         editor.putString(KEY_USUARIOS, gson.toJson(usuarios));
         editor.apply();
+    }
+
+    public long getTempoRestanteToken() {
+        long expiration = prefs.getLong(KEY_TOKEN_EXPIRATION, 0);
+        long restante = expiration - System.currentTimeMillis();
+        return Math.max(restante, 0);
     }
 }

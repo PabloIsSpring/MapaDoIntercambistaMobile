@@ -12,10 +12,18 @@ import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.mapadointercambista.R;
+import com.example.mapadointercambista.model.user.SessionManager;
+import com.example.mapadointercambista.network.ApiClient;
+import com.example.mapadointercambista.network.ApiService;
+import com.example.mapadointercambista.dto.request.RegisterUserRequestDto;
+import com.example.mapadointercambista.dto.response.RegisterUserResponseDto;
 import com.example.mapadointercambista.util.EmailUtils;
 import com.example.mapadointercambista.util.FiltroSenha;
 import com.example.mapadointercambista.util.SenhaUtils;
-import com.example.mapadointercambista.model.user.SessionManager;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class CadastroActivity extends AppCompatActivity {
 
@@ -132,15 +140,45 @@ public class CadastroActivity extends AppCompatActivity {
                 return;
             }
 
-            boolean cadastrado = sessionManager.cadastrarUsuario(nome, email, senha);
+            tentarCadastroApiComFallback(sessionManager, nome, email, senha);
+        });
+    }
 
-            if (!cadastrado) {
-                Toast.makeText(this, "Já existe uma conta com este e-mail", Toast.LENGTH_SHORT).show();
-                return;
+    private void tentarCadastroApiComFallback(SessionManager sessionManager, String nome, String email, String senha) {
+        ApiService apiService = ApiClient.getApiService(CadastroActivity.this);
+        RegisterUserRequestDto request = new RegisterUserRequestDto(nome, email, senha);
+
+        apiService.registerUser(request).enqueue(new Callback<RegisterUserResponseDto>() {
+            @Override
+            public void onResponse(Call<RegisterUserResponseDto> call, Response<RegisterUserResponseDto> response) {
+                if (response.isSuccessful()) {
+                    sessionManager.salvarUsuarioLocalSeNaoExistir(nome, email, senha);
+                    Toast.makeText(CadastroActivity.this, "Cadastro realizado com sucesso!", Toast.LENGTH_SHORT).show();
+                    finish();
+                    return;
+                }
+
+                boolean cadastradoLocal = sessionManager.cadastrarUsuario(nome, email, senha);
+
+                if (cadastradoLocal) {
+                    Toast.makeText(CadastroActivity.this, "API recusou o cadastro. Usuário salvo localmente para demonstração.", Toast.LENGTH_LONG).show();
+                    finish();
+                } else {
+                    Toast.makeText(CadastroActivity.this, "Já existe uma conta com este e-mail", Toast.LENGTH_SHORT).show();
+                }
             }
 
-            Toast.makeText(this, "Cadastro realizado com sucesso!", Toast.LENGTH_SHORT).show();
-            finish();
+            @Override
+            public void onFailure(Call<RegisterUserResponseDto> call, Throwable t) {
+                boolean cadastradoLocal = sessionManager.cadastrarUsuario(nome, email, senha);
+
+                if (cadastradoLocal) {
+                    Toast.makeText(CadastroActivity.this, "API indisponível. Cadastro salvo localmente.", Toast.LENGTH_LONG).show();
+                    finish();
+                } else {
+                    Toast.makeText(CadastroActivity.this, "Já existe uma conta com este e-mail", Toast.LENGTH_SHORT).show();
+                }
+            }
         });
     }
 }

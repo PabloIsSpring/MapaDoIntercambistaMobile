@@ -11,8 +11,8 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true"
         android:clipToPadding="false"
+        android:fillViewport="true"
         android:paddingBottom="110dp">
 
         <LinearLayout
@@ -22,38 +22,30 @@
             android:padding="20dp"
             android:paddingBottom="24dp">
 
-            <ImageView
-                android:id="@+id/botaoVoltarConta"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_arrow_left"
-                android:visibility="gone"
-                app:tint="@color/text_primary" />
-
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="18dp"
+                android:layout_marginTop="10dp"
+                app:cardBackgroundColor="@color/color_primary"
                 app:cardCornerRadius="24dp"
-                app:cardElevation="6dp"
-                app:cardBackgroundColor="@color/color_primary">
+                app:cardElevation="6dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
                     android:gravity="center"
+                    android:orientation="vertical"
                     android:padding="24dp">
 
                     <com.google.android.material.imageview.ShapeableImageView
                         android:id="@+id/imagemPerfilConta"
                         android:layout_width="118dp"
                         android:layout_height="118dp"
-                        android:src="@drawable/ic_user"
-                        android:scaleType="centerCrop"
-                        android:padding="6dp"
-                        android:contentDescription="Foto de perfil"
                         android:backgroundTint="@color/color_primary_dark"
+                        android:contentDescription="Foto de perfil"
+                        android:padding="6dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ic_user"
                         app:shapeAppearanceOverlay="@style/CircleImageShape"
                         app:strokeColor="@color/white"
                         app:strokeWidth="2dp" />
@@ -62,43 +54,109 @@
                         android:id="@+id/textoAlterarFoto"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:alpha="0.92"
                         android:text="Toque para alterar a foto"
                         android:textColor="@color/text_on_primary"
-                        android:textSize="13sp"
-                        android:layout_marginTop="8dp"
-                        android:alpha="0.92"/>
+                        android:textSize="13sp" />
 
                     <TextView
                         android:id="@+id/textoNomeUsuarioConta"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
                         android:text="Nome do usuário"
-                        android:textSize="24sp"
-                        android:textStyle="bold"
                         android:textColor="@color/text_on_primary"
-                        android:layout_marginTop="16dp"/>
+                        android:textSize="24sp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/textoEmailUsuarioConta"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:alpha="0.95"
+                        android:gravity="center"
                         android:text="email@teste.com"
                         android:textColor="@color/text_on_primary"
-                        android:textSize="15sp"
-                        android:layout_marginTop="6dp"
-                        android:alpha="0.95"/>
-
+                        android:textSize="15sp" />
                 </LinearLayout>
-
             </androidx.cardview.widget.CardView>
 
-            <androidx.cardview.widget.CardView
+            <LinearLayout
+                android:id="@+id/secaoAcoesVisitante"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/botaoEntrarConta"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:text="Entrar"
+                    android:textAllCaps="false"
+                    android:textStyle="bold"
+                    app:backgroundTint="@color/color_accent"
+                    app:cornerRadius="18dp"
+                    app:icon="@drawable/ic_user"
+                    app:iconTint="@color/text_on_primary" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/botaoCriarConta"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:layout_marginTop="10dp"
+                    android:text="Criar conta"
+                    android:textAllCaps="false"
+                    android:textStyle="bold"
+                    app:cornerRadius="18dp"
+                    app:strokeColor="@color/color_accent"
+                    app:strokeWidth="1dp" />
+            </LinearLayout>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardVisitanteConta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardBackgroundColor="@color/card_background"
                 app:cardCornerRadius="18dp"
                 app:cardElevation="3dp"
-                app:cardBackgroundColor="@color/card_background">
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="18dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Explorar sem login"
+                        style="@style/TextSectionTitle" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Você pode navegar pelo app normalmente. Para responder publicações, curtir, descurtir e favoritar destinos, entre em uma conta."
+                        android:textColor="@color/text_secondary"
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardInfoConta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardBackgroundColor="@color/card_background"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="3dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -115,19 +173,19 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
                         android:text="Nome"
-                        android:textStyle="bold"
                         android:textColor="@color/text_secondary"
-                        android:layout_marginTop="16dp" />
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/textoNomeCardConta"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
                         android:text="William"
                         android:textColor="@color/text_primary"
-                        android:textSize="16sp"
-                        android:layout_marginTop="4dp" />
+                        android:textSize="16sp" />
 
                     <View
                         android:layout_width="match_parent"
@@ -140,20 +198,18 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="E-mail"
-                        android:textStyle="bold"
-                        android:textColor="@color/text_secondary" />
+                        android:textColor="@color/text_secondary"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/textoEmailCardConta"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
                         android:text="email@teste.com"
                         android:textColor="@color/text_primary"
-                        android:textSize="16sp"
-                        android:layout_marginTop="4dp" />
-
+                        android:textSize="16sp" />
                 </LinearLayout>
-
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
@@ -161,9 +217,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                app:cardBackgroundColor="@color/card_background"
                 app:cardCornerRadius="18dp"
-                app:cardElevation="3dp"
-                app:cardBackgroundColor="@color/card_background">
+                app:cardElevation="3dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -202,34 +258,37 @@
                         android:layout_marginTop="14dp"
                         android:clipToPadding="false"
                         android:paddingEnd="8dp" />
-
                 </LinearLayout>
-
             </androidx.cardview.widget.CardView>
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/botaoSairConta"
+            <LinearLayout
+                android:id="@+id/secaoAcoesLogado"
                 android:layout_width="match_parent"
-                android:layout_height="54dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="18dp"
-                android:layout_marginBottom="40dp"
-                android:text="Sair da conta"
-                android:textAllCaps="false"
-                android:textStyle="bold"
-                android:textSize="16sp"
-                android:textColor="@color/text_on_primary"
-                app:backgroundTint="@color/color_accent"
-                app:cornerRadius="18dp"
-                app:icon="@drawable/ic_logout"
-                app:iconPadding="10dp"
-                app:iconTint="@color/text_on_primary" />
+                android:orientation="vertical">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/botaoSairConta"
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:layout_marginBottom="40dp"
+                    android:text="Sair da conta"
+                    android:textAllCaps="false"
+                    android:textColor="@color/text_on_primary"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:backgroundTint="@color/color_accent"
+                    app:cornerRadius="18dp"
+                    app:icon="@drawable/ic_logout"
+                    app:iconPadding="10dp"
+                    app:iconTint="@color/text_on_primary" />
+            </LinearLayout>
 
         </LinearLayout>
-
     </ScrollView>
 
     <include
         layout="@layout/menu_inferior"
-        android:layout_gravity="bottom"/>
-
+        android:layout_gravity="bottom" />
 </FrameLayout>

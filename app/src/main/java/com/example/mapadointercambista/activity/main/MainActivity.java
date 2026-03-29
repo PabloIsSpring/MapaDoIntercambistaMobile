@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.Nullable;
@@ -39,6 +40,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.example.mapadointercambista.activity.auth.LoginActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -77,6 +80,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         sessionManager = new SessionManager(this);
+
+        if (sessionManager.sessaoApiExpirada()) {
+            sessionManager.logout();
+            Toast.makeText(this, "Sua sessão expirou. Faça login novamente.", Toast.LENGTH_SHORT).show();
+
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
+
         favoritosStorage = new FavoritosStorage(this);
 
         secaoFavoritosHome = findViewById(R.id.secaoFavoritosHome);

@@ -166,6 +166,7 @@ public class RespostasForumActivity extends AppCompatActivity {
         listaRespostas.setLayoutManager(new LinearLayoutManager(this));
         listaRespostas.setHasFixedSize(false);
         listaRespostas.setItemViewCacheSize(12);
+        listaRespostas.setItemAnimator(null);
 
         adapter = new RespostaForumAdapter(
                 this,
@@ -188,7 +189,7 @@ public class RespostasForumActivity extends AppCompatActivity {
 
     private void abrirTelaNovaResposta() {
         if (!sessionManager.estaLogado()) {
-            Toast.makeText(this, "Você não entrou em sua conta", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Entre em uma conta para responder", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -232,7 +233,7 @@ public class RespostasForumActivity extends AppCompatActivity {
     private void configurarAcoesPostOriginal() {
         botaoLikePostOriginal.setOnClickListener(v -> {
             if (!sessionManager.estaLogado()) {
-                Toast.makeText(this, "Você não entrou em sua conta", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Entre em uma conta para responder", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -248,7 +249,7 @@ public class RespostasForumActivity extends AppCompatActivity {
 
         botaoDislikePostOriginal.setOnClickListener(v -> {
             if (!sessionManager.estaLogado()) {
-                Toast.makeText(this, "Você não entrou em sua conta", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Entre em uma conta para responder", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -349,13 +350,13 @@ public class RespostasForumActivity extends AppCompatActivity {
     }
 
     private void carregarRespostas() {
-        respostasExibidas.clear();
+        if (adapter == null) return;
 
         if (postAtual != null && postAtual.getRespostas() != null) {
-            respostasExibidas.addAll(postAtual.getRespostas());
+            adapter.atualizarDadosPreservandoVisibilidade(postAtual.getRespostas());
+        } else {
+            adapter.atualizarDados(new ArrayList<>());
         }
-
-        adapter.notifyDataSetChanged();
     }
 
     private void abrirDialogEditarPostOriginal() {

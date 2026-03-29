@@ -8,8 +8,8 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:background="@color/background_primary"
-    android:paddingStart="12dp"
-    android:paddingEnd="12dp"
+    android:paddingStart="8dp"
+    android:paddingEnd="8dp"
     android:paddingTop="10dp"
     android:paddingBottom="10dp">
 
@@ -17,20 +17,20 @@
         android:id="@+id/linhaThread"
         android:layout_width="2dp"
         android:layout_height="match_parent"
-        android:layout_marginStart="6dp"
-        android:layout_marginEnd="10dp"
-        android:background="@color/thread_line"/>
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="8dp"
+        android:background="@color/thread_line" />
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/fotoPerfilResposta"
-        android:layout_width="38dp"
-        android:layout_height="38dp"
-        android:layout_marginEnd="10dp"
-        android:src="@drawable/ic_user"
+        android:layout_width="34dp"
+        android:layout_height="34dp"
+        android:layout_marginEnd="8dp"
         android:scaleType="centerCrop"
+        android:src="@drawable/ic_user"
         app:shapeAppearanceOverlay="@style/CircleImageShape"
-        app:strokeWidth="1dp"
-        app:strokeColor="@color/border_light" />
+        app:strokeColor="@color/border_light"
+        app:strokeWidth="1dp" />
 
     <LinearLayout
         android:id="@+id/blocoResposta"
@@ -42,22 +42,25 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/nomeUsuarioResposta"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:textSize="16sp"
-                android:textColor="@color/text_primary" />
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/text_primary"
+                android:textSize="15sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/textoBadgeVoceResposta"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="6dp"
                 android:background="@color/color_primary_light"
                 android:paddingStart="8dp"
                 android:paddingEnd="8dp"
@@ -65,7 +68,7 @@
                 android:paddingBottom="2dp"
                 android:text="Você"
                 android:textColor="@color/color_accent"
-                android:textSize="12sp"
+                android:textSize="11sp"
                 android:textStyle="bold"
                 android:visibility="gone" />
 
@@ -73,14 +76,15 @@
                 android:id="@+id/textoTempoResposta"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="6dp"
+                android:maxLines="1"
                 android:textColor="@color/text_muted"
-                android:textSize="14sp" />
+                android:textSize="12sp" />
 
             <ImageView
                 android:id="@+id/botaoOpcoesResposta"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
                 android:layout_marginStart="8dp"
                 android:src="@drawable/ic_more_vert"
                 android:visibility="gone"
@@ -92,28 +96,32 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:textSize="17sp"
+            android:lineSpacingExtra="2dp"
+            android:paddingEnd="4dp"
             android:textColor="@color/text_primary"
-            android:lineSpacingExtra="2dp" />
+            android:textSize="15sp" />
 
         <LinearLayout
+            android:id="@+id/linhaAcoesResposta"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
             <LinearLayout
                 android:id="@+id/botaoLikeResposta"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:minHeight="32dp"
                 android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:paddingEnd="14dp">
 
                 <ImageView
                     android:id="@+id/iconeLikeResposta"
-                    android:layout_width="17dp"
-                    android:layout_height="17dp"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
                     android:src="@drawable/ic_like"
                     app:tint="@color/green_like" />
 
@@ -124,21 +132,22 @@
                     android:layout_marginStart="4dp"
                     android:text="0"
                     android:textColor="@color/green_like"
-                    android:textSize="13sp" />
+                    android:textSize="12sp" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/botaoDislikeResposta"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="18dp"
+                android:gravity="center_vertical"
+                android:minHeight="32dp"
                 android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:paddingEnd="14dp">
 
                 <ImageView
                     android:id="@+id/iconeDislikeResposta"
-                    android:layout_width="17dp"
-                    android:layout_height="17dp"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
                     android:src="@drawable/ic_dislike"
                     app:tint="@color/red_dislike" />
 
@@ -149,20 +158,20 @@
                     android:layout_marginStart="4dp"
                     android:text="0"
                     android:textColor="@color/red_dislike"
-                    android:textSize="13sp" />
+                    android:textSize="12sp" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/botaoResponderResposta"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="18dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:gravity="center_vertical"
+                android:minHeight="32dp"
+                android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="17dp"
-                    android:layout_height="17dp"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
                     android:src="@drawable/ic_chat"
                     app:tint="@color/color_accent" />
 
@@ -172,28 +181,28 @@
                     android:layout_marginStart="4dp"
                     android:text="Responder"
                     android:textColor="@color/color_accent"
-                    android:textSize="13sp" />
+                    android:textSize="12sp" />
             </LinearLayout>
-
-            <TextView
-                android:id="@+id/textoToggleRespostas"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="18dp"
-                android:text="Ver respostas"
-                android:textColor="@color/color_accent"
-                android:textStyle="bold"
-                android:textSize="13sp"
-                android:visibility="gone" />
-
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/textoToggleRespostas"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:minHeight="28dp"
+            android:gravity="center_vertical"
+            android:text="Ver respostas"
+            android:textColor="@color/color_accent"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginTop="10dp"
             android:background="@color/divider_color" />
-
     </LinearLayout>
 
 </LinearLayout>
