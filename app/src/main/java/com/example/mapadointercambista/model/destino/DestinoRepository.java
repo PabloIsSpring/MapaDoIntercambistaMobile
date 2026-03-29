@@ -16,6 +16,7 @@ public class DestinoRepository {
                 "Nenhuma agência"
         );
 
+        // ================= OXFORD =================
         List<AvaliacaoDestino> avaliacoesOxford = new ArrayList<>();
         avaliacoesOxford.add(new AvaliacaoDestino(
                 "SpringPablos",
@@ -32,13 +33,15 @@ public class DestinoRepository {
                 "Inglaterra - Oxford",
                 "inglaterra",
                 "Inglaterra",
+                "Europa", // ✅ NOVO CAMPO
                 "Inglês",
                 "Libra Esterlina",
-                "Oxford é uma cidade histórica e acadêmica, conhecida por abrigar uma das universidades mais prestigiadas do mundo. Com arquitetura clássica, bibliotecas renomadas e um ambiente universitário único, é um excelente destino para intercâmbio.",
+                "Oxford é uma cidade histórica e acadêmica, conhecida por abrigar uma das universidades mais prestigiadas do mundo.",
                 agenciasPadrao,
                 avaliacoesOxford
         ));
 
+        // ================= KYOTO =================
         List<AvaliacaoDestino> avaliacoesKyoto = new ArrayList<>();
         avaliacoesKyoto.add(new AvaliacaoDestino(
                 "SpringPablos",
@@ -55,69 +58,80 @@ public class DestinoRepository {
                 "Japão - Kyoto",
                 "japao",
                 "Japão",
+                "Ásia", // ✅ NOVO
                 "Japonês",
                 "Iene",
-                "Kyoto é famosa por seus templos, cultura tradicional e experiências únicas de intercâmbio.",
+                "Kyoto é famosa por seus templos e cultura tradicional.",
                 agenciasPadrao,
                 avaliacoesKyoto
         ));
 
+        // ================= BERLIM =================
         lista.add(new Destino(
                 "destino_berlim",
                 "Alemanha - Berlim",
                 "alemanha",
                 "Alemanha",
+                "Europa", // ✅
                 "Alemão",
                 "Euro",
-                "Berlim é uma cidade moderna, multicultural e cheia de oportunidades para estudantes internacionais.",
+                "Berlim é uma cidade moderna e multicultural.",
                 agenciasPadrao,
                 new ArrayList<>()
         ));
 
+        // ================= TORONTO =================
         lista.add(new Destino(
                 "destino_toronto",
                 "Canadá - Toronto",
                 "toronto",
                 "Canadá",
+                "América do Norte", // ✅
                 "Inglês",
                 "Dólar Canadense",
-                "Toronto é um dos destinos mais procurados por intercambistas, com ótima qualidade de vida e ensino.",
+                "Toronto é um dos destinos mais procurados por intercambistas.",
                 agenciasPadrao,
                 new ArrayList<>()
         ));
 
+        // ================= BARCELONA =================
         lista.add(new Destino(
                 "destino_barcelona",
                 "Espanha - Barcelona",
                 "barcelona",
                 "Espanha",
+                "Europa", // ✅
                 "Espanhol",
                 "Euro",
-                "Barcelona mistura cultura, praia e educação de qualidade em um ambiente vibrante.",
+                "Barcelona mistura cultura, praia e educação.",
                 agenciasPadrao,
                 new ArrayList<>()
         ));
 
+        // ================= SYDNEY =================
         lista.add(new Destino(
                 "destino_sydney",
                 "Austrália - Sydney",
-                "boston",
+                "australia", // ⚠️ CORRIGIDO (antes tava "boston")
                 "Austrália",
+                "Oceania", // ✅
                 "Inglês",
                 "Dólar Australiano",
-                "Sydney é conhecida por sua qualidade de vida, belas paisagens e excelentes instituições.",
+                "Sydney é conhecida por sua qualidade de vida.",
                 agenciasPadrao,
                 new ArrayList<>()
         ));
 
+        // ================= LISBOA =================
         lista.add(new Destino(
                 "destino_lisboa",
                 "Portugal - Lisboa",
-                "boston",
+                "lisboa", // ⚠️ CORRIGIDO (antes tava "boston")
                 "Portugal",
+                "Europa", // ✅
                 "Português",
                 "Euro",
-                "Lisboa é um ótimo destino para intercâmbio, com custo relativamente acessível e muita história.",
+                "Lisboa é um ótimo destino com custo acessível.",
                 agenciasPadrao,
                 new ArrayList<>()
         ));

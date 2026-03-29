@@ -29,9 +29,11 @@ import com.example.mapadointercambista.adapter.home.CarrosselAdapter;
 import com.example.mapadointercambista.model.destino.Destino;
 import com.example.mapadointercambista.model.destino.DestinoRepository;
 import com.example.mapadointercambista.model.destino.DestinoStorage;
+import com.example.mapadointercambista.model.destino.FavoritosStorage;
 import com.example.mapadointercambista.model.forum.ForumRepository;
 import com.example.mapadointercambista.model.forum.ForumStorage;
 import com.example.mapadointercambista.model.forum.PostForum;
+import com.example.mapadointercambista.model.user.SessionManager;
 import com.example.mapadointercambista.navigation.NavigationHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -57,6 +59,15 @@ public class MainActivity extends AppCompatActivity {
     private boolean dadosCarregados = false;
     private LinearLayout indicadorCarrossel;
     private int totalBanners = 0;
+    private RecyclerView listaFavoritosHome;
+    private DestinoAdapter adapterFavoritos;
+    private final List<Destino> favoritosHome = new ArrayList<>();
+
+    private LinearLayout secaoFavoritosHome;
+    private TextView textoResumoFavoritosHome;
+
+    private SessionManager sessionManager;
+    private FavoritosStorage favoritosStorage;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,6 +75,22 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+
+        sessionManager = new SessionManager(this);
+        favoritosStorage = new FavoritosStorage(this);
+
+        secaoFavoritosHome = findViewById(R.id.secaoFavoritosHome);
+        textoResumoFavoritosHome = findViewById(R.id.textoResumoFavoritosHome);
+
+        listaFavoritosHome = findViewById(R.id.listaFavoritosHome);
+        listaFavoritosHome.setLayoutManager(
+                new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        );
+        listaFavoritosHome.setHasFixedSize(true);
+        listaFavoritosHome.setItemViewCacheSize(6);
+
+        adapterFavoritos = new DestinoAdapter(favoritosHome);
+        listaFavoritosHome.setAdapter(adapterFavoritos);
 
         aplicarModoImersivo();
         configurarInsets();
@@ -175,6 +202,46 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, ForumActivity.class)));
     }
 
+    private void carregarFavoritosHome() {
+        if (!sessionManager.estaLogado()) {
+            secaoFavoritosHome.setVisibility(View.GONE);
+            favoritosHome.clear();
+            adapterFavoritos.notifyDataSetChanged();
+            return;
+        }
+
+        List<Destino> todosDestinos = new DestinoStorage(this).carregarDestinos();
+
+        if (todosDestinos.isEmpty()) {
+            todosDestinos = DestinoRepository.getDestinos();
+            new DestinoStorage(this).salvarDestinos(todosDestinos);
+        }
+
+        java.util.Set<String> favoritosIds =
+                favoritosStorage.carregarFavoritos(sessionManager.getEmailUsuario());
+
+        favoritosHome.clear();
+
+        for (Destino destino : todosDestinos) {
+            if (favoritosIds.contains(destino.getId())) {
+                favoritosHome.add(destino);
+            }
+        }
+
+        if (favoritosHome.isEmpty()) {
+            secaoFavoritosHome.setVisibility(View.GONE);
+        } else {
+            secaoFavoritosHome.setVisibility(View.VISIBLE);
+            textoResumoFavoritosHome.setText(
+                    favoritosHome.size() == 1
+                            ? "1 destino salvo por você"
+                            : favoritosHome.size() + " destinos salvos por você"
+            );
+        }
+
+        adapterFavoritos.notifyDataSetChanged();
+    }
+
     private void configurarListas() {
         listaDestinos.setLayoutManager(
                 new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
@@ -198,6 +265,7 @@ public class MainActivity extends AppCompatActivity {
 
         carregarDestinosHome();
         carregarForumHome();
+        carregarFavoritosHome();
         dadosCarregados = true;
     }
 
@@ -271,6 +339,14 @@ public class MainActivity extends AppCompatActivity {
                 && carrossel.getAdapter().getItemCount() > 1) {
             handler.postDelayed(autoSlideRunnable, AUTO_SLIDE_DELAY_MS);
         }
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        carregarDestinosHome();
+        carregarForumHome();
+        carregarFavoritosHome();
     }
 
     @Override

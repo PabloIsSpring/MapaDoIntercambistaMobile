@@ -58,6 +58,7 @@ public class RespostasForumActivity extends AppCompatActivity {
 
     private RespostaForumAdapter adapter;
     private final List<RespostaForum> respostasExibidas = new ArrayList<>();
+    private int ultimoHashPost = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +78,7 @@ public class RespostasForumActivity extends AppCompatActivity {
         configurarAcoesPostOriginal();
         preencherPostOriginal();
         carregarRespostas();
+        ultimoHashPost = calcularHashPostAtual();
 
         findViewById(R.id.botaoResponderAcao).setOnClickListener(v -> abrirTelaNovaResposta());
         findViewById(R.id.cardResponder).setOnClickListener(v -> abrirTelaNovaResposta());
@@ -90,11 +92,17 @@ public class RespostasForumActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         aplicarModoImersivo();
+
         sincronizarPostAtual();
-        configurarCaixaResponder();
-        configurarAcoesPostOriginal();
-        preencherPostOriginal();
-        carregarRespostas();
+
+        int hashAtual = calcularHashPostAtual();
+        if (hashAtual != ultimoHashPost) {
+            configurarCaixaResponder();
+            configurarAcoesPostOriginal();
+            preencherPostOriginal();
+            carregarRespostas();
+            ultimoHashPost = hashAtual;
+        }
     }
 
     private void aplicarModoImersivo() {
@@ -106,6 +114,17 @@ public class RespostasForumActivity extends AppCompatActivity {
                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
         );
+    }
+
+    private int calcularHashPostAtual() {
+        if (postAtual == null) return -1;
+
+        int hash = postAtual.getId() != null ? postAtual.getId().hashCode() : 0;
+        hash = 31 * hash + postAtual.getLikes();
+        hash = 31 * hash + postAtual.getDislikes();
+        hash = 31 * hash + postAtual.getQuantidadeRespostas();
+        hash = 31 * hash + (postAtual.getMensagem() != null ? postAtual.getMensagem().hashCode() : 0);
+        return hash;
     }
 
     private void inicializarViews() {

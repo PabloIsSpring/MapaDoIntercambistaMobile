@@ -48,6 +48,8 @@ public class NavigationHelper {
             }
 
             if (intent != null) {
+                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 activity.startActivity(intent);
                 activity.overridePendingTransition(0, 0);
 

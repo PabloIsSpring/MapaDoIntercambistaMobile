@@ -15,11 +15,27 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/imagemDestino"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="118dp"
-            android:scaleType="centerCrop"/>
+            android:layout_height="118dp">
+
+            <ImageView
+                android:id="@+id/imagemDestino"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"/>
+
+            <ImageView
+                android:id="@+id/iconeFavoritoDestino"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:layout_gravity="top|end"
+                android:layout_margin="10dp"
+                android:background="@drawable/bg_carrossel_nav"
+                android:padding="7dp"
+                android:src="@drawable/ic_favorite"
+                app:tint="@color/white"/>
+        </FrameLayout>
 
         <LinearLayout
             android:layout_width="match_parent"

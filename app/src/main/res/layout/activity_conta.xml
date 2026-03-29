@@ -6,150 +6,227 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/color_primary">
+    android:background="@color/background_secondary">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="20dp"
-        android:paddingBottom="100dp">
-
-        <ImageView
-            android:id="@+id/botaoVoltarConta"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_arrow_left"
-            android:visibility="gone"
-            app:tint="@color/text_on_primary" />
+        android:fillViewport="true"
+        android:clipToPadding="false"
+        android:paddingBottom="110dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:gravity="center"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="24dp">
+            android:padding="20dp"
+            android:paddingBottom="24dp">
 
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/imagemPerfilConta"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:src="@drawable/ic_user"
-                android:scaleType="centerCrop"
-                android:padding="6dp"
-                android:contentDescription="Foto de perfil"
-                android:backgroundTint="@color/color_primary_dark"
-                app:shapeAppearanceOverlay="@style/CircleImageShape"
-                app:strokeColor="@color/white"
-                app:strokeWidth="2dp" />
+            <ImageView
+                android:id="@+id/botaoVoltarConta"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_arrow_left"
+                android:visibility="gone"
+                app:tint="@color/text_primary" />
 
-            <TextView
-                android:id="@+id/textoAlterarFoto"
-                android:layout_width="wrap_content"
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Toque para alterar a foto"
-                android:textColor="@color/text_on_primary"
-                android:textSize="13sp"
-                android:layout_marginTop="8dp"/>
+                android:layout_marginTop="18dp"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="6dp"
+                app:cardBackgroundColor="@color/color_primary">
 
-            <TextView
-                android:id="@+id/textoNomeUsuarioConta"
-                android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="24dp">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/imagemPerfilConta"
+                        android:layout_width="118dp"
+                        android:layout_height="118dp"
+                        android:src="@drawable/ic_user"
+                        android:scaleType="centerCrop"
+                        android:padding="6dp"
+                        android:contentDescription="Foto de perfil"
+                        android:backgroundTint="@color/color_primary_dark"
+                        app:shapeAppearanceOverlay="@style/CircleImageShape"
+                        app:strokeColor="@color/white"
+                        app:strokeWidth="2dp" />
+
+                    <TextView
+                        android:id="@+id/textoAlterarFoto"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Toque para alterar a foto"
+                        android:textColor="@color/text_on_primary"
+                        android:textSize="13sp"
+                        android:layout_marginTop="8dp"
+                        android:alpha="0.92"/>
+
+                    <TextView
+                        android:id="@+id/textoNomeUsuarioConta"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Nome do usuário"
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_on_primary"
+                        android:layout_marginTop="16dp"/>
+
+                    <TextView
+                        android:id="@+id/textoEmailUsuarioConta"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="email@teste.com"
+                        android:textColor="@color/text_on_primary"
+                        android:textSize="15sp"
+                        android:layout_marginTop="6dp"
+                        android:alpha="0.95"/>
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Nome do usuário"
-                android:textSize="24sp"
+                android:layout_marginTop="16dp"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="3dp"
+                app:cardBackgroundColor="@color/card_background">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="18dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Informações da conta"
+                        style="@style/TextSectionTitle" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Nome"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_secondary"
+                        android:layout_marginTop="16dp" />
+
+                    <TextView
+                        android:id="@+id/textoNomeCardConta"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="William"
+                        android:textColor="@color/text_primary"
+                        android:textSize="16sp"
+                        android:layout_marginTop="4dp" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="14dp"
+                        android:layout_marginBottom="14dp"
+                        android:background="@color/divider_color" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="E-mail"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_secondary" />
+
+                    <TextView
+                        android:id="@+id/textoEmailCardConta"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="email@teste.com"
+                        android:textColor="@color/text_primary"
+                        android:textSize="16sp"
+                        android:layout_marginTop="4dp" />
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardFavoritosConta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="3dp"
+                app:cardBackgroundColor="@color/card_background">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="18dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Meus favoritos"
+                        style="@style/TextSectionTitle" />
+
+                    <TextView
+                        android:id="@+id/textoResumoFavoritosConta"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Seus destinos favoritos aparecerão aqui"
+                        style="@style/TextBodySecondary" />
+
+                    <TextView
+                        android:id="@+id/textoVazioFavoritosConta"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:text="Você ainda não favoritou nenhum destino."
+                        android:textColor="@color/text_secondary"
+                        android:textSize="14sp"
+                        android:visibility="gone" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/listaFavoritosConta"
+                        android:layout_width="match_parent"
+                        android:layout_height="220dp"
+                        android:layout_marginTop="14dp"
+                        android:clipToPadding="false"
+                        android:paddingEnd="8dp" />
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/botaoSairConta"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:layout_marginTop="18dp"
+                android:layout_marginBottom="40dp"
+                android:text="Sair da conta"
+                android:textAllCaps="false"
                 android:textStyle="bold"
-                android:textColor="@color/text_on_primary"
-                android:layout_marginTop="14dp"/>
-
-            <TextView
-                android:id="@+id/textoEmailUsuarioConta"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="email@teste.com"
-                android:textColor="@color/text_on_primary"
                 android:textSize="16sp"
-                android:layout_marginTop="6dp"/>
+                android:textColor="@color/text_on_primary"
+                app:backgroundTint="@color/color_accent"
+                app:cornerRadius="18dp"
+                app:icon="@drawable/ic_logout"
+                app:iconPadding="10dp"
+                app:iconTint="@color/text_on_primary" />
 
         </LinearLayout>
 
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            app:cardCornerRadius="18dp"
-            app:cardElevation="6dp"
-            app:cardBackgroundColor="@color/card_background">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="18dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Informações da conta"
-                    android:textStyle="bold"
-                    android:textSize="18sp"
-                    android:textColor="@color/text_primary" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Nome"
-                    android:textStyle="bold"
-                    android:textColor="@color/text_secondary"
-                    android:layout_marginTop="14dp" />
-
-                <TextView
-                    android:id="@+id/textoNomeCardConta"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="William"
-                    android:textColor="@color/text_primary"
-                    android:textSize="16sp"
-                    android:layout_marginTop="4dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="E-mail"
-                    android:textStyle="bold"
-                    android:textColor="@color/text_secondary"
-                    android:layout_marginTop="14dp" />
-
-                <TextView
-                    android:id="@+id/textoEmailCardConta"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="email@teste.com"
-                    android:textColor="@color/text_primary"
-                    android:textSize="16sp"
-                    android:layout_marginTop="4dp" />
-
-            </LinearLayout>
-
-        </androidx.cardview.widget.CardView>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/botaoSairConta"
-            android:layout_width="match_parent"
-            android:layout_height="54dp"
-            android:text="Sair da conta"
-            android:textAllCaps="false"
-            android:textStyle="bold"
-            android:textSize="16sp"
-            android:textColor="@color/color_primary"
-            app:backgroundTint="@color/white"
-            app:cornerRadius="18dp"
-            app:icon="@drawable/ic_logout"
-            app:iconPadding="10dp"
-            app:iconTint="@color/color_primary" />
-
-    </LinearLayout>
+    </ScrollView>
 
     <include
         layout="@layout/menu_inferior"

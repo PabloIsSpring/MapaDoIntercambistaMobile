@@ -20,11 +20,13 @@ public class Destino implements Serializable {
 
     private List<String> agencias;
     private List<AvaliacaoDestino> listaAvaliacoes;
+    private String continente;
 
     public Destino(String id,
                    String nome,
                    String imagemNome,
                    String pais,
+                   String continente,
                    String idioma,
                    String moeda,
                    String descricao,
@@ -35,6 +37,7 @@ public class Destino implements Serializable {
         this.nome = nome;
         this.imagemNome = imagemNome;
         this.pais = pais;
+        this.continente = continente;
         this.idioma = idioma;
         this.moeda = moeda;
         this.descricao = descricao;
@@ -108,4 +111,9 @@ public class Destino implements Serializable {
         avaliacoes = listaAvaliacoes.size();
         nota = soma / avaliacoes;
     }
+
+    public String getContinente() {
+        return continente;
+    }
+
 }

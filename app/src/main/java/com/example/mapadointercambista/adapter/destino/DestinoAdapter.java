@@ -8,13 +8,18 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mapadointercambista.R;
+import com.example.mapadointercambista.activity.auth.LoginActivity;
 import com.example.mapadointercambista.activity.destinos.DetalheDestinoActivity;
 import com.example.mapadointercambista.model.destino.Destino;
+import com.example.mapadointercambista.model.destino.FavoritosStorage;
+import com.example.mapadointercambista.model.user.SessionManager;
 import com.example.mapadointercambista.util.ImageUtils;
 
 import java.util.List;
@@ -32,6 +37,7 @@ public class DestinoAdapter extends RecyclerView.Adapter<DestinoAdapter.ViewHold
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imagem;
+        ImageView iconeFavorito;
         TextView nome;
         RatingBar rating;
         TextView reviews;
@@ -39,6 +45,7 @@ public class DestinoAdapter extends RecyclerView.Adapter<DestinoAdapter.ViewHold
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             imagem = itemView.findViewById(R.id.imagemDestino);
+            iconeFavorito = itemView.findViewById(R.id.iconeFavoritoDestino);
             nome = itemView.findViewById(R.id.textoDestino);
             rating = itemView.findViewById(R.id.ratingDestino);
             reviews = itemView.findViewById(R.id.textoReviews);
@@ -91,6 +98,37 @@ public class DestinoAdapter extends RecyclerView.Adapter<DestinoAdapter.ViewHold
         }
 
         holder.imagem.setImageResource(drawableId);
+
+        SessionManager sessionManager = new SessionManager(holder.itemView.getContext());
+        FavoritosStorage favoritosStorage = new FavoritosStorage(holder.itemView.getContext());
+
+        boolean logado = sessionManager.estaLogado();
+        String emailUsuario = sessionManager.getEmailUsuario();
+
+        boolean favorito = logado && favoritosStorage.isFavorito(emailUsuario, destino.getId());
+
+        holder.iconeFavorito.setColorFilter(ContextCompat.getColor(
+                holder.itemView.getContext(),
+                favorito ? R.color.favorite_active : R.color.white
+        ));
+
+        holder.iconeFavorito.setOnClickListener(v -> {
+            if (!sessionManager.estaLogado()) {
+                Toast.makeText(v.getContext(), "Entre em sua conta para favoritar", Toast.LENGTH_SHORT).show();
+                v.getContext().startActivity(new Intent(v.getContext(), LoginActivity.class));
+                return;
+            }
+
+            boolean agoraFavorito = favoritosStorage.toggleFavorito(
+                    sessionManager.getEmailUsuario(),
+                    destino.getId()
+            );
+
+            holder.iconeFavorito.setColorFilter(ContextCompat.getColor(
+                    v.getContext(),
+                    agoraFavorito ? R.color.favorite_active : R.color.white
+            ));
+        });
 
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(v.getContext(), DetalheDestinoActivity.class);

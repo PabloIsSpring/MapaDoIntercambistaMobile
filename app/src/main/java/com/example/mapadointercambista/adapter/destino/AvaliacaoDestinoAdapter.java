@@ -146,7 +146,13 @@ public class AvaliacaoDestinoAdapter extends RecyclerView.Adapter<AvaliacaoDesti
             );
 
             if (sucesso) {
-                atualizarLista();
+                int posicao = holder.getAdapterPosition();
+                AvaliacaoDestino atualizada = buscarAvaliacaoAtualizada(avaliacao.getId());
+
+                if (posicao != RecyclerView.NO_POSITION && atualizada != null) {
+                    lista.set(posicao, atualizada);
+                    notifyItemChanged(posicao);
+                }
             }
         });
 
@@ -165,9 +171,30 @@ public class AvaliacaoDestinoAdapter extends RecyclerView.Adapter<AvaliacaoDesti
             );
 
             if (sucesso) {
-                atualizarLista();
+                int posicao = holder.getAdapterPosition();
+                AvaliacaoDestino atualizada = buscarAvaliacaoAtualizada(avaliacao.getId());
+
+                if (posicao != RecyclerView.NO_POSITION && atualizada != null) {
+                    lista.set(posicao, atualizada);
+                    notifyItemChanged(posicao);
+                }
             }
         });
+    }
+
+    private AvaliacaoDestino buscarAvaliacaoAtualizada(String avaliacaoId) {
+        Destino destinoAtualizado = destinoStorage.buscarDestinoPorId(destinoId);
+        if (destinoAtualizado == null || destinoAtualizado.getListaAvaliacoes() == null) {
+            return null;
+        }
+
+        for (AvaliacaoDestino avaliacao : destinoAtualizado.getListaAvaliacoes()) {
+            if (avaliacaoId.equals(avaliacao.getId())) {
+                return avaliacao;
+            }
+        }
+
+        return null;
     }
 
     private void abrirMenuAvaliacao(View anchor, AvaliacaoDestino avaliacao) {

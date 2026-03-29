@@ -1,130 +1,162 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/color_primary"
-    android:padding="20dp">
-
-    <ImageView
-        android:id="@+id/botaoVoltar"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:src="@drawable/ic_arrow_left"
-        app:tint="@color/text_on_primary" />
+    android:fillViewport="true"
+    android:background="@color/color_primary">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:gravity="center"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="20dp">
+        android:padding="20dp">
 
         <ImageView
-            android:layout_width="300dp"
-            android:layout_height="140dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/logo" />
+            android:id="@+id/botaoVoltar"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_arrow_left"
+            app:tint="@color/text_on_primary" />
 
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="Bem-vindo de volta 👋"
-            android:textColor="@color/text_on_primary"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="26dp">
 
-        <TextView
-            android:layout_width="wrap_content"
+            <ImageView
+                android:layout_width="280dp"
+                android:layout_height="130dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/logo" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Bem-vindo de volta 👋"
+                android:textColor="@color/text_on_primary"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Faça login para continuar"
+                android:textColor="@color/text_on_primary"
+                android:textSize="14sp"
+                android:alpha="0.92"/>
+        </LinearLayout>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Faça login para continuar"
-            android:textColor="@color/text_on_primary"
-            android:layout_marginTop="2dp"/>
+            app:cardCornerRadius="22dp"
+            app:cardElevation="6dp"
+            app:cardBackgroundColor="@color/card_background">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="18dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Email"
+                    android:textColor="@color/text_primary"
+                    android:textStyle="bold"/>
+
+                <EditText
+                    android:id="@+id/inputEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="14dp"
+                    android:background="@drawable/bg_input"
+                    android:hint="Digite seu email"
+                    android:inputType="textEmailAddress"
+                    android:padding="12dp"
+                    android:textColor="@color/text_primary"
+                    android:textColorHint="@color/text_secondary"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Senha"
+                    android:textColor="@color/text_primary"
+                    android:textStyle="bold"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="6dp"
+                    android:background="@drawable/bg_input"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingEnd="12dp">
+
+                    <EditText
+                        android:id="@+id/inputSenha"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:hint="Digite sua senha"
+                        android:inputType="textPassword"
+                        android:padding="12dp"
+                        android:textColor="@color/text_primary"
+                        android:textColorHint="@color/text_secondary"/>
+
+                    <ImageView
+                        android:id="@+id/iconeOlhoSenhaLogin"
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:src="@drawable/ic_eye"
+                        app:tint="@color/text_secondary"/>
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/botaoEntrar"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:layout_marginTop="18dp"
+                    android:text="Entrar"
+                    android:textAllCaps="false"
+                    android:textColor="@color/text_on_primary"
+                    android:textStyle="bold"
+                    app:backgroundTint="@color/color_accent"
+                    app:cornerRadius="16dp"/>
+
+                <TextView
+                    android:id="@+id/textoEsqueceuSenha"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center"
+                    android:text="Esqueceu a senha?"
+                    android:textColor="@color/color_accent"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/textoCriarConta"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="22dp"
+                    android:gravity="center"
+                    android:text="Não tem conta? Crie uma"
+                    android:textColor="@color/text_secondary"/>
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
 
     </LinearLayout>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Email"
-        android:textColor="@color/text_on_primary"/>
-
-    <EditText
-        android:id="@+id/inputEmail"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:hint="Digite seu email"
-        android:background="@drawable/bg_input"
-        android:padding="10dp"
-        android:inputType="textEmailAddress"
-        android:textColor="@color/text_primary"
-        android:textColorHint="@color/text_secondary"
-        android:layout_marginBottom="12dp"/>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Senha"
-        android:textColor="@color/text_on_primary"/>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginBottom="20dp"
-        android:background="@drawable/bg_input"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingEnd="10dp">
-
-        <EditText
-            android:id="@+id/inputSenha"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
-            android:hint="Digite sua senha"
-            android:inputType="textPassword"
-            android:textColor="@color/text_primary"
-            android:textColorHint="@color/text_secondary"
-            android:padding="10dp"/>
-
-        <ImageView
-            android:id="@+id/iconeOlhoSenhaLogin"
-            android:layout_width="22dp"
-            android:layout_height="22dp"
-            android:src="@drawable/ic_eye"
-            app:tint="@color/text_secondary"/>
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/botaoEntrar"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:text="Entrar"
-        android:backgroundTint="@color/white"
-        android:textColor="@color/color_primary"/>
-
-    <TextView
-        android:id="@+id/textoEsqueceuSenha"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Esqueceu a senha?"
-        android:textColor="@color/text_on_primary"
-        android:gravity="center"
-        android:layout_marginTop="10dp"/>
-
-    <TextView
-        android:id="@+id/textoCriarConta"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Não tem conta? Crie uma"
-        android:textColor="@color/text_on_primary"
-        android:gravity="center"
-        android:layout_marginTop="30dp"/>
-
-</LinearLayout>
+</ScrollView>

@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -21,6 +22,7 @@ import com.example.mapadointercambista.adapter.destino.AvaliacaoDestinoAdapter;
 import com.example.mapadointercambista.model.destino.AvaliacaoDestino;
 import com.example.mapadointercambista.model.destino.Destino;
 import com.example.mapadointercambista.model.destino.DestinoStorage;
+import com.example.mapadointercambista.model.destino.FavoritosStorage;
 import com.example.mapadointercambista.model.user.SessionManager;
 import com.example.mapadointercambista.navigation.NavigationHelper;
 import com.example.mapadointercambista.util.ImageUtils;
@@ -47,12 +49,14 @@ public class DetalheDestinoActivity extends AppCompatActivity {
     private TextView textoResumoAvaliacoes;
     private RecyclerView listaAvaliacoes;
     private TextView textoVerMaisDescricao;
-
     private boolean descricaoExpandida = false;
     private String descricaoCompleta = "";
-
     private final List<AvaliacaoDestino> avaliacoesExibidas = new ArrayList<>();
     private AvaliacaoDestinoAdapter avaliacaoAdapter;
+    private int ultimoHashDestino = -1;
+
+    private ImageView botaoFavoritoDestino;
+    private FavoritosStorage favoritosStorage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +74,7 @@ public class DetalheDestinoActivity extends AppCompatActivity {
 
         destinoStorage = new DestinoStorage(this);
         sessionManager = new SessionManager(this);
+        favoritosStorage = new FavoritosStorage(this);
 
         Destino destinoRecebido = (Destino) getIntent().getSerializableExtra("destino");
         if (destinoRecebido != null) {
@@ -89,6 +94,7 @@ public class DetalheDestinoActivity extends AppCompatActivity {
         textoResumoAvaliacoes = findViewById(R.id.textoResumoAvaliacoesDestino);
         listaAvaliacoes = findViewById(R.id.listaAvaliacoesDestino);
         textoVerMaisDescricao = findViewById(R.id.textoVerMaisDescricao);
+        botaoFavoritoDestino = findViewById(R.id.botaoFavoritoDestino);
 
         listaAvaliacoes.setLayoutManager(new LinearLayoutManager(this));
         listaAvaliacoes.setHasFixedSize(false);
@@ -103,10 +109,34 @@ public class DetalheDestinoActivity extends AppCompatActivity {
         listaAvaliacoes.setAdapter(avaliacaoAdapter);
 
         botaoVoltar.setOnClickListener(v -> finish());
+        botaoFavoritoDestino.setOnClickListener(v -> {
+            if (!sessionManager.estaLogado()) {
+                Toast.makeText(this, "Entre em sua conta para favoritar", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (destinoAtual == null) {
+                return;
+            }
+
+            boolean agoraFavorito = favoritosStorage.toggleFavorito(
+                    sessionManager.getEmailUsuario(),
+                    destinoAtual.getId()
+            );
+
+            atualizarBotaoFavorito(agoraFavorito);
+
+            Toast.makeText(
+                    this,
+                    agoraFavorito ? "Destino adicionado aos favoritos" : "Destino removido dos favoritos",
+                    Toast.LENGTH_SHORT
+            ).show();
+        });
         findViewById(R.id.botaoAvaliarDestino).setOnClickListener(v -> abrirDialogNovaAvaliacao());
 
         preencherCabecalho();
         carregarAvaliacoes();
+        ultimoHashDestino = calcularHashDestinoAtual();
 
         textoVerMaisDescricao.setOnClickListener(v -> {
             descricaoExpandida = !descricaoExpandida;
@@ -144,8 +174,29 @@ public class DetalheDestinoActivity extends AppCompatActivity {
             }
         }
 
-        preencherCabecalho();
-        carregarAvaliacoes();
+        int hashAtual = calcularHashDestinoAtual();
+        if (hashAtual != ultimoHashDestino) {
+            preencherCabecalho();
+            carregarAvaliacoes();
+            ultimoHashDestino = hashAtual;
+        }
+    }
+
+    private void atualizarBotaoFavorito(boolean favorito) {
+        botaoFavoritoDestino.setColorFilter(ContextCompat.getColor(
+                this,
+                favorito ? R.color.favorite_active : R.color.white
+        ));
+    }
+
+    private int calcularHashDestinoAtual() {
+        if (destinoAtual == null) return -1;
+
+        int hash = destinoAtual.getId() != null ? destinoAtual.getId().hashCode() : 0;
+        hash = 31 * hash + Float.floatToIntBits(destinoAtual.getNota());
+        hash = 31 * hash + destinoAtual.getAvaliacoes();
+        hash = 31 * hash + (destinoAtual.getDescricao() != null ? destinoAtual.getDescricao().hashCode() : 0);
+        return hash;
     }
 
     private void preencherCabecalho() {
@@ -182,6 +233,17 @@ public class DetalheDestinoActivity extends AppCompatActivity {
                         ? notaMedia + " • 1 avaliação"
                         : notaMedia + " • " + quantidade + " avaliações"
         );
+
+        if (sessionManager.estaLogado() && destinoAtual != null) {
+            boolean favorito = favoritosStorage.isFavorito(
+                    sessionManager.getEmailUsuario(),
+                    destinoAtual.getId()
+            );
+            atualizarBotaoFavorito(favorito);
+        } else {
+            atualizarBotaoFavorito(false);
+        }
+
     }
 
     private void carregarAvaliacoes() {

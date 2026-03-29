@@ -170,10 +170,11 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
 
             if (sucesso) {
                 int posicao = holder.getAdapterPosition();
-                PostForum atualizado = forumStorage.buscarPostPorId(postId);
+                RespostaForum atualizada = buscarRespostaAtualizada(resposta.getId());
 
-                if (posicao != RecyclerView.NO_POSITION && atualizado != null) {
-                    atualizarDados(atualizado.getRespostas());
+                if (posicao != RecyclerView.NO_POSITION && atualizada != null) {
+                    lista.set(posicao, atualizada);
+                    notifyItemChanged(posicao);
                 }
             }
         });
@@ -194,10 +195,11 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
 
             if (sucesso) {
                 int posicao = holder.getAdapterPosition();
-                PostForum atualizado = forumStorage.buscarPostPorId(postId);
+                RespostaForum atualizada = buscarRespostaAtualizada(resposta.getId());
 
-                if (posicao != RecyclerView.NO_POSITION && atualizado != null) {
-                    atualizarDados(atualizado.getRespostas());
+                if (posicao != RecyclerView.NO_POSITION && atualizada != null) {
+                    lista.set(posicao, atualizada);
+                    notifyItemChanged(posicao);
                 }
             }
         });
@@ -231,6 +233,21 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
         diminuirY.setDuration(120);
         diminuirX.start();
         diminuirY.start();
+    }
+
+    private RespostaForum buscarRespostaAtualizada(String respostaId) {
+        PostForum postAtualizado = forumStorage.buscarPostPorId(postId);
+        if (postAtualizado == null || postAtualizado.getRespostas() == null) {
+            return null;
+        }
+
+        for (RespostaForum resposta : postAtualizado.getRespostas()) {
+            if (respostaId.equals(resposta.getId())) {
+                return resposta;
+            }
+        }
+
+        return null;
     }
 
     private void aplicarAvatar(ShapeableImageView imageView, String fotoUri, String nomeAutor) {

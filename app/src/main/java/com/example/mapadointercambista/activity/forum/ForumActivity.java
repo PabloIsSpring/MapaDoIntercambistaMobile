@@ -3,10 +3,11 @@ package com.example.mapadointercambista.activity.forum;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.PopupMenu;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,6 +24,7 @@ import com.example.mapadointercambista.model.forum.PostForum;
 import com.example.mapadointercambista.model.user.SessionManager;
 import com.example.mapadointercambista.navigation.NavigationHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,6 +48,7 @@ public class ForumActivity extends AppCompatActivity {
 
     private TextView textoResultadosForum;
     private TextView textoVazioForum;
+    private View containerVazioForum;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +70,7 @@ public class ForumActivity extends AppCompatActivity {
         listaTodosForuns.setAdapter(adapter);
 
         textoResultadosForum = findViewById(R.id.textoResultadosForum);
+        containerVazioForum = findViewById(R.id.containerVazioForum);
         textoVazioForum = findViewById(R.id.textoVazioForum);
 
         EditText barraPesquisa = findViewById(R.id.barraPesquisaForum);
@@ -89,7 +93,7 @@ public class ForumActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) { }
         });
 
-        iconeFiltro.setOnClickListener(this::abrirMenuOrdenacao);
+        iconeFiltro.setOnClickListener(v -> abrirBottomSheetFiltrosForum());
 
         carregarPostsIniciais();
 
@@ -188,7 +192,7 @@ public class ForumActivity extends AppCompatActivity {
 
         int quantidade = filtrados.size();
         textoResultadosForum.setText(quantidade == 1 ? "1 resultado" : quantidade + " resultados");
-        textoVazioForum.setVisibility(quantidade == 0 ? View.VISIBLE : View.GONE);
+        containerVazioForum.setVisibility(quantidade == 0 ? View.VISIBLE : View.GONE);
         listaTodosForuns.setVisibility(quantidade == 0 ? View.GONE : View.VISIBLE);
     }
 
@@ -209,21 +213,39 @@ public class ForumActivity extends AppCompatActivity {
         }
     }
 
-    private void abrirMenuOrdenacao(View anchor) {
-        PopupMenu popupMenu = new PopupMenu(this, anchor);
-        popupMenu.getMenu().add("Mais recentes");
-        popupMenu.getMenu().add("Mais curtidos");
-        popupMenu.getMenu().add("Mais respondidos");
+    private void abrirBottomSheetFiltrosForum() {
+        BottomSheetDialog dialog = new BottomSheetDialog(this);
+        View view = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_filtros_forum, null);
+        dialog.setContentView(view);
 
-        popupMenu.setOnMenuItemClickListener(item -> {
-            String titulo = item.getTitle().toString();
+        RadioButton radioRecentes = view.findViewById(R.id.radioRecentesForum);
+        RadioButton radioCurtidos = view.findViewById(R.id.radioCurtidosForum);
+        RadioButton radioRespondidos = view.findViewById(R.id.radioRespondidosForum);
 
-            if ("Mais recentes".equals(titulo)) {
-                criterioOrdenacao = "recentes";
-            } else if ("Mais curtidos".equals(titulo)) {
+        switch (criterioOrdenacao) {
+            case "curtidos":
+                radioCurtidos.setChecked(true);
+                break;
+
+            case "respondidos":
+                radioRespondidos.setChecked(true);
+                break;
+
+            case "recentes":
+            default:
+                radioRecentes.setChecked(true);
+                break;
+        }
+
+        view.findViewById(R.id.botaoFecharFiltrosForum).setOnClickListener(v -> dialog.dismiss());
+
+        view.findViewById(R.id.botaoAplicarFiltrosForum).setOnClickListener(v -> {
+            if (radioCurtidos.isChecked()) {
                 criterioOrdenacao = "curtidos";
-            } else if ("Mais respondidos".equals(titulo)) {
+            } else if (radioRespondidos.isChecked()) {
                 criterioOrdenacao = "respondidos";
+            } else {
+                criterioOrdenacao = "recentes";
             }
 
             getSharedPreferences(PREF_FORUM_UI, MODE_PRIVATE)
@@ -232,9 +254,9 @@ public class ForumActivity extends AppCompatActivity {
                     .apply();
 
             aplicarBuscaEOrdenacao();
-            return true;
+            dialog.dismiss();
         });
 
-        popupMenu.show();
+        dialog.show();
     }
 }
