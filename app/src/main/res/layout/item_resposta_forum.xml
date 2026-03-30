@@ -7,11 +7,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:background="@color/background_primary"
+    android:background="@color/background_secondary"
     android:paddingStart="8dp"
     android:paddingEnd="8dp"
-    android:paddingTop="10dp"
-    android:paddingBottom="10dp">
+    android:paddingTop="6dp"
+    android:paddingBottom="6dp">
 
     <View
         android:id="@+id/linhaThread"
@@ -25,6 +25,7 @@
         android:id="@+id/fotoPerfilResposta"
         android:layout_width="34dp"
         android:layout_height="34dp"
+        android:layout_marginTop="4dp"
         android:layout_marginEnd="8dp"
         android:scaleType="centerCrop"
         android:src="@drawable/ic_user"
@@ -37,7 +38,11 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -61,7 +66,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="6dp"
-                android:background="@color/color_primary_light"
+                android:background="@drawable/bg_badge_voce"
                 android:paddingStart="8dp"
                 android:paddingEnd="8dp"
                 android:paddingTop="2dp"
@@ -95,9 +100,8 @@
             android:id="@+id/textoMensagemResposta"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="6dp"
             android:lineSpacingExtra="2dp"
-            android:paddingEnd="4dp"
             android:textColor="@color/text_primary"
             android:textSize="15sp" />
 
@@ -114,14 +118,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:minHeight="32dp"
+                android:minHeight="30dp"
                 android:orientation="horizontal"
                 android:paddingEnd="14dp">
 
                 <ImageView
                     android:id="@+id/iconeLikeResposta"
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
                     android:src="@drawable/ic_like"
                     app:tint="@color/green_like" />
 
@@ -140,14 +144,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:minHeight="32dp"
+                android:minHeight="30dp"
                 android:orientation="horizontal"
                 android:paddingEnd="14dp">
 
                 <ImageView
                     android:id="@+id/iconeDislikeResposta"
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
                     android:src="@drawable/ic_dislike"
                     app:tint="@color/red_dislike" />
 
@@ -166,12 +170,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:minHeight="32dp"
+                android:minHeight="30dp"
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
                     android:src="@drawable/ic_chat"
                     app:tint="@color/color_accent" />
 
@@ -190,7 +194,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:minHeight="28dp"
+            android:minHeight="26dp"
             android:gravity="center_vertical"
             android:text="Ver respostas"
             android:textColor="@color/color_accent"
@@ -201,8 +205,10 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginTop="10dp"
-            android:background="@color/divider_color" />
+            android:layout_marginTop="8dp"
+            android:background="@color/divider_color"
+            android:alpha="0.55" />
+
     </LinearLayout>
 
 </LinearLayout>

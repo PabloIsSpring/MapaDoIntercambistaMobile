@@ -6,9 +6,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_primary">
+    android:background="@color/background_secondary">
 
-    <include layout="@layout/menu_superior"/>
+    <include layout="@layout/menu_superior" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -22,16 +22,16 @@
             android:orientation="vertical"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
-            android:paddingTop="16dp"
+            android:paddingTop="14dp"
             android:paddingBottom="10dp">
 
             <ImageView
                 android:id="@+id/botaoVoltarRespostas"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_arrow_left"
-                android:contentDescription="Voltar"
                 android:layout_marginBottom="12dp"
+                android:contentDescription="Voltar"
+                android:src="@drawable/ic_arrow_left"
                 app:tint="@color/text_primary" />
 
             <TextView
@@ -43,251 +43,294 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
                 android:text="Veja as respostas desta publicação"
-                android:textColor="@color/text_muted"
-                android:layout_marginTop="4dp" />
+                android:textColor="@color/text_muted" />
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="12dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:id="@+id/fotoPerfilPostOriginal"
-                    android:layout_width="46dp"
-                    android:layout_height="46dp"
-                    android:layout_marginEnd="10dp"
-                    android:src="@drawable/ic_user"
-                    android:scaleType="centerCrop"
-                    app:shapeAppearanceOverlay="@style/CircleImageShape"
-                    app:strokeWidth="1dp"
-                    app:strokeColor="@color/border_light" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical">
-
-                        <TextView
-                            android:id="@+id/nomeUsuarioPostOriginal"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textStyle="bold"
-                            android:textSize="17sp"
-                            android:textColor="@color/text_primary" />
-
-                        <TextView
-                            android:id="@+id/textoBadgeVocePostOriginal"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:background="@color/color_primary_light"
-                            android:paddingStart="8dp"
-                            android:paddingEnd="8dp"
-                            android:paddingTop="2dp"
-                            android:paddingBottom="2dp"
-                            android:text="Você"
-                            android:textColor="@color/color_accent"
-                            android:textSize="12sp"
-                            android:textStyle="bold"
-                            android:visibility="gone" />
-
-                        <TextView
-                            android:id="@+id/tempoPostOriginal"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:textColor="@color/text_muted"
-                            android:textSize="14sp" />
-
-                        <ImageView
-                            android:id="@+id/botaoOpcoesPostOriginal"
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:layout_marginStart="8dp"
-                            android:src="@drawable/ic_more_vert"
-                            android:visibility="gone"
-                            app:tint="@color/text_muted" />
-                    </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/mensagemPostOriginal"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="6dp"
-                        android:textSize="19sp"
-                        android:textColor="@color/text_primary"
-                        android:lineSpacingExtra="2dp" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="14dp"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical">
-
-                        <LinearLayout
-                            android:id="@+id/botaoLikePostOriginal"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical">
-
-                            <ImageView
-                                android:id="@+id/iconeLikePostOriginal"
-                                android:layout_width="18dp"
-                                android:layout_height="18dp"
-                                android:src="@drawable/ic_like"
-                                app:tint="@color/green_like" />
-
-                            <TextView
-                                android:id="@+id/textoLikesPostOriginal"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="5dp"
-                                android:text="0"
-                                android:textColor="@color/green_like"
-                                android:textSize="13sp" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:id="@+id/botaoDislikePostOriginal"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="22dp"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical">
-
-                            <ImageView
-                                android:id="@+id/iconeDislikePostOriginal"
-                                android:layout_width="18dp"
-                                android:layout_height="18dp"
-                                android:src="@drawable/ic_dislike"
-                                app:tint="@color/red_dislike" />
-
-                            <TextView
-                                android:id="@+id/textoDislikesPostOriginal"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="5dp"
-                                android:text="0"
-                                android:textColor="@color/red_dislike"
-                                android:textSize="13sp" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="22dp"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical">
-
-                            <ImageView
-                                android:layout_width="18dp"
-                                android:layout_height="18dp"
-                                android:src="@drawable/ic_chat"
-                                app:tint="@color/color_accent" />
-
-                            <TextView
-                                android:id="@+id/textoQuantidadeRespostasPostOriginal"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="5dp"
-                                android:text="0 respostas"
-                                android:textColor="@color/color_accent"
-                                android:textSize="13sp" />
-                        </LinearLayout>
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/divider_color" />
-
-        <LinearLayout
-            android:id="@+id/cardResponder"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:paddingTop="14dp"
-            android:paddingBottom="14dp">
-
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/iconeAvatarResponder"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginEnd="10dp"
-                android:src="@drawable/ic_user"
-                android:scaleType="centerCrop"
-                app:shapeAppearanceOverlay="@style/CircleImageShape"
-                app:strokeWidth="1dp"
-                app:strokeColor="@color/border_light"
-                app:tint="@android:color/white" />
-
-            <TextView
-                android:id="@+id/textoResponderBloqueado"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Postar sua resposta"
-                android:textColor="@color/text_muted"
-                android:textSize="16sp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/botaoResponderAcao"
-                android:layout_width="wrap_content"
-                android:layout_height="44dp"
-                android:text="Responder"
-                android:textAllCaps="false"
-                android:textStyle="bold"
-                android:textColor="@color/text_on_primary"
-                app:backgroundTint="@color/text_secondary"
-                app:cornerRadius="22dp" />
-
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/divider_color" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/listaRespostas"
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:clipToPadding="false"
-            android:paddingBottom="90dp" />
+            android:fillViewport="true"
+            android:paddingBottom="90dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="12dp">
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardPostOriginal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    app:cardBackgroundColor="@color/card_background"
+                    app:cardCornerRadius="18dp"
+                    app:cardElevation="2dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="14dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.imageview.ShapeableImageView
+                                android:id="@+id/fotoPerfilPostOriginal"
+                                android:layout_width="44dp"
+                                android:layout_height="44dp"
+                                android:layout_marginEnd="10dp"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/ic_user"
+                                app:shapeAppearanceOverlay="@style/CircleImageShape"
+                                app:strokeColor="@color/border_light"
+                                app:strokeWidth="1dp" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:id="@+id/nomeUsuarioPostOriginal"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1"
+                                        android:ellipsize="end"
+                                        android:maxLines="1"
+                                        android:textColor="@color/text_primary"
+                                        android:textSize="16sp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:id="@+id/textoBadgeVocePostOriginal"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="6dp"
+                                        android:background="@drawable/bg_badge_voce"
+                                        android:paddingStart="8dp"
+                                        android:paddingEnd="8dp"
+                                        android:paddingTop="2dp"
+                                        android:paddingBottom="2dp"
+                                        android:text="Você"
+                                        android:textColor="@color/color_accent"
+                                        android:textSize="11sp"
+                                        android:textStyle="bold"
+                                        android:visibility="gone" />
+
+                                    <TextView
+                                        android:id="@+id/tempoPostOriginal"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="6dp"
+                                        android:maxLines="1"
+                                        android:textColor="@color/text_muted"
+                                        android:textSize="12sp" />
+
+                                    <ImageView
+                                        android:id="@+id/botaoOpcoesPostOriginal"
+                                        android:layout_width="18dp"
+                                        android:layout_height="18dp"
+                                        android:layout_marginStart="8dp"
+                                        android:src="@drawable/ic_more_vert"
+                                        android:visibility="gone"
+                                        app:tint="@color/text_muted" />
+                                </LinearLayout>
+
+                                <TextView
+                                    android:id="@+id/mensagemPostOriginal"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="6dp"
+                                    android:lineSpacingExtra="2dp"
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="17sp" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="12dp"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal">
+
+                                    <LinearLayout
+                                        android:id="@+id/botaoLikePostOriginal"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="center_vertical"
+                                        android:minHeight="32dp"
+                                        android:orientation="horizontal"
+                                        android:paddingEnd="14dp">
+
+                                        <ImageView
+                                            android:id="@+id/iconeLikePostOriginal"
+                                            android:layout_width="16dp"
+                                            android:layout_height="16dp"
+                                            android:src="@drawable/ic_like"
+                                            app:tint="@color/green_like" />
+
+                                        <TextView
+                                            android:id="@+id/textoLikesPostOriginal"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginStart="4dp"
+                                            android:text="0"
+                                            android:textColor="@color/green_like"
+                                            android:textSize="12sp" />
+                                    </LinearLayout>
+
+                                    <LinearLayout
+                                        android:id="@+id/botaoDislikePostOriginal"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="center_vertical"
+                                        android:minHeight="32dp"
+                                        android:orientation="horizontal"
+                                        android:paddingEnd="14dp">
+
+                                        <ImageView
+                                            android:id="@+id/iconeDislikePostOriginal"
+                                            android:layout_width="16dp"
+                                            android:layout_height="16dp"
+                                            android:src="@drawable/ic_dislike"
+                                            app:tint="@color/red_dislike" />
+
+                                        <TextView
+                                            android:id="@+id/textoDislikesPostOriginal"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginStart="4dp"
+                                            android:text="0"
+                                            android:textColor="@color/red_dislike"
+                                            android:textSize="12sp" />
+                                    </LinearLayout>
+
+                                    <LinearLayout
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="center_vertical"
+                                        android:minHeight="32dp"
+                                        android:orientation="horizontal">
+
+                                        <ImageView
+                                            android:layout_width="16dp"
+                                            android:layout_height="16dp"
+                                            android:src="@drawable/ic_chat"
+                                            app:tint="@color/color_accent" />
+
+                                        <TextView
+                                            android:id="@+id/textoQuantidadeRespostasPostOriginal"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginStart="4dp"
+                                            android:text="0 respostas"
+                                            android:textColor="@color/color_accent"
+                                            android:textSize="12sp" />
+                                    </LinearLayout>
+                                </LinearLayout>
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardResponder"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    app:cardBackgroundColor="@color/card_background"
+                    app:cardCornerRadius="18dp"
+                    app:cardElevation="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        android:paddingTop="12dp"
+                        android:paddingBottom="12dp">
+
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:id="@+id/iconeAvatarResponder"
+                            android:layout_width="38dp"
+                            android:layout_height="38dp"
+                            android:layout_marginEnd="10dp"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/ic_user"
+                            app:shapeAppearanceOverlay="@style/CircleImageShape"
+                            app:strokeColor="@color/border_light"
+                            app:strokeWidth="1dp"
+                            app:tint="@android:color/white" />
+
+                        <TextView
+                            android:id="@+id/textoResponderBloqueado"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:paddingEnd="10dp"
+                            android:text="Postar sua resposta"
+                            android:textColor="@color/text_muted"
+                            android:textSize="15sp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/botaoResponderAcao"
+                            android:layout_width="wrap_content"
+                            android:layout_height="40dp"
+                            android:minWidth="0dp"
+                            android:text="Responder"
+                            android:textAllCaps="false"
+                            android:textColor="@color/text_on_primary"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            app:backgroundTint="@color/color_accent"
+                            app:cornerRadius="20dp" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <TextView
+                    android:id="@+id/textoSecaoComentarios"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="6dp"
+                    android:text="Comentários"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/listaRespostas"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"
+                    android:clipToPadding="false"
+                    android:paddingBottom="4dp" />
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
 
     </LinearLayout>
 
-    <include layout="@layout/menu_inferior"/>
+    <include
+        layout="@layout/menu_inferior"
+        android:layout_gravity="bottom" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

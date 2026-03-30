@@ -42,7 +42,7 @@ public class NavigationHelper {
                 if (sessionManager.estaLogado()) {
                     intent = new Intent(activity, ContaActivity.class);
                 } else {
-                    intent = new Intent(activity, LoginActivity.class);
+                    intent = new Intent(activity, ContaActivity.class);
                     deveFinalizarTelaAtual = false;
                 }
             }

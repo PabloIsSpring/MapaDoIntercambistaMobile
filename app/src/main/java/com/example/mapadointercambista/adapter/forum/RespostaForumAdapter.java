@@ -37,8 +37,8 @@ import java.util.Map;
 
 public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdapter.ViewHolder> {
 
-    private static final int MAX_NIVEL_VISUAL = 2;
-    private static final int INDENT_DP = 14;
+    private static final int MAX_NIVEL_VISUAL = 3;
+    private static final int INDENT_DP = 12;
 
     private final Context context;
     private final String postId;
@@ -252,13 +252,21 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
 
         MarginLayoutParams params = (MarginLayoutParams) holder.containerResposta.getLayoutParams();
         params.setMarginStart(margemEsquerda);
+        params.bottomMargin = dpToPx(10);
         holder.containerResposta.setLayoutParams(params);
 
         if (nivelReal == 0) {
             holder.linhaThread.setVisibility(View.INVISIBLE);
         } else {
             holder.linhaThread.setVisibility(View.VISIBLE);
-            holder.linhaThread.setAlpha(nivelReal >= 3 ? 0.35f : 0.60f);
+
+            if (nivelReal == 1) {
+                holder.linhaThread.setAlpha(0.18f);
+            } else if (nivelReal == 2) {
+                holder.linhaThread.setAlpha(0.12f);
+            } else {
+                holder.linhaThread.setAlpha(0.08f);
+            }
         }
     }
 

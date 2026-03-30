@@ -165,6 +165,7 @@ public class RespostasForumActivity extends AppCompatActivity {
     private void configurarLista() {
         listaRespostas.setLayoutManager(new LinearLayoutManager(this));
         listaRespostas.setHasFixedSize(false);
+        listaRespostas.setNestedScrollingEnabled(false);
         listaRespostas.setItemViewCacheSize(12);
         listaRespostas.setItemAnimator(null);
 
