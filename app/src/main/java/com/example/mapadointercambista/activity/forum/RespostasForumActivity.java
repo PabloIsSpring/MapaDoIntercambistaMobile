@@ -4,7 +4,9 @@ import android.animation.ObjectAnimator;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.InputFilter;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
@@ -12,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -26,6 +29,8 @@ import com.example.mapadointercambista.model.forum.RespostaForum;
 import com.example.mapadointercambista.model.user.SessionManager;
 import com.example.mapadointercambista.navigation.NavigationHelper;
 import com.example.mapadointercambista.util.AvatarUtils;
+import com.example.mapadointercambista.util.ForumLimits;
+import com.example.mapadointercambista.util.InputSecurityUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.imageview.ShapeableImageView;
 
@@ -43,6 +48,7 @@ public class RespostasForumActivity extends AppCompatActivity {
     private ShapeableImageView iconeAvatarResponder;
     private TextView nome;
     private TextView tempo;
+    private TextView tituloPostOriginal;
     private TextView mensagem;
     private TextView textoLikes;
     private TextView textoDislikes;
@@ -123,6 +129,7 @@ public class RespostasForumActivity extends AppCompatActivity {
         hash = 31 * hash + postAtual.getLikes();
         hash = 31 * hash + postAtual.getDislikes();
         hash = 31 * hash + postAtual.getQuantidadeRespostas();
+        hash = 31 * hash + (postAtual.getTitulo() != null ? postAtual.getTitulo().hashCode() : 0);
         hash = 31 * hash + (postAtual.getMensagem() != null ? postAtual.getMensagem().hashCode() : 0);
         return hash;
     }
@@ -133,6 +140,7 @@ public class RespostasForumActivity extends AppCompatActivity {
 
         nome = findViewById(R.id.nomeUsuarioPostOriginal);
         tempo = findViewById(R.id.tempoPostOriginal);
+        tituloPostOriginal = findViewById(R.id.tituloPostOriginal);
         mensagem = findViewById(R.id.mensagemPostOriginal);
 
         textoLikes = findViewById(R.id.textoLikesPostOriginal);
@@ -190,12 +198,12 @@ public class RespostasForumActivity extends AppCompatActivity {
 
     private void abrirTelaNovaResposta() {
         if (!sessionManager.estaLogado()) {
-            Toast.makeText(this, "Entre em uma conta para responder", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Entre em uma conta para responder.", Toast.LENGTH_SHORT).show();
             return;
         }
 
         if (postAtual == null) {
-            Toast.makeText(this, "Post não encontrado", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Post não encontrado.", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -234,7 +242,7 @@ public class RespostasForumActivity extends AppCompatActivity {
     private void configurarAcoesPostOriginal() {
         botaoLikePostOriginal.setOnClickListener(v -> {
             if (!sessionManager.estaLogado()) {
-                Toast.makeText(this, "Entre em uma conta para responder", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Entre em uma conta para responder.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -250,7 +258,7 @@ public class RespostasForumActivity extends AppCompatActivity {
 
         botaoDislikePostOriginal.setOnClickListener(v -> {
             if (!sessionManager.estaLogado()) {
-                Toast.makeText(this, "Entre em uma conta para responder", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Entre em uma conta para responder.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -342,7 +350,8 @@ public class RespostasForumActivity extends AppCompatActivity {
 
         nome.setText(postAtual.getAutorNome());
         tempo.setText("· " + postAtual.getTempoPostagem());
-        mensagem.setText(postAtual.getMensagem());
+        tituloPostOriginal.setText(textoSeguro(postAtual.getTitulo(), "Sem título"));
+        mensagem.setText(textoSeguro(postAtual.getMensagem(), ""));
         textoLikes.setText(String.valueOf(postAtual.getLikes()));
         textoDislikes.setText(String.valueOf(postAtual.getDislikes()));
         textoRespostas.setText(postAtual.getQuantidadeRespostas() + " respostas");
@@ -361,37 +370,60 @@ public class RespostasForumActivity extends AppCompatActivity {
     }
 
     private void abrirDialogEditarPostOriginal() {
-        android.widget.EditText input = new android.widget.EditText(this);
-        input.setText(postAtual.getMensagem());
-        input.setMinLines(3);
-        input.setPadding(40, 30, 40, 30);
+        LinearLayout container = new LinearLayout(this);
+        container.setOrientation(LinearLayout.VERTICAL);
+        container.setPadding(40, 24, 40, 8);
 
-        new androidx.appcompat.app.AlertDialog.Builder(this)
+        EditText inputTitulo = new EditText(this);
+        inputTitulo.setHint("Título");
+        inputTitulo.setText(textoSeguro(postAtual.getTitulo(), ""));
+        inputTitulo.setFilters(new InputFilter[]{
+                new InputFilter.LengthFilter(ForumLimits.MAX_TITULO_POST)
+        });
+
+        EditText inputMensagem = new EditText(this);
+        inputMensagem.setHint("Mensagem");
+        inputMensagem.setText(textoSeguro(postAtual.getMensagem(), ""));
+        inputMensagem.setMinLines(4);
+        inputMensagem.setFilters(new InputFilter[]{
+                new InputFilter.LengthFilter(ForumLimits.MAX_TEXTO_POST)
+        });
+
+        container.addView(inputTitulo);
+        container.addView(inputMensagem);
+
+        new AlertDialog.Builder(this)
                 .setTitle("Editar post")
-                .setView(input)
+                .setView(container)
                 .setNegativeButton("Cancelar", null)
                 .setPositiveButton("Salvar", (dialog, which) -> {
-                    String novaMensagem = input.getText().toString().trim();
+                    String novoTitulo = InputSecurityUtils.sanitizeUserText(inputTitulo.getText().toString());
+                    String novaMensagem = InputSecurityUtils.sanitizeUserText(inputMensagem.getText().toString());
 
-                    if (novaMensagem.isEmpty()) {
-                        Toast.makeText(this, "Digite uma mensagem", Toast.LENGTH_SHORT).show();
+                    if (InputSecurityUtils.isNullOrBlank(novoTitulo)) {
+                        Toast.makeText(this, "Digite um título.", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
-                    boolean sucesso = forumStorage.editarPost(postAtual.getId(), novaMensagem);
+                    if (InputSecurityUtils.isNullOrBlank(novaMensagem)) {
+                        Toast.makeText(this, "Digite uma mensagem.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    boolean sucesso = forumStorage.editarPost(postAtual.getId(), novoTitulo, novaMensagem);
 
                     if (sucesso) {
                         recarregarPostAtual();
-                        Toast.makeText(this, "Post editado com sucesso", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Post editado com sucesso.", Toast.LENGTH_SHORT).show();
                     } else {
-                        Toast.makeText(this, "Erro ao editar post", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Erro ao editar post.", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .show();
     }
 
     private void confirmarExclusaoPostOriginal() {
-        new androidx.appcompat.app.AlertDialog.Builder(this)
+        new AlertDialog.Builder(this)
                 .setTitle("Excluir post")
                 .setMessage("Tem certeza que deseja excluir esta publicação?")
                 .setNegativeButton("Cancelar", null)
@@ -399,10 +431,10 @@ public class RespostasForumActivity extends AppCompatActivity {
                     boolean sucesso = forumStorage.excluirPost(postAtual.getId());
 
                     if (sucesso) {
-                        Toast.makeText(this, "Post excluído com sucesso", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Post excluído com sucesso.", Toast.LENGTH_SHORT).show();
                         finish();
                     } else {
-                        Toast.makeText(this, "Erro ao excluir post", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Erro ao excluir post.", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .show();
@@ -438,5 +470,10 @@ public class RespostasForumActivity extends AppCompatActivity {
             Bitmap avatar = AvatarUtils.criarAvatarComInicial(this, nomeAutor, 72);
             imageView.setImageBitmap(avatar);
         }
+    }
+
+    private String textoSeguro(String valor, String fallback) {
+        String texto = InputSecurityUtils.sanitizeUserText(valor);
+        return texto.isEmpty() ? fallback : texto;
     }
 }

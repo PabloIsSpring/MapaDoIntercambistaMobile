@@ -13,6 +13,8 @@ public class PostForum implements Serializable {
     private String autorNome;
     private String autorEmail;
     private String autorFotoUri;
+
+    private String titulo;
     private String mensagem;
     private long criadoEm;
 
@@ -21,11 +23,12 @@ public class PostForum implements Serializable {
     private List<RespostaForum> respostas;
 
     public PostForum(String autorNome, String autorEmail, String autorFotoUri,
-                     String mensagem, long criadoEm) {
+                     String titulo, String mensagem, long criadoEm) {
         this.id = UUID.randomUUID().toString();
         this.autorNome = autorNome;
         this.autorEmail = autorEmail;
         this.autorFotoUri = autorFotoUri;
+        this.titulo = titulo;
         this.mensagem = mensagem;
         this.criadoEm = criadoEm;
         this.usuariosLike = new ArrayList<>();
@@ -34,13 +37,14 @@ public class PostForum implements Serializable {
     }
 
     public PostForum(String id, String autorNome, String autorEmail, String autorFotoUri,
-                     String mensagem, long criadoEm,
+                     String titulo, String mensagem, long criadoEm,
                      List<String> usuariosLike, List<String> usuariosDislike,
                      List<RespostaForum> respostas) {
         this.id = id;
         this.autorNome = autorNome;
         this.autorEmail = autorEmail;
         this.autorFotoUri = autorFotoUri;
+        this.titulo = titulo;
         this.mensagem = mensagem;
         this.criadoEm = criadoEm;
         this.usuariosLike = usuariosLike != null ? usuariosLike : new ArrayList<>();
@@ -62,6 +66,10 @@ public class PostForum implements Serializable {
 
     public String getAutorFotoUri() {
         return autorFotoUri;
+    }
+
+    public String getTitulo() {
+        return titulo;
     }
 
     public String getMensagem() {
@@ -88,6 +96,10 @@ public class PostForum implements Serializable {
         return respostas;
     }
 
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
+
     public void setMensagem(String mensagem) {
         this.mensagem = mensagem;
     }
@@ -109,10 +121,14 @@ public class PostForum implements Serializable {
     }
 
     public boolean usuarioCurtiu(String emailUsuario) {
-        return emailUsuario != null && usuariosLike != null && usuariosLike.contains(emailUsuario);
+        return emailUsuario != null
+                && usuariosLike != null
+                && usuariosLike.contains(emailUsuario);
     }
 
     public boolean usuarioDescurtiu(String emailUsuario) {
-        return emailUsuario != null && usuariosDislike != null && usuariosDislike.contains(emailUsuario);
+        return emailUsuario != null
+                && usuariosDislike != null
+                && usuariosDislike.contains(emailUsuario);
     }
 }

@@ -5,14 +5,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:background="@color/color_primary">
+    android:background="@color/color_primary"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="20dp">
+        android:padding="20dp"
+        android:paddingBottom="28dp">
 
         <ImageView
             android:id="@+id/botaoVoltarCadastro"
@@ -24,42 +25,43 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="24dp"
             android:gravity="center"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="26dp">
+            android:orientation="vertical">
 
             <ImageView
-                android:layout_width="280dp"
-                android:layout_height="130dp"
-                android:src="@drawable/logo"
-                android:scaleType="fitCenter"/>
+                android:layout_width="260dp"
+                android:layout_height="120dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/logo" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Crie sua conta ✨"
-                android:textSize="22sp"
-                android:textStyle="bold"
+                android:layout_marginTop="10dp"
+                android:text="Crie sua conta"
                 android:textColor="@color/text_on_primary"
-                android:layout_marginTop="8dp"/>
+                android:textSize="24sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Cadastre-se para continuar"
-                android:textColor="@color/text_on_primary"
-                android:textSize="14sp"
                 android:layout_marginTop="4dp"
-                android:alpha="0.92"/>
+                android:alpha="0.92"
+                android:gravity="center"
+                android:text="Cadastre-se para responder publicações, favoritar destinos e personalizar seu perfil"
+                android:textColor="@color/text_on_primary"
+                android:textSize="14sp" />
         </LinearLayout>
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="22dp"
-            app:cardElevation="6dp"
-            app:cardBackgroundColor="@color/card_background">
+            app:cardBackgroundColor="@color/card_background"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="6dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -72,7 +74,7 @@
                     android:layout_height="wrap_content"
                     android:text="Nome"
                     android:textColor="@color/text_primary"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
 
                 <EditText
                     android:id="@+id/inputNomeCadastro"
@@ -82,16 +84,17 @@
                     android:layout_marginBottom="14dp"
                     android:background="@drawable/bg_input"
                     android:hint="Digite seu nome"
+                    android:importantForAutofill="yes"
                     android:padding="12dp"
                     android:textColor="@color/text_primary"
-                    android:textColorHint="@color/text_secondary"/>
+                    android:textColorHint="@color/text_secondary" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Email"
+                    android:text="E-mail"
                     android:textColor="@color/text_primary"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
 
                 <EditText
                     android:id="@+id/inputEmailCadastro"
@@ -100,18 +103,19 @@
                     android:layout_marginTop="6dp"
                     android:layout_marginBottom="14dp"
                     android:background="@drawable/bg_input"
-                    android:hint="Digite seu email"
+                    android:hint="Digite seu e-mail"
+                    android:importantForAutofill="yes"
                     android:inputType="textEmailAddress"
                     android:padding="12dp"
                     android:textColor="@color/text_primary"
-                    android:textColorHint="@color/text_secondary"/>
+                    android:textColorHint="@color/text_secondary" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Senha"
                     android:textColor="@color/text_primary"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -128,19 +132,21 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
+                        android:autofillHints="password"
                         android:background="@null"
                         android:hint="Digite sua senha"
+                        android:importantForAutofill="yes"
                         android:inputType="textPassword"
                         android:padding="12dp"
                         android:textColor="@color/text_primary"
-                        android:textColorHint="@color/text_secondary"/>
+                        android:textColorHint="@color/text_secondary" />
 
                     <ImageView
                         android:id="@+id/iconeOlhoSenhaCadastro"
                         android:layout_width="22dp"
                         android:layout_height="22dp"
                         android:src="@drawable/ic_eye"
-                        app:tint="@color/text_secondary"/>
+                        app:tint="@color/text_secondary" />
                 </LinearLayout>
 
                 <TextView
@@ -148,7 +154,7 @@
                     android:layout_height="wrap_content"
                     android:text="Confirme sua senha"
                     android:textColor="@color/text_primary"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -163,38 +169,44 @@
                         android:id="@+id/inputConfirmarSenhaCadastro"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="1"
                         android:background="@null"
+                        android:layout_weight="1"
+                        android:autofillHints="password"
                         android:hint="Confirme sua senha"
+                        android:importantForAutofill="yes"
                         android:inputType="textPassword"
                         android:padding="12dp"
                         android:textColor="@color/text_primary"
-                        android:textColorHint="@color/text_secondary"/>
+                        android:textColorHint="@color/text_secondary" />
 
                     <ImageView
                         android:id="@+id/iconeOlhoConfirmarSenhaCadastro"
                         android:layout_width="22dp"
                         android:layout_height="22dp"
                         android:src="@drawable/ic_eye"
-                        app:tint="@color/text_secondary"/>
+                        app:tint="@color/text_secondary" />
                 </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Sua senha deve ter entre 8 e 32 caracteres, incluindo maiúscula, minúscula, número e símbolo."
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/botaoCadastrar"
                     android:layout_width="match_parent"
                     android:layout_height="52dp"
                     android:layout_marginTop="18dp"
-                    android:text="Cadastrar-se"
+                    android:text="Criar conta"
                     android:textAllCaps="false"
                     android:textColor="@color/text_on_primary"
                     android:textStyle="bold"
                     app:backgroundTint="@color/color_accent"
-                    app:cornerRadius="16dp"/>
-
+                    app:cornerRadius="16dp" />
             </LinearLayout>
-
         </androidx.cardview.widget.CardView>
-
     </LinearLayout>
-
 </ScrollView>

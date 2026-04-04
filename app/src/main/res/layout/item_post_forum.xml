@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<androidx.cardview.widget.CardView
+<com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -9,9 +9,11 @@
     android:layout_marginTop="8dp"
     android:layout_marginEnd="12dp"
     android:layout_marginBottom="4dp"
+    app:cardBackgroundColor="@color/card_background"
     app:cardCornerRadius="18dp"
-    app:cardElevation="3dp"
-    app:cardBackgroundColor="@color/card_background">
+    app:cardElevation="2dp"
+    app:strokeColor="@color/divider_color"
+    app:strokeWidth="1dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -52,8 +54,11 @@
 
                     <TextView
                         android:id="@+id/nomeUsuario"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ellipsize="end"
+                        android:maxLines="1"
                         android:text="Usuário"
                         android:textColor="@color/text_primary"
                         android:textSize="16sp"
@@ -63,7 +68,7 @@
                         android:id="@+id/textoBadgeVocePost"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
+                        android:layout_marginStart="6dp"
                         android:background="@drawable/bg_badge_voce"
                         android:paddingStart="8dp"
                         android:paddingTop="3dp"
@@ -71,7 +76,7 @@
                         android:paddingBottom="3dp"
                         android:text="Você"
                         android:textColor="@color/color_accent"
-                        android:textSize="12sp"
+                        android:textSize="11sp"
                         android:textStyle="bold"
                         android:visibility="gone" />
 
@@ -79,15 +84,15 @@
                         android:id="@+id/textoTempoPostagem"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
+                        android:layout_marginStart="6dp"
                         android:text="· há 2h"
                         android:textColor="@color/text_muted"
-                        android:textSize="13sp" />
+                        android:textSize="12sp" />
 
                     <ImageView
                         android:id="@+id/botaoOpcoesPost"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
                         android:layout_marginStart="8dp"
                         android:src="@drawable/ic_more_vert"
                         android:visibility="gone"
@@ -95,14 +100,26 @@
                 </LinearLayout>
 
                 <TextView
-                    android:id="@+id/textoMensagem"
+                    android:id="@+id/textoTituloPost"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:text="Título do post"
+                    android:textColor="@color/text_primary"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/textoMensagem"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
                     android:lineSpacingExtra="2dp"
                     android:text="Mensagem do post"
-                    android:textColor="@color/text_primary"
-                    android:textSize="16sp" />
+                    android:textColor="@color/text_secondary"
+                    android:textSize="15sp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -125,8 +142,8 @@
 
                         <ImageView
                             android:id="@+id/iconeLike"
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
+                            android:layout_width="17dp"
+                            android:layout_height="17dp"
                             android:src="@drawable/ic_like"
                             app:tint="@color/green_like" />
 
@@ -137,7 +154,7 @@
                             android:layout_marginStart="5dp"
                             android:text="0"
                             android:textColor="@color/green_like"
-                            android:textSize="13sp" />
+                            android:textSize="12sp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -155,8 +172,8 @@
 
                         <ImageView
                             android:id="@+id/iconeDislike"
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
+                            android:layout_width="17dp"
+                            android:layout_height="17dp"
                             android:src="@drawable/ic_dislike"
                             app:tint="@color/red_dislike" />
 
@@ -167,7 +184,7 @@
                             android:layout_marginStart="5dp"
                             android:text="0"
                             android:textColor="@color/red_dislike"
-                            android:textSize="13sp" />
+                            android:textSize="12sp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -185,8 +202,8 @@
 
                         <ImageView
                             android:id="@+id/iconeRespostas"
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
+                            android:layout_width="17dp"
+                            android:layout_height="17dp"
                             android:src="@drawable/ic_chat"
                             app:tint="@color/color_accent" />
 
@@ -197,15 +214,13 @@
                             android:layout_marginStart="5dp"
                             android:text="0 respostas"
                             android:textColor="@color/color_accent"
-                            android:textSize="13sp" />
+                            android:textSize="12sp" />
                     </LinearLayout>
-
                 </LinearLayout>
 
             </LinearLayout>
-
         </LinearLayout>
 
     </LinearLayout>
 
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>

@@ -14,7 +14,8 @@ public class ForumRepository {
                 "Associação MarkitoLivre",
                 "markito@forum.com",
                 "",
-                "Gostei hein, top demais",
+                "Primeiras impressões do aplicativo",
+                "Gostei hein, top demais.",
                 agora - (2 * 60 * 60 * 1000L)
         );
 
@@ -72,6 +73,7 @@ public class ForumRepository {
                 "Juninho Mandelão",
                 "juninho@forum.com",
                 "",
+                "Feedback sobre a experiência",
                 "Show de bola esse aplicativo!",
                 agora - (5 * 60 * 60 * 1000L)
         );
@@ -92,6 +94,7 @@ public class ForumRepository {
                 "XD",
                 "xd@forum.com",
                 "",
+                "Visual e proposta do app",
                 "Aplicativo ficou muito bom!",
                 agora - (8 * 60 * 60 * 1000L)
         );

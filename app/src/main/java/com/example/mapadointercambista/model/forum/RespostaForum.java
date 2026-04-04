@@ -125,10 +125,14 @@ public class RespostaForum implements Serializable {
     }
 
     public boolean usuarioCurtiu(String emailUsuario) {
-        return emailUsuario != null && usuariosLike != null && usuariosLike.contains(emailUsuario);
+        return emailUsuario != null
+                && usuariosLike != null
+                && usuariosLike.contains(emailUsuario);
     }
 
     public boolean usuarioDescurtiu(String emailUsuario) {
-        return emailUsuario != null && usuariosDislike != null && usuariosDislike.contains(emailUsuario);
+        return emailUsuario != null
+                && usuariosDislike != null
+                && usuariosDislike.contains(emailUsuario);
     }
 }

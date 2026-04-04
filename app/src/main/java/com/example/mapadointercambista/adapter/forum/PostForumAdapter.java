@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.text.InputFilter;
+import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,8 +29,9 @@ import com.example.mapadointercambista.model.forum.ForumStorage;
 import com.example.mapadointercambista.model.forum.PostForum;
 import com.example.mapadointercambista.model.user.SessionManager;
 import com.example.mapadointercambista.util.AvatarUtils;
+import com.example.mapadointercambista.util.ForumLimits;
+import com.example.mapadointercambista.util.InputSecurityUtils;
 import com.google.android.material.imageview.ShapeableImageView;
-import android.util.LruCache;
 
 import java.util.List;
 
@@ -51,10 +54,10 @@ public class PostForumAdapter extends RecyclerView.Adapter<PostForumAdapter.View
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-
         ShapeableImageView fotoPerfil;
         TextView usuario;
         TextView textoBadgeVocePost;
+        TextView textoTituloPost;
         TextView mensagem;
         TextView textoTempoPostagem;
         TextView textoLikes;
@@ -63,16 +66,16 @@ public class PostForumAdapter extends RecyclerView.Adapter<PostForumAdapter.View
         LinearLayout botaoRespostas;
         LinearLayout botaoLikeContainer;
         LinearLayout botaoDislikeContainer;
-        ImageView botaoOpcoesPost;
+        View botaoOpcoesPost;
         ImageView iconeLike;
         ImageView iconeDislike;
 
         public ViewHolder(View itemView) {
             super(itemView);
-
             fotoPerfil = itemView.findViewById(R.id.fotoPerfil);
             usuario = itemView.findViewById(R.id.nomeUsuario);
             textoBadgeVocePost = itemView.findViewById(R.id.textoBadgeVocePost);
+            textoTituloPost = itemView.findViewById(R.id.textoTituloPost);
             mensagem = itemView.findViewById(R.id.textoMensagem);
             textoTempoPostagem = itemView.findViewById(R.id.textoTempoPostagem);
             textoLikes = itemView.findViewById(R.id.textoLikes);
@@ -98,7 +101,6 @@ public class PostForumAdapter extends RecyclerView.Adapter<PostForumAdapter.View
     public PostForumAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_post_forum, parent, false);
-
         return new ViewHolder(view);
     }
 
@@ -106,8 +108,9 @@ public class PostForumAdapter extends RecyclerView.Adapter<PostForumAdapter.View
     public void onBindViewHolder(@NonNull PostForumAdapter.ViewHolder holder, int position) {
         PostForum post = lista.get(position);
 
-        holder.usuario.setText(post.getAutorNome());
-        holder.mensagem.setText(post.getMensagem());
+        holder.usuario.setText(textoSeguro(post.getAutorNome(), "Usuário"));
+        holder.textoTituloPost.setText(textoSeguro(post.getTitulo(), "Sem título"));
+        holder.mensagem.setText(textoSeguro(post.getMensagem(), ""));
         holder.textoTempoPostagem.setText("· " + post.getTempoPostagem());
         holder.textoLikes.setText(String.valueOf(post.getLikes()));
         holder.textoDislikes.setText(String.valueOf(post.getDislikes()));
@@ -124,13 +127,24 @@ public class PostForumAdapter extends RecyclerView.Adapter<PostForumAdapter.View
         holder.botaoOpcoesPost.setVisibility(ehAutor ? View.VISIBLE : View.GONE);
         holder.botaoOpcoesPost.setOnClickListener(v -> abrirMenuPost(v, post));
 
+        if (!modoCompleto) {
+            holder.textoTituloPost.setMaxLines(2);
+            holder.mensagem.setMaxLines(2);
+        } else {
+            holder.textoTituloPost.setMaxLines(3);
+            holder.mensagem.setMaxLines(Integer.MAX_VALUE);
+        }
+
         atualizarEstadoVisualReacoes(holder, post);
 
         holder.botaoLikeContainer.setOnClickListener(v -> {
             if (!sessionManager.estaLogado()) {
-                Toast.makeText(context, "Você não entrou em sua conta", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Entre em uma conta para interagir.", Toast.LENGTH_SHORT).show();
                 return;
             }
+
+            if (!v.isEnabled()) return;
+            v.setEnabled(false);
 
             animarClique(holder.botaoLikeContainer);
 
@@ -144,13 +158,18 @@ public class PostForumAdapter extends RecyclerView.Adapter<PostForumAdapter.View
                     notifyItemChanged(posicao);
                 }
             }
+
+            v.postDelayed(() -> v.setEnabled(true), 250);
         });
 
         holder.botaoDislikeContainer.setOnClickListener(v -> {
             if (!sessionManager.estaLogado()) {
-                Toast.makeText(context, "Você não entrou em sua conta", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Entre em uma conta para interagir.", Toast.LENGTH_SHORT).show();
                 return;
             }
+
+            if (!v.isEnabled()) return;
+            v.setEnabled(false);
 
             animarClique(holder.botaoDislikeContainer);
 
@@ -164,6 +183,8 @@ public class PostForumAdapter extends RecyclerView.Adapter<PostForumAdapter.View
                     notifyItemChanged(posicao);
                 }
             }
+
+            v.postDelayed(() -> v.setEnabled(true), 250);
         });
 
         holder.botaoRespostas.setOnClickListener(v -> {
@@ -254,12 +275,12 @@ public class PostForumAdapter extends RecyclerView.Adapter<PostForumAdapter.View
         popupMenu.setOnMenuItemClickListener(item -> {
             String titulo = item.getTitle().toString();
 
-            if (titulo.equals("Editar")) {
+            if ("Editar".equals(titulo)) {
                 abrirDialogEditarPost(post);
                 return true;
             }
 
-            if (titulo.equals("Excluir")) {
+            if ("Excluir".equals(titulo)) {
                 confirmarExclusaoPost(post);
                 return true;
             }
@@ -271,30 +292,53 @@ public class PostForumAdapter extends RecyclerView.Adapter<PostForumAdapter.View
     }
 
     private void abrirDialogEditarPost(PostForum post) {
-        EditText input = new EditText(context);
-        input.setText(post.getMensagem());
-        input.setMinLines(3);
-        input.setPadding(40, 30, 40, 30);
+        LinearLayout container = new LinearLayout(context);
+        container.setOrientation(LinearLayout.VERTICAL);
+        container.setPadding(40, 24, 40, 8);
+
+        EditText inputTitulo = new EditText(context);
+        inputTitulo.setHint("Título");
+        inputTitulo.setText(textoSeguro(post.getTitulo(), ""));
+        inputTitulo.setFilters(new InputFilter[]{
+                new InputFilter.LengthFilter(ForumLimits.MAX_TITULO_POST)
+        });
+
+        EditText inputMensagem = new EditText(context);
+        inputMensagem.setHint("Mensagem");
+        inputMensagem.setText(textoSeguro(post.getMensagem(), ""));
+        inputMensagem.setMinLines(4);
+        inputMensagem.setFilters(new InputFilter[]{
+                new InputFilter.LengthFilter(ForumLimits.MAX_TEXTO_POST)
+        });
+
+        container.addView(inputTitulo);
+        container.addView(inputMensagem);
 
         new AlertDialog.Builder(context)
                 .setTitle("Editar post")
-                .setView(input)
+                .setView(container)
                 .setNegativeButton("Cancelar", null)
                 .setPositiveButton("Salvar", (dialog, which) -> {
-                    String novaMensagem = input.getText().toString().trim();
+                    String novoTitulo = InputSecurityUtils.sanitizeUserText(inputTitulo.getText().toString());
+                    String novaMensagem = InputSecurityUtils.sanitizeUserText(inputMensagem.getText().toString());
 
-                    if (novaMensagem.isEmpty()) {
-                        Toast.makeText(context, "Digite uma mensagem", Toast.LENGTH_SHORT).show();
+                    if (InputSecurityUtils.isNullOrBlank(novoTitulo)) {
+                        Toast.makeText(context, "Digite um título.", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
-                    boolean sucesso = forumStorage.editarPost(post.getId(), novaMensagem);
+                    if (InputSecurityUtils.isNullOrBlank(novaMensagem)) {
+                        Toast.makeText(context, "Digite uma mensagem.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    boolean sucesso = forumStorage.editarPost(post.getId(), novoTitulo, novaMensagem);
 
                     if (sucesso) {
-                        Toast.makeText(context, "Post editado com sucesso", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Post editado com sucesso.", Toast.LENGTH_SHORT).show();
                         atualizarListaCompleta();
                     } else {
-                        Toast.makeText(context, "Erro ao editar post", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Não foi possível editar o post.", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .show();
@@ -309,10 +353,10 @@ public class PostForumAdapter extends RecyclerView.Adapter<PostForumAdapter.View
                     boolean sucesso = forumStorage.excluirPost(post.getId());
 
                     if (sucesso) {
-                        Toast.makeText(context, "Post excluído com sucesso", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Post excluído com sucesso.", Toast.LENGTH_SHORT).show();
                         atualizarListaCompleta();
                     } else {
-                        Toast.makeText(context, "Erro ao excluir post", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Erro ao excluir post.", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .show();
@@ -333,6 +377,11 @@ public class PostForumAdapter extends RecyclerView.Adapter<PostForumAdapter.View
     private void atualizarListaCompleta() {
         List<PostForum> novosPosts = forumStorage.carregarPosts();
         atualizarDados(novosPosts);
+    }
+
+    private String textoSeguro(String valor, String fallback) {
+        String texto = InputSecurityUtils.sanitizeUserText(valor);
+        return texto.isEmpty() ? fallback : texto;
     }
 
     @Override

@@ -3,7 +3,10 @@ package com.example.mapadointercambista.model.forum;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.example.mapadointercambista.util.ForumLimits;
+import com.example.mapadointercambista.util.InputSecurityUtils;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
@@ -26,7 +29,8 @@ public class ForumStorage {
     }
 
     public synchronized void salvarPosts(List<PostForum> posts) {
-        cachePosts = posts != null ? new ArrayList<>(posts) : new ArrayList<>();
+        List<PostForum> normalizados = normalizarPosts(posts);
+        cachePosts = new ArrayList<>(normalizados);
         prefs.edit().putString(KEY_POSTS, gson.toJson(cachePosts)).apply();
     }
 
@@ -36,16 +40,21 @@ public class ForumStorage {
         }
 
         String json = prefs.getString(KEY_POSTS, null);
-        if (json == null) {
+        if (json == null || json.trim().isEmpty()) {
             cachePosts = new ArrayList<>();
             return new ArrayList<>();
         }
 
-        Type type = new TypeToken<List<PostForum>>() {}.getType();
-        List<PostForum> posts = gson.fromJson(json, type);
-        cachePosts = posts != null ? posts : new ArrayList<>();
-
-        return new ArrayList<>(cachePosts);
+        try {
+            Type type = new TypeToken<List<PostForum>>() {}.getType();
+            List<PostForum> posts = gson.fromJson(json, type);
+            cachePosts = normalizarPosts(posts);
+            return new ArrayList<>(cachePosts);
+        } catch (JsonSyntaxException | IllegalStateException e) {
+            cachePosts = new ArrayList<>();
+            prefs.edit().remove(KEY_POSTS).apply();
+            return new ArrayList<>();
+        }
     }
 
     public synchronized void limparPosts() {
@@ -53,18 +62,40 @@ public class ForumStorage {
         prefs.edit().remove(KEY_POSTS).apply();
     }
 
-    public synchronized void adicionarPost(PostForum novoPost) {
+    public synchronized boolean adicionarPost(PostForum novoPost) {
+        if (!isPostValido(novoPost)) {
+            return false;
+        }
+
         List<PostForum> posts = carregarPosts();
-        posts.add(0, novoPost);
+        posts.add(0, sanitizarPost(novoPost));
         salvarPosts(posts);
+        return true;
     }
 
-    public synchronized boolean editarPost(String postId, String novaMensagem) {
+    public synchronized boolean editarPost(String postId, String novoTitulo, String novaMensagem) {
+        if (InputSecurityUtils.isNullOrBlank(postId)) {
+            return false;
+        }
+
+        String titulo = InputSecurityUtils.sanitizeUserText(novoTitulo);
+        String mensagem = InputSecurityUtils.sanitizeUserText(novaMensagem);
+
+        if (InputSecurityUtils.isNullOrBlank(titulo)
+                || InputSecurityUtils.isNullOrBlank(mensagem)
+                || InputSecurityUtils.exceedsMaxLength(titulo, ForumLimits.MAX_TITULO_POST)
+                || InputSecurityUtils.exceedsMaxLength(mensagem, ForumLimits.MAX_TEXTO_POST)
+                || InputSecurityUtils.containsSuspiciousPattern(titulo)
+                || InputSecurityUtils.containsSuspiciousPattern(mensagem)) {
+            return false;
+        }
+
         List<PostForum> posts = carregarPosts();
 
         for (PostForum post : posts) {
-            if (post.getId().equals(postId)) {
-                post.setMensagem(novaMensagem);
+            if (postId.equals(post.getId())) {
+                post.setTitulo(titulo);
+                post.setMensagem(mensagem);
                 salvarPosts(posts);
                 return true;
             }
@@ -74,10 +105,14 @@ public class ForumStorage {
     }
 
     public synchronized boolean excluirPost(String postId) {
+        if (InputSecurityUtils.isNullOrBlank(postId)) {
+            return false;
+        }
+
         List<PostForum> posts = carregarPosts();
 
         for (int i = 0; i < posts.size(); i++) {
-            if (posts.get(i).getId().equals(postId)) {
+            if (postId.equals(posts.get(i).getId())) {
                 posts.remove(i);
                 salvarPosts(posts);
                 return true;
@@ -88,15 +123,24 @@ public class ForumStorage {
     }
 
     public synchronized boolean adicionarResposta(String postId, RespostaForum novaResposta) {
+        if (InputSecurityUtils.isNullOrBlank(postId) || !isRespostaValida(novaResposta)) {
+            return false;
+        }
+
         List<PostForum> posts = carregarPosts();
 
         for (PostForum post : posts) {
-            if (post.getId().equals(postId)) {
+            if (postId.equals(post.getId())) {
                 List<RespostaForum> respostas = post.getRespostas();
                 if (respostas == null) {
                     respostas = new ArrayList<>();
                 }
-                respostas.add(novaResposta);
+
+                if (respostas.size() >= ForumLimits.MAX_RESPOSTAS_POR_POST) {
+                    return false;
+                }
+
+                respostas.add(sanitizarResposta(novaResposta));
                 post.setRespostas(respostas);
                 salvarPosts(posts);
                 return true;
@@ -107,26 +151,38 @@ public class ForumStorage {
     }
 
     public synchronized boolean adicionarRespostaFilha(String postId, String respostaPaiId, RespostaForum novaResposta) {
+        if (InputSecurityUtils.isNullOrBlank(postId)
+                || InputSecurityUtils.isNullOrBlank(respostaPaiId)
+                || !isRespostaValida(novaResposta)) {
+            return false;
+        }
+
         List<PostForum> posts = carregarPosts();
 
         for (PostForum post : posts) {
-            if (post.getId().equals(postId)) {
+            if (postId.equals(post.getId())) {
                 List<RespostaForum> respostas = post.getRespostas();
 
-                if (respostas == null) {
+                if (respostas == null || respostas.isEmpty()) {
+                    return false;
+                }
+
+                if (respostas.size() >= ForumLimits.MAX_RESPOSTAS_POR_POST) {
                     return false;
                 }
 
                 for (int i = 0; i < respostas.size(); i++) {
                     RespostaForum respostaAtual = respostas.get(i);
 
-                    if (respostaAtual.getId().equals(respostaPaiId)) {
+                    if (respostaPaiId.equals(respostaAtual.getId())) {
+                        RespostaForum base = sanitizarResposta(novaResposta);
+
                         RespostaForum respostaFilha = new RespostaForum(
-                                novaResposta.getAutorNome(),
-                                novaResposta.getAutorEmail(),
-                                novaResposta.getAutorFotoUri(),
-                                novaResposta.getMensagem(),
-                                novaResposta.getCriadoEm(),
+                                base.getAutorNome(),
+                                base.getAutorEmail(),
+                                base.getAutorFotoUri(),
+                                base.getMensagem(),
+                                base.getCriadoEm(),
                                 respostaAtual.getNivel() + 1,
                                 false,
                                 false
@@ -153,10 +209,22 @@ public class ForumStorage {
     }
 
     public synchronized boolean editarResposta(String postId, String respostaId, String novaMensagem) {
+        if (InputSecurityUtils.isNullOrBlank(postId) || InputSecurityUtils.isNullOrBlank(respostaId)) {
+            return false;
+        }
+
+        String mensagem = InputSecurityUtils.sanitizeUserText(novaMensagem);
+
+        if (InputSecurityUtils.isNullOrBlank(mensagem)
+                || InputSecurityUtils.exceedsMaxLength(mensagem, ForumLimits.MAX_RESPOSTA)
+                || InputSecurityUtils.containsSuspiciousPattern(mensagem)) {
+            return false;
+        }
+
         List<PostForum> posts = carregarPosts();
 
         for (PostForum post : posts) {
-            if (post.getId().equals(postId)) {
+            if (postId.equals(post.getId())) {
                 List<RespostaForum> respostas = post.getRespostas();
 
                 if (respostas == null) {
@@ -164,8 +232,8 @@ public class ForumStorage {
                 }
 
                 for (RespostaForum resposta : respostas) {
-                    if (resposta.getId().equals(respostaId)) {
-                        resposta.setMensagem(novaMensagem);
+                    if (respostaId.equals(resposta.getId())) {
+                        resposta.setMensagem(mensagem);
                         salvarPosts(posts);
                         return true;
                     }
@@ -177,10 +245,14 @@ public class ForumStorage {
     }
 
     public synchronized boolean excluirResposta(String postId, String respostaId) {
+        if (InputSecurityUtils.isNullOrBlank(postId) || InputSecurityUtils.isNullOrBlank(respostaId)) {
+            return false;
+        }
+
         List<PostForum> posts = carregarPosts();
 
         for (PostForum post : posts) {
-            if (post.getId().equals(postId)) {
+            if (postId.equals(post.getId())) {
                 List<RespostaForum> respostas = post.getRespostas();
 
                 if (respostas == null) {
@@ -190,7 +262,7 @@ public class ForumStorage {
                 for (int i = 0; i < respostas.size(); i++) {
                     RespostaForum resposta = respostas.get(i);
 
-                    if (resposta.getId().equals(respostaId)) {
+                    if (respostaId.equals(resposta.getId())) {
                         int nivelPai = resposta.getNivel();
 
                         respostas.remove(i);
@@ -209,6 +281,154 @@ public class ForumStorage {
         }
 
         return false;
+    }
+
+    public synchronized boolean toggleLikePost(String postId, String emailUsuario) {
+        if (InputSecurityUtils.isNullOrBlank(postId) || InputSecurityUtils.isNullOrBlank(emailUsuario)) {
+            return false;
+        }
+
+        List<PostForum> posts = carregarPosts();
+
+        for (PostForum post : posts) {
+            if (postId.equals(post.getId())) {
+                List<String> likes = garantirLista(post.getUsuariosLike());
+                List<String> dislikes = garantirLista(post.getUsuariosDislike());
+
+                if (likes.contains(emailUsuario)) {
+                    likes.remove(emailUsuario);
+                } else {
+                    likes.add(emailUsuario);
+                    dislikes.remove(emailUsuario);
+                }
+
+                salvarPosts(posts);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public synchronized boolean toggleDislikePost(String postId, String emailUsuario) {
+        if (InputSecurityUtils.isNullOrBlank(postId) || InputSecurityUtils.isNullOrBlank(emailUsuario)) {
+            return false;
+        }
+
+        List<PostForum> posts = carregarPosts();
+
+        for (PostForum post : posts) {
+            if (postId.equals(post.getId())) {
+                List<String> likes = garantirLista(post.getUsuariosLike());
+                List<String> dislikes = garantirLista(post.getUsuariosDislike());
+
+                if (dislikes.contains(emailUsuario)) {
+                    dislikes.remove(emailUsuario);
+                } else {
+                    dislikes.add(emailUsuario);
+                    likes.remove(emailUsuario);
+                }
+
+                salvarPosts(posts);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public synchronized boolean toggleLikeResposta(String postId, String respostaId, String emailUsuario) {
+        if (InputSecurityUtils.isNullOrBlank(postId)
+                || InputSecurityUtils.isNullOrBlank(respostaId)
+                || InputSecurityUtils.isNullOrBlank(emailUsuario)) {
+            return false;
+        }
+
+        List<PostForum> posts = carregarPosts();
+
+        for (PostForum post : posts) {
+            if (postId.equals(post.getId())) {
+                List<RespostaForum> respostas = post.getRespostas();
+
+                if (respostas == null) {
+                    return false;
+                }
+
+                for (RespostaForum resposta : respostas) {
+                    if (respostaId.equals(resposta.getId())) {
+                        List<String> likes = garantirLista(resposta.getUsuariosLike());
+                        List<String> dislikes = garantirLista(resposta.getUsuariosDislike());
+
+                        if (likes.contains(emailUsuario)) {
+                            likes.remove(emailUsuario);
+                        } else {
+                            likes.add(emailUsuario);
+                            dislikes.remove(emailUsuario);
+                        }
+
+                        salvarPosts(posts);
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public synchronized boolean toggleDislikeResposta(String postId, String respostaId, String emailUsuario) {
+        if (InputSecurityUtils.isNullOrBlank(postId)
+                || InputSecurityUtils.isNullOrBlank(respostaId)
+                || InputSecurityUtils.isNullOrBlank(emailUsuario)) {
+            return false;
+        }
+
+        List<PostForum> posts = carregarPosts();
+
+        for (PostForum post : posts) {
+            if (postId.equals(post.getId())) {
+                List<RespostaForum> respostas = post.getRespostas();
+
+                if (respostas == null) {
+                    return false;
+                }
+
+                for (RespostaForum resposta : respostas) {
+                    if (respostaId.equals(resposta.getId())) {
+                        List<String> likes = garantirLista(resposta.getUsuariosLike());
+                        List<String> dislikes = garantirLista(resposta.getUsuariosDislike());
+
+                        if (dislikes.contains(emailUsuario)) {
+                            dislikes.remove(emailUsuario);
+                        } else {
+                            dislikes.add(emailUsuario);
+                            likes.remove(emailUsuario);
+                        }
+
+                        salvarPosts(posts);
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public synchronized PostForum buscarPostPorId(String postId) {
+        if (InputSecurityUtils.isNullOrBlank(postId)) {
+            return null;
+        }
+
+        List<PostForum> posts = carregarPosts();
+
+        for (PostForum post : posts) {
+            if (postId.equals(post.getId())) {
+                return post;
+            }
+        }
+
+        return null;
     }
 
     private void reajustarTemRespostas(List<RespostaForum> respostas) {
@@ -231,127 +451,104 @@ public class ForumStorage {
         }
     }
 
-    public synchronized boolean toggleLikePost(String postId, String emailUsuario) {
-        List<PostForum> posts = carregarPosts();
+    private List<PostForum> normalizarPosts(List<PostForum> posts) {
+        List<PostForum> listaNormalizada = new ArrayList<>();
 
-        for (PostForum post : posts) {
-            if (post.getId().equals(postId)) {
-                List<String> likes = post.getUsuariosLike();
-                List<String> dislikes = post.getUsuariosDislike();
-
-                if (likes.contains(emailUsuario)) {
-                    likes.remove(emailUsuario);
-                } else {
-                    likes.add(emailUsuario);
-                    dislikes.remove(emailUsuario);
-                }
-
-                salvarPosts(posts);
-                return true;
-            }
+        if (posts == null) {
+            return listaNormalizada;
         }
 
-        return false;
+        for (PostForum post : posts) {
+            if (post == null) {
+                continue;
+            }
+
+            post.setTitulo(InputSecurityUtils.sanitizeUserText(post.getTitulo()));
+            post.setMensagem(InputSecurityUtils.sanitizeUserText(post.getMensagem()));
+
+            if (post.getRespostas() == null) {
+                post.setRespostas(new ArrayList<>());
+            }
+
+            for (RespostaForum resposta : post.getRespostas()) {
+                if (resposta != null) {
+                    resposta.setMensagem(InputSecurityUtils.sanitizeUserText(resposta.getMensagem()));
+                }
+            }
+
+            listaNormalizada.add(post);
+        }
+
+        return listaNormalizada;
     }
 
-    public synchronized boolean toggleDislikePost(String postId, String emailUsuario) {
-        List<PostForum> posts = carregarPosts();
-
-        for (PostForum post : posts) {
-            if (post.getId().equals(postId)) {
-                List<String> likes = post.getUsuariosLike();
-                List<String> dislikes = post.getUsuariosDislike();
-
-                if (dislikes.contains(emailUsuario)) {
-                    dislikes.remove(emailUsuario);
-                } else {
-                    dislikes.add(emailUsuario);
-                    likes.remove(emailUsuario);
-                }
-
-                salvarPosts(posts);
-                return true;
-            }
+    private boolean isPostValido(PostForum post) {
+        if (post == null) {
+            return false;
         }
 
-        return false;
+        String titulo = InputSecurityUtils.sanitizeUserText(post.getTitulo());
+        String mensagem = InputSecurityUtils.sanitizeUserText(post.getMensagem());
+
+        return !InputSecurityUtils.isNullOrBlank(titulo)
+                && !InputSecurityUtils.isNullOrBlank(mensagem)
+                && !InputSecurityUtils.exceedsMaxLength(titulo, ForumLimits.MAX_TITULO_POST)
+                && !InputSecurityUtils.exceedsMaxLength(mensagem, ForumLimits.MAX_TEXTO_POST)
+                && !InputSecurityUtils.containsSuspiciousPattern(titulo)
+                && !InputSecurityUtils.containsSuspiciousPattern(mensagem);
     }
 
-    public synchronized boolean toggleLikeResposta(String postId, String respostaId, String emailUsuario) {
-        List<PostForum> posts = carregarPosts();
-
-        for (PostForum post : posts) {
-            if (post.getId().equals(postId)) {
-                List<RespostaForum> respostas = post.getRespostas();
-
-                if (respostas == null) {
-                    return false;
-                }
-
-                for (RespostaForum resposta : respostas) {
-                    if (resposta.getId().equals(respostaId)) {
-                        List<String> likes = resposta.getUsuariosLike();
-                        List<String> dislikes = resposta.getUsuariosDislike();
-
-                        if (likes.contains(emailUsuario)) {
-                            likes.remove(emailUsuario);
-                        } else {
-                            likes.add(emailUsuario);
-                            dislikes.remove(emailUsuario);
-                        }
-
-                        salvarPosts(posts);
-                        return true;
-                    }
-                }
-            }
+    private boolean isRespostaValida(RespostaForum resposta) {
+        if (resposta == null) {
+            return false;
         }
 
-        return false;
+        String mensagem = InputSecurityUtils.sanitizeUserText(resposta.getMensagem());
+
+        return !InputSecurityUtils.isNullOrBlank(mensagem)
+                && !InputSecurityUtils.exceedsMaxLength(mensagem, ForumLimits.MAX_RESPOSTA)
+                && !InputSecurityUtils.containsSuspiciousPattern(mensagem);
     }
 
-    public synchronized boolean toggleDislikeResposta(String postId, String respostaId, String emailUsuario) {
-        List<PostForum> posts = carregarPosts();
-
-        for (PostForum post : posts) {
-            if (post.getId().equals(postId)) {
-                List<RespostaForum> respostas = post.getRespostas();
-
-                if (respostas == null) {
-                    return false;
-                }
-
-                for (RespostaForum resposta : respostas) {
-                    if (resposta.getId().equals(respostaId)) {
-                        List<String> likes = resposta.getUsuariosLike();
-                        List<String> dislikes = resposta.getUsuariosDislike();
-
-                        if (dislikes.contains(emailUsuario)) {
-                            dislikes.remove(emailUsuario);
-                        } else {
-                            dislikes.add(emailUsuario);
-                            likes.remove(emailUsuario);
-                        }
-
-                        salvarPosts(posts);
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
+    private PostForum sanitizarPost(PostForum post) {
+        return new PostForum(
+                post.getId(),
+                limitar(post.getAutorNome(), ForumLimits.MAX_NOME_AUTOR),
+                limitar(post.getAutorEmail(), ForumLimits.MAX_EMAIL),
+                limitar(post.getAutorFotoUri(), ForumLimits.MAX_FOTO_URI),
+                limitar(InputSecurityUtils.sanitizeUserText(post.getTitulo()), ForumLimits.MAX_TITULO_POST),
+                limitar(InputSecurityUtils.sanitizeUserText(post.getMensagem()), ForumLimits.MAX_TEXTO_POST),
+                post.getCriadoEm(),
+                garantirLista(post.getUsuariosLike()),
+                garantirLista(post.getUsuariosDislike()),
+                post.getRespostas() != null ? post.getRespostas() : new ArrayList<>()
+        );
     }
 
-    public synchronized PostForum buscarPostPorId(String postId) {
-        List<PostForum> posts = carregarPosts();
+    private RespostaForum sanitizarResposta(RespostaForum resposta) {
+        return new RespostaForum(
+                resposta.getId(),
+                limitar(resposta.getAutorNome(), ForumLimits.MAX_NOME_AUTOR),
+                limitar(resposta.getAutorEmail(), ForumLimits.MAX_EMAIL),
+                limitar(resposta.getAutorFotoUri(), ForumLimits.MAX_FOTO_URI),
+                limitar(InputSecurityUtils.sanitizeUserText(resposta.getMensagem()), ForumLimits.MAX_RESPOSTA),
+                resposta.getCriadoEm(),
+                resposta.getNivel(),
+                resposta.isVisivel(),
+                resposta.isTemRespostas(),
+                garantirLista(resposta.getUsuariosLike()),
+                garantirLista(resposta.getUsuariosDislike())
+        );
+    }
 
-        for (PostForum post : posts) {
-            if (post.getId().equals(postId)) {
-                return post;
-            }
+    private List<String> garantirLista(List<String> lista) {
+        return lista != null ? lista : new ArrayList<>();
+    }
+
+    private String limitar(String valor, int max) {
+        if (valor == null) {
+            return "";
         }
-
-        return null;
+        return valor.length() > max ? valor.substring(0, max) : valor;
     }
 }

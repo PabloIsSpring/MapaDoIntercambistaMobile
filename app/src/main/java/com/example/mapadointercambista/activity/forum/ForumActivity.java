@@ -1,5 +1,6 @@
 package com.example.mapadointercambista.activity.forum;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -23,6 +24,7 @@ import com.example.mapadointercambista.model.forum.ForumStorage;
 import com.example.mapadointercambista.model.forum.PostForum;
 import com.example.mapadointercambista.model.user.SessionManager;
 import com.example.mapadointercambista.navigation.NavigationHelper;
+import com.example.mapadointercambista.util.InputSecurityUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
@@ -65,6 +67,7 @@ public class ForumActivity extends AppCompatActivity {
         listaTodosForuns.setLayoutManager(new LinearLayoutManager(this));
         listaTodosForuns.setHasFixedSize(false);
         listaTodosForuns.setItemViewCacheSize(10);
+        listaTodosForuns.setItemAnimator(null);
 
         adapter = new PostForumAdapter(this, postsExibidos, true);
         listaTodosForuns.setAdapter(adapter);
@@ -99,11 +102,11 @@ public class ForumActivity extends AppCompatActivity {
 
         findViewById(R.id.botaoNovoForum).setOnClickListener(v -> {
             if (!sessionManager.estaLogado()) {
-                Toast.makeText(this, "Entre em sua conta para publicar", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Entre em uma conta para publicar.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            startActivity(new android.content.Intent(this, NovaPublicacaoActivity.class));
+            startActivity(new Intent(this, NovaPublicacaoActivity.class));
         });
 
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavigation);
@@ -115,6 +118,14 @@ public class ForumActivity extends AppCompatActivity {
         super.onResume();
         aplicarModoImersivo();
         sincronizarPosts();
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            aplicarModoImersivo();
+        }
     }
 
     private void aplicarModoImersivo() {
@@ -151,11 +162,12 @@ public class ForumActivity extends AppCompatActivity {
                 PostForum antigo = postsOriginais.get(i);
                 PostForum novo = atualizados.get(i);
 
-                if (!antigo.getId().equals(novo.getId())
+                if (!textoSeguro(antigo.getId()).equals(textoSeguro(novo.getId()))
                         || antigo.getLikes() != novo.getLikes()
                         || antigo.getDislikes() != novo.getDislikes()
                         || antigo.getQuantidadeRespostas() != novo.getQuantidadeRespostas()
-                        || !antigo.getMensagem().equals(novo.getMensagem())) {
+                        || !textoSeguro(antigo.getTitulo()).equals(textoSeguro(novo.getTitulo()))
+                        || !textoSeguro(antigo.getMensagem()).equals(textoSeguro(novo.getMensagem()))) {
                     mudou = true;
                     break;
                 }
@@ -173,13 +185,17 @@ public class ForumActivity extends AppCompatActivity {
 
     private void aplicarBuscaEOrdenacao() {
         List<PostForum> filtrados = new ArrayList<>();
-        String busca = textoBusca != null ? textoBusca.toLowerCase() : "";
+        String busca = textoSeguro(textoBusca).toLowerCase();
 
         for (PostForum post : postsOriginais) {
-            String autor = post.getAutorNome() != null ? post.getAutorNome().toLowerCase() : "";
-            String mensagem = post.getMensagem() != null ? post.getMensagem().toLowerCase() : "";
+            String autor = textoSeguro(post.getAutorNome()).toLowerCase();
+            String titulo = textoSeguro(post.getTitulo()).toLowerCase();
+            String mensagem = textoSeguro(post.getMensagem()).toLowerCase();
 
-            if (busca.isEmpty() || autor.contains(busca) || mensagem.contains(busca)) {
+            if (busca.isEmpty()
+                    || autor.contains(busca)
+                    || titulo.contains(busca)
+                    || mensagem.contains(busca)) {
                 filtrados.add(post);
             }
         }
@@ -191,9 +207,21 @@ public class ForumActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
 
         int quantidade = filtrados.size();
-        textoResultadosForum.setText(quantidade == 1 ? "1 resultado" : quantidade + " resultados");
-        containerVazioForum.setVisibility(quantidade == 0 ? View.VISIBLE : View.GONE);
-        listaTodosForuns.setVisibility(quantidade == 0 ? View.GONE : View.VISIBLE);
+        textoResultadosForum.setText(
+                quantidade == 1
+                        ? "1 publicação encontrada"
+                        : quantidade + " publicações encontradas"
+        );
+
+        boolean vazio = quantidade == 0;
+        containerVazioForum.setVisibility(vazio ? View.VISIBLE : View.GONE);
+        listaTodosForuns.setVisibility(vazio ? View.GONE : View.VISIBLE);
+
+        if (vazio) {
+            textoVazioForum.setText(busca.isEmpty()
+                    ? "Ainda não existem publicações no fórum."
+                    : "Nenhuma publicação encontrada.");
+        }
     }
 
     private void ordenarLista(List<PostForum> lista) {
@@ -226,11 +254,9 @@ public class ForumActivity extends AppCompatActivity {
             case "curtidos":
                 radioCurtidos.setChecked(true);
                 break;
-
             case "respondidos":
                 radioRespondidos.setChecked(true);
                 break;
-
             case "recentes":
             default:
                 radioRecentes.setChecked(true);
@@ -258,5 +284,9 @@ public class ForumActivity extends AppCompatActivity {
         });
 
         dialog.show();
+    }
+
+    private String textoSeguro(String valor) {
+        return InputSecurityUtils.sanitizeUserText(valor);
     }
 }

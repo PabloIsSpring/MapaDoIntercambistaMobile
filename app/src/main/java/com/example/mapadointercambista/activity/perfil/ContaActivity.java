@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,11 +44,11 @@ public class ContaActivity extends AppCompatActivity {
     private ShapeableImageView imagemPerfilConta;
     private TextView textoNomeUsuarioConta;
     private TextView textoEmailUsuarioConta;
-    private TextView textoNomeCardConta;
-    private TextView textoEmailCardConta;
+    private TextView textoAlterarFoto;
     private TextView textoResumoFavoritosConta;
     private TextView textoVazioFavoritosConta;
-    private TextView textoAlterarFoto;
+    private TextView textoTituloSecaoConfiguracoes;
+    private TextView textoSubtituloHeroConta;
 
     private RecyclerView listaFavoritosConta;
 
@@ -55,11 +56,25 @@ public class ContaActivity extends AppCompatActivity {
     private MaterialButton botaoEntrarConta;
     private MaterialButton botaoCriarConta;
 
-    private View cardInfoConta;
-    private View cardFavoritosConta;
-    private View cardVisitanteConta;
     private View secaoAcoesVisitante;
     private View secaoAcoesLogado;
+    private View cardVisitanteConta;
+    private View cardFavoritosConta;
+    private View blocoConfiguracoesConta;
+
+    private LinearLayout atalhoFavoritos;
+    private LinearLayout atalhoConversas;
+    private LinearLayout atalhoEditarPerfil;
+
+    private LinearLayout itemIdioma;
+    private LinearLayout itemNotificacoes;
+    private LinearLayout itemLocalizacao;
+    private LinearLayout itemAcessibilidade;
+    private LinearLayout itemPrivacidade;
+    private LinearLayout itemSeguranca;
+    private LinearLayout itemSuporte;
+    private LinearLayout itemTermos;
+    private LinearLayout itemAdicionarConta;
 
     private DestinoAdapter favoritosAdapter;
     private final List<Destino> favoritosExibidos = new ArrayList<>();
@@ -143,11 +158,11 @@ public class ContaActivity extends AppCompatActivity {
         imagemPerfilConta = findViewById(R.id.imagemPerfilConta);
         textoNomeUsuarioConta = findViewById(R.id.textoNomeUsuarioConta);
         textoEmailUsuarioConta = findViewById(R.id.textoEmailUsuarioConta);
-        textoNomeCardConta = findViewById(R.id.textoNomeCardConta);
-        textoEmailCardConta = findViewById(R.id.textoEmailCardConta);
+        textoAlterarFoto = findViewById(R.id.textoAlterarFoto);
         textoResumoFavoritosConta = findViewById(R.id.textoResumoFavoritosConta);
         textoVazioFavoritosConta = findViewById(R.id.textoVazioFavoritosConta);
-        textoAlterarFoto = findViewById(R.id.textoAlterarFoto);
+        textoTituloSecaoConfiguracoes = findViewById(R.id.textoTituloSecaoConfiguracoes);
+        textoSubtituloHeroConta = findViewById(R.id.textoSubtituloHeroConta);
 
         listaFavoritosConta = findViewById(R.id.listaFavoritosConta);
 
@@ -155,11 +170,25 @@ public class ContaActivity extends AppCompatActivity {
         botaoEntrarConta = findViewById(R.id.botaoEntrarConta);
         botaoCriarConta = findViewById(R.id.botaoCriarConta);
 
-        cardInfoConta = findViewById(R.id.cardInfoConta);
-        cardFavoritosConta = findViewById(R.id.cardFavoritosConta);
-        cardVisitanteConta = findViewById(R.id.cardVisitanteConta);
         secaoAcoesVisitante = findViewById(R.id.secaoAcoesVisitante);
         secaoAcoesLogado = findViewById(R.id.secaoAcoesLogado);
+        cardVisitanteConta = findViewById(R.id.cardVisitanteConta);
+        cardFavoritosConta = findViewById(R.id.cardFavoritosConta);
+        blocoConfiguracoesConta = findViewById(R.id.blocoConfiguracoesConta);
+
+        atalhoFavoritos = findViewById(R.id.atalhoFavoritos);
+        atalhoConversas = findViewById(R.id.atalhoConversas);
+        atalhoEditarPerfil = findViewById(R.id.atalhoEditarPerfil);
+
+        itemIdioma = findViewById(R.id.itemIdioma);
+        itemNotificacoes = findViewById(R.id.itemNotificacoes);
+        itemLocalizacao = findViewById(R.id.itemLocalizacao);
+        itemAcessibilidade = findViewById(R.id.itemAcessibilidade);
+        itemPrivacidade = findViewById(R.id.itemPrivacidade);
+        itemSeguranca = findViewById(R.id.itemSeguranca);
+        itemSuporte = findViewById(R.id.itemSuporte);
+        itemTermos = findViewById(R.id.itemTermos);
+        itemAdicionarConta = findViewById(R.id.itemAdicionarConta);
     }
 
     private void configurarAcoes() {
@@ -192,6 +221,68 @@ public class ContaActivity extends AppCompatActivity {
             Toast.makeText(this, "Você saiu da conta", Toast.LENGTH_SHORT).show();
             atualizarInterface();
         });
+
+        atalhoFavoritos.setOnClickListener(v -> {
+            if (!sessionManager.estaLogado()) {
+                Toast.makeText(this, "Entre em uma conta para ver seus favoritos", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (favoritosExibidos.isEmpty()) {
+                Toast.makeText(this, "Você ainda não favoritou nenhum destino", Toast.LENGTH_SHORT).show();
+            } else {
+                listaFavoritosConta.smoothScrollToPosition(0);
+                Toast.makeText(this, "Seus favoritos estão logo abaixo", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        atalhoConversas.setOnClickListener(v ->
+                Toast.makeText(this, "Suas conversas ficarão disponíveis em breve", Toast.LENGTH_SHORT).show()
+        );
+
+        atalhoEditarPerfil.setOnClickListener(v -> {
+            if (!sessionManager.estaLogado()) {
+                Toast.makeText(this, "Entre em uma conta para editar seu perfil", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            selecionarFoto();
+        });
+
+        itemIdioma.setOnClickListener(v ->
+                Toast.makeText(this, "Idioma: Português - Brasil", Toast.LENGTH_SHORT).show()
+        );
+
+        itemNotificacoes.setOnClickListener(v ->
+                Toast.makeText(this, "Configuração de notificações em breve", Toast.LENGTH_SHORT).show()
+        );
+
+        itemLocalizacao.setOnClickListener(v ->
+                Toast.makeText(this, "Configuração de localização em breve", Toast.LENGTH_SHORT).show()
+        );
+
+        itemAcessibilidade.setOnClickListener(v ->
+                Toast.makeText(this, "Opções de acessibilidade em breve", Toast.LENGTH_SHORT).show()
+        );
+
+        itemPrivacidade.setOnClickListener(v ->
+                Toast.makeText(this, "Políticas de privacidade em breve", Toast.LENGTH_SHORT).show()
+        );
+
+        itemSeguranca.setOnClickListener(v ->
+                Toast.makeText(this, "Configurações de segurança em breve", Toast.LENGTH_SHORT).show()
+        );
+
+        itemSuporte.setOnClickListener(v ->
+                Toast.makeText(this, "Central de suporte em breve", Toast.LENGTH_SHORT).show()
+        );
+
+        itemTermos.setOnClickListener(v ->
+                Toast.makeText(this, "Termos de uso em breve", Toast.LENGTH_SHORT).show()
+        );
+
+        itemAdicionarConta.setOnClickListener(v ->
+                Toast.makeText(this, "Suporte para múltiplas contas em breve", Toast.LENGTH_SHORT).show()
+        );
     }
 
     private void configurarListaFavoritos() {
@@ -221,9 +312,12 @@ public class ContaActivity extends AppCompatActivity {
     private void aplicarEstadoLogado() {
         secaoAcoesVisitante.setVisibility(View.GONE);
         secaoAcoesLogado.setVisibility(View.VISIBLE);
-        cardInfoConta.setVisibility(View.VISIBLE);
-        cardFavoritosConta.setVisibility(View.VISIBLE);
         cardVisitanteConta.setVisibility(View.GONE);
+        cardFavoritosConta.setVisibility(View.VISIBLE);
+        blocoConfiguracoesConta.setVisibility(View.VISIBLE);
+
+        textoTituloSecaoConfiguracoes.setText("Configurações");
+        textoSubtituloHeroConta.setText("Carteirinha do Intercambista");
 
         preencherDadosUsuario();
         carregarFavoritos();
@@ -232,13 +326,15 @@ public class ContaActivity extends AppCompatActivity {
     private void aplicarEstadoVisitante() {
         secaoAcoesVisitante.setVisibility(View.VISIBLE);
         secaoAcoesLogado.setVisibility(View.GONE);
-        cardInfoConta.setVisibility(View.GONE);
-        cardFavoritosConta.setVisibility(View.GONE);
         cardVisitanteConta.setVisibility(View.VISIBLE);
+        cardFavoritosConta.setVisibility(View.GONE);
+        blocoConfiguracoesConta.setVisibility(View.VISIBLE);
 
         textoNomeUsuarioConta.setText("Visitante");
-        textoEmailUsuarioConta.setText("Entre em uma conta para interagir, responder e favoritar destinos");
+        textoEmailUsuarioConta.setText("Explore o app livremente e entre em uma conta para interagir");
         textoAlterarFoto.setText("Faça login para personalizar seu perfil");
+        textoSubtituloHeroConta.setText("Mapa do Intercambista");
+        textoTituloSecaoConfiguracoes.setText("Explorar e configurações");
 
         Glide.with(this).clear(imagemPerfilConta);
         imagemPerfilConta.setImageDrawable(null);
@@ -276,8 +372,6 @@ public class ContaActivity extends AppCompatActivity {
 
         textoNomeUsuarioConta.setText(nome != null && !nome.isEmpty() ? nome : "Usuário");
         textoEmailUsuarioConta.setText(email != null ? email : "");
-        textoNomeCardConta.setText(nome != null && !nome.isEmpty() ? nome : "Usuário");
-        textoEmailCardConta.setText(email != null ? email : "");
         textoAlterarFoto.setText("Toque para alterar a foto");
 
         Glide.with(this).clear(imagemPerfilConta);

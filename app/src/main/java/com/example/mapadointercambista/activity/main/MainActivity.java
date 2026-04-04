@@ -269,6 +269,7 @@ public class MainActivity extends AppCompatActivity {
         listaForum.setLayoutManager(new LinearLayoutManager(this));
         listaForum.setHasFixedSize(false);
         listaForum.setItemViewCacheSize(8);
+        listaForum.setItemAnimator(null);
 
         adapterForum = new PostForumAdapter(this, postsHome, false);
         listaForum.setAdapter(adapterForum);
@@ -307,7 +308,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
         postsHome.clear();
-        postsHome.addAll(posts);
+
+        int limite = Math.min(posts.size(), 3);
+        for (int i = 0; i < limite; i++) {
+            postsHome.add(posts.get(i));
+        }
+
         adapterForum.notifyDataSetChanged();
     }
 
