@@ -117,10 +117,14 @@
                 android:id="@+id/botaoLikeResposta"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="@drawable/bg_action_chip_soft"
                 android:gravity="center_vertical"
                 android:minHeight="30dp"
                 android:orientation="horizontal"
-                android:paddingEnd="14dp">
+                android:paddingStart="10dp"
+                android:paddingTop="6dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="6dp">
 
                 <ImageView
                     android:id="@+id/iconeLikeResposta"
@@ -143,10 +147,15 @@
                 android:id="@+id/botaoDislikeResposta"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_action_chip_soft"
                 android:gravity="center_vertical"
                 android:minHeight="30dp"
                 android:orientation="horizontal"
-                android:paddingEnd="14dp">
+                android:paddingStart="10dp"
+                android:paddingTop="6dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="6dp">
 
                 <ImageView
                     android:id="@+id/iconeDislikeResposta"
@@ -169,9 +178,15 @@
                 android:id="@+id/botaoResponderResposta"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_action_chip_soft"
                 android:gravity="center_vertical"
                 android:minHeight="30dp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:paddingStart="10dp"
+                android:paddingTop="6dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="6dp">
 
                 <ImageView
                     android:layout_width="15dp"
@@ -193,7 +208,7 @@
             android:id="@+id/textoToggleRespostas"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
+            android:layout_marginTop="8dp"
             android:minHeight="26dp"
             android:gravity="center_vertical"
             android:text="Ver respostas"
@@ -207,7 +222,7 @@
             android:layout_height="1dp"
             android:layout_marginTop="8dp"
             android:background="@color/divider_color"
-            android:alpha="0.55" />
+            android:alpha="0.45" />
 
     </LinearLayout>
 

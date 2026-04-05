@@ -5,6 +5,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.text.InputFilter;
+import android.util.LruCache;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +30,8 @@ import com.example.mapadointercambista.model.forum.PostForum;
 import com.example.mapadointercambista.model.forum.RespostaForum;
 import com.example.mapadointercambista.model.user.SessionManager;
 import com.example.mapadointercambista.util.AvatarUtils;
+import com.example.mapadointercambista.util.ForumLimits;
+import com.example.mapadointercambista.util.InputSecurityUtils;
 import com.example.mapadointercambista.util.TimeUtils;
 import com.google.android.material.imageview.ShapeableImageView;
 
@@ -45,6 +49,7 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
     private final List<RespostaForum> lista;
     private final SessionManager sessionManager;
     private final ForumStorage forumStorage;
+    private final LruCache<String, Bitmap> avatarCache = new LruCache<>(60);
 
     public RespostaForumAdapter(Context context, String postId, List<RespostaForum> lista, boolean usuarioLogado) {
         this.context = context;
@@ -137,14 +142,11 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
 
         aplicarAvatar(holder.fotoPerfil, resposta.getAutorFotoUri(), resposta.getAutorNome());
 
-        holder.nomeUsuario.setText(resposta.getAutorNome());
+        holder.nomeUsuario.setText(textoSeguro(resposta.getAutorNome(), "Usuário"));
         holder.tempo.setText(resposta.getTempoPostagem());
-        holder.mensagem.setText(resposta.getMensagem());
-        if (resposta.getNivel() >= 3) {
-            holder.mensagem.setAlpha(0.96f);
-        } else {
-            holder.mensagem.setAlpha(1f);
-        }
+        holder.mensagem.setText(textoSeguro(resposta.getMensagem(), ""));
+        holder.mensagem.setAlpha(resposta.getNivel() >= 3 ? 0.96f : 1f);
+
         holder.textoLikes.setText(String.valueOf(resposta.getLikes()));
         holder.textoDislikes.setText(String.valueOf(resposta.getDislikes()));
 
@@ -161,9 +163,12 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
 
         holder.botaoLike.setOnClickListener(v -> {
             if (!usuarioEstaLogado()) {
-                Toast.makeText(context, "Entre em uma conta para interagir", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Entre em uma conta para interagir.", Toast.LENGTH_SHORT).show();
                 return;
             }
+
+            if (!v.isEnabled()) return;
+            v.setEnabled(false);
 
             animarClique(holder.botaoLike);
 
@@ -182,13 +187,18 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
                     notifyItemChanged(posicao);
                 }
             }
+
+            v.postDelayed(() -> v.setEnabled(true), 250);
         });
 
         holder.botaoDislike.setOnClickListener(v -> {
             if (!usuarioEstaLogado()) {
-                Toast.makeText(context, "Entre em uma conta para interagir", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Entre em uma conta para interagir.", Toast.LENGTH_SHORT).show();
                 return;
             }
+
+            if (!v.isEnabled()) return;
+            v.setEnabled(false);
 
             animarClique(holder.botaoDislike);
 
@@ -207,6 +217,8 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
                     notifyItemChanged(posicao);
                 }
             }
+
+            v.postDelayed(() -> v.setEnabled(true), 250);
         });
 
         holder.botaoResponder.setOnClickListener(v -> abrirDialogNovaRespostaFilha(resposta));
@@ -226,17 +238,13 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
                 );
             }
 
-            View.OnClickListener toggleListener = v -> {
+            holder.textoToggleRespostas.setOnClickListener(v -> {
                 alternarRespostasFilhas(position, resposta.getNivel());
                 notifyDataSetChanged();
-            };
-
-            holder.textoToggleRespostas.setOnClickListener(toggleListener);
-            holder.blocoResposta.setOnClickListener(toggleListener);
+            });
         } else {
             holder.textoToggleRespostas.setVisibility(View.GONE);
             holder.textoToggleRespostas.setOnClickListener(null);
-            holder.blocoResposta.setOnClickListener(null);
         }
     }
 
@@ -278,17 +286,6 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
         );
     }
 
-    private void garantirCadeiaVisivel(String respostaIdNova) {
-        if (respostaIdNova == null) return;
-
-        for (RespostaForum resposta : lista) {
-            if (respostaIdNova.equals(resposta.getId())) {
-                resposta.setVisivel(true);
-                break;
-            }
-        }
-    }
-
     private void animarClique(View view) {
         ObjectAnimator diminuirX = ObjectAnimator.ofFloat(view, "scaleX", 1f, 0.96f, 1f);
         ObjectAnimator diminuirY = ObjectAnimator.ofFloat(view, "scaleY", 1f, 0.96f, 1f);
@@ -323,9 +320,26 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
                     .error(R.drawable.ic_user)
                     .circleCrop()
                     .into(imageView);
-        } else {
-            Bitmap avatar = AvatarUtils.criarAvatarComInicial(context, nomeAutor, 72);
+            return;
+        }
+
+        String chaveCache = nomeAutor != null && !nomeAutor.trim().isEmpty()
+                ? nomeAutor.trim().toLowerCase()
+                : "avatar_padrao_resposta";
+
+        Bitmap avatar = avatarCache.get(chaveCache);
+
+        if (avatar == null) {
+            avatar = AvatarUtils.criarAvatarComInicial(context, nomeAutor, 72);
+            if (avatar != null) {
+                avatarCache.put(chaveCache, avatar);
+            }
+        }
+
+        if (avatar != null) {
             imageView.setImageBitmap(avatar);
+        } else {
+            imageView.setImageResource(R.drawable.ic_user);
         }
     }
 
@@ -361,7 +375,7 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
 
     private void abrirDialogNovaRespostaFilha(RespostaForum respostaPai) {
         if (!usuarioEstaLogado()) {
-            Toast.makeText(context, "Entre em uma conta para interagir", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Entre em uma conta para interagir.", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -369,16 +383,26 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
         input.setHint("Digite sua resposta");
         input.setMinLines(3);
         input.setPadding(40, 30, 40, 30);
+        input.setFilters(new InputFilter[]{
+                new InputFilter.LengthFilter(ForumLimits.MAX_RESPOSTA)
+        });
 
         new AlertDialog.Builder(context)
                 .setTitle("Responder comentário")
                 .setView(input)
                 .setNegativeButton("Cancelar", null)
                 .setPositiveButton("Responder", (dialog, which) -> {
-                    String texto = input.getText().toString().trim();
+                    String texto = InputSecurityUtils.sanitizeUserText(
+                            input.getText().toString()
+                    );
 
-                    if (texto.isEmpty()) {
-                        Toast.makeText(context, "Digite uma resposta", Toast.LENGTH_SHORT).show();
+                    if (InputSecurityUtils.isNullOrBlank(texto)) {
+                        Toast.makeText(context, "Digite uma resposta.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (InputSecurityUtils.containsSuspiciousPattern(texto)) {
+                        Toast.makeText(context, "Conteúdo inválido detectado.", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
@@ -400,10 +424,10 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
                     );
 
                     if (sucesso) {
-                        Toast.makeText(context, "Resposta enviada com sucesso", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Resposta enviada com sucesso.", Toast.LENGTH_SHORT).show();
                         atualizarLista();
                     } else {
-                        Toast.makeText(context, "Erro ao responder comentário", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Não foi possível responder agora.", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .show();
@@ -417,12 +441,12 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
         popupMenu.setOnMenuItemClickListener(item -> {
             String titulo = item.getTitle().toString();
 
-            if (titulo.equals("Editar")) {
+            if ("Editar".equals(titulo)) {
                 abrirDialogEditarResposta(resposta);
                 return true;
             }
 
-            if (titulo.equals("Excluir")) {
+            if ("Excluir".equals(titulo)) {
                 confirmarExclusaoResposta(resposta);
                 return true;
             }
@@ -435,29 +459,39 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
 
     private void abrirDialogEditarResposta(RespostaForum resposta) {
         EditText input = new EditText(context);
-        input.setText(resposta.getMensagem());
+        input.setText(textoSeguro(resposta.getMensagem(), ""));
         input.setMinLines(3);
         input.setPadding(40, 30, 40, 30);
+        input.setFilters(new InputFilter[]{
+                new InputFilter.LengthFilter(ForumLimits.MAX_RESPOSTA)
+        });
 
         new AlertDialog.Builder(context)
                 .setTitle("Editar resposta")
                 .setView(input)
                 .setNegativeButton("Cancelar", null)
                 .setPositiveButton("Salvar", (dialog, which) -> {
-                    String novaMensagem = input.getText().toString().trim();
+                    String novaMensagem = InputSecurityUtils.sanitizeUserText(
+                            input.getText().toString()
+                    );
 
-                    if (novaMensagem.isEmpty()) {
-                        Toast.makeText(context, "Digite uma mensagem", Toast.LENGTH_SHORT).show();
+                    if (InputSecurityUtils.isNullOrBlank(novaMensagem)) {
+                        Toast.makeText(context, "Digite uma mensagem.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (InputSecurityUtils.containsSuspiciousPattern(novaMensagem)) {
+                        Toast.makeText(context, "Conteúdo inválido detectado.", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
                     boolean sucesso = forumStorage.editarResposta(postId, resposta.getId(), novaMensagem);
 
                     if (sucesso) {
-                        Toast.makeText(context, "Resposta editada com sucesso", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Resposta editada com sucesso.", Toast.LENGTH_SHORT).show();
                         atualizarLista();
                     } else {
-                        Toast.makeText(context, "Erro ao editar resposta", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Não foi possível editar a resposta.", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .show();
@@ -472,10 +506,10 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
                     boolean sucesso = forumStorage.excluirResposta(postId, resposta.getId());
 
                     if (sucesso) {
-                        Toast.makeText(context, "Resposta excluída com sucesso", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Resposta excluída com sucesso.", Toast.LENGTH_SHORT).show();
                         atualizarLista();
                     } else {
-                        Toast.makeText(context, "Erro ao excluir resposta", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Não foi possível excluir a resposta.", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .show();
@@ -580,6 +614,11 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
             lista.addAll(novasRespostas);
         }
         notifyDataSetChanged();
+    }
+
+    private String textoSeguro(String valor, String fallback) {
+        String texto = InputSecurityUtils.sanitizeUserText(valor);
+        return texto.isEmpty() ? fallback : texto;
     }
 
     @Override
