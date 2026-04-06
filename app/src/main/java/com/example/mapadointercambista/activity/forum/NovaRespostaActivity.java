@@ -17,8 +17,10 @@ import com.example.mapadointercambista.R;
 import com.example.mapadointercambista.model.forum.ForumStorage;
 import com.example.mapadointercambista.model.forum.RespostaForum;
 import com.example.mapadointercambista.model.user.SessionManager;
+import com.example.mapadointercambista.navigation.NavigationHelper;
 import com.example.mapadointercambista.util.InputSecurityUtils;
 import com.example.mapadointercambista.util.TimeUtils;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 
 public class NovaRespostaActivity extends AppCompatActivity {
@@ -58,6 +60,9 @@ public class NovaRespostaActivity extends AppCompatActivity {
         configurarLimites();
         configurarContadores();
         configurarEventos();
+
+        BottomNavigationView bottomNav = findViewById(R.id.bottomNavigation);
+        NavigationHelper.configurarBottomNavigation(this, bottomNav, R.id.nav_forum);
     }
 
     private void initViews() {
@@ -159,7 +164,7 @@ public class NovaRespostaActivity extends AppCompatActivity {
     private void setRespondendo(boolean respondendo) {
         this.respondendo = respondendo;
         botaoResponder.setEnabled(!respondendo);
-        botaoResponder.setText(respondendo ? "Respondendo..." : "+ Publicar");
+        botaoResponder.setText(respondendo ? "Respondendo..." : "Responder");
         inputMensagem.setEnabled(!respondendo);
     }
 

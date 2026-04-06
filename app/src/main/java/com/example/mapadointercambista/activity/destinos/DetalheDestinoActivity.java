@@ -12,6 +12,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -25,9 +26,11 @@ import com.example.mapadointercambista.model.destino.DestinoStorage;
 import com.example.mapadointercambista.model.destino.FavoritosStorage;
 import com.example.mapadointercambista.model.user.SessionManager;
 import com.example.mapadointercambista.navigation.NavigationHelper;
+import com.example.mapadointercambista.util.InputSecurityUtils;
 import com.example.mapadointercambista.util.ImageUtils;
 import com.example.mapadointercambista.util.TimeUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,31 +60,35 @@ public class DetalheDestinoActivity extends AppCompatActivity {
 
     private ImageView botaoFavoritoDestino;
     private FavoritosStorage favoritosStorage;
+    private MaterialButton botaoAvaliarDestino;
+
+    private boolean alterandoFavorito = false;
+    private boolean publicandoAvaliacao = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_detalhe_destino);
 
-        getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-        );
+        aplicarModoImersivo();
 
         destinoStorage = new DestinoStorage(this);
         sessionManager = new SessionManager(this);
         favoritosStorage = new FavoritosStorage(this);
 
         Destino destinoRecebido = (Destino) getIntent().getSerializableExtra("destino");
-        if (destinoRecebido != null) {
+        if (destinoRecebido != null && destinoRecebido.getId() != null) {
             destinoAtual = destinoStorage.buscarDestinoPorId(destinoRecebido.getId());
             if (destinoAtual == null) {
                 destinoAtual = destinoRecebido;
             }
+        }
+
+        if (destinoAtual == null) {
+            Toast.makeText(this, "Destino não encontrado.", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
         }
 
         imagem = findViewById(R.id.imagemDestino);
@@ -95,29 +102,35 @@ public class DetalheDestinoActivity extends AppCompatActivity {
         listaAvaliacoes = findViewById(R.id.listaAvaliacoesDestino);
         textoVerMaisDescricao = findViewById(R.id.textoVerMaisDescricao);
         botaoFavoritoDestino = findViewById(R.id.botaoFavoritoDestino);
+        botaoAvaliarDestino = findViewById(R.id.botaoAvaliarDestino);
 
         listaAvaliacoes.setLayoutManager(new LinearLayoutManager(this));
         listaAvaliacoes.setHasFixedSize(false);
         listaAvaliacoes.setItemViewCacheSize(8);
+        listaAvaliacoes.setItemAnimator(null);
 
         avaliacaoAdapter = new AvaliacaoDestinoAdapter(
                 this,
-                destinoAtual != null ? destinoAtual.getId() : "",
-                destinoAtual != null ? destinoAtual.getAgencias() : new ArrayList<>(),
+                destinoAtual.getId(),
+                destinoAtual.getAgencias() != null ? destinoAtual.getAgencias() : new ArrayList<>(),
                 avaliacoesExibidas
         );
         listaAvaliacoes.setAdapter(avaliacaoAdapter);
 
         botaoVoltar.setOnClickListener(v -> finish());
+
         botaoFavoritoDestino.setOnClickListener(v -> {
             if (!sessionManager.estaLogado()) {
-                Toast.makeText(this, "Entre em sua conta para favoritar", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Entre em sua conta para favoritar.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            if (destinoAtual == null) {
+            if (destinoAtual == null || alterandoFavorito) {
                 return;
             }
+
+            alterandoFavorito = true;
+            v.setEnabled(false);
 
             boolean agoraFavorito = favoritosStorage.toggleFavorito(
                     sessionManager.getEmailUsuario(),
@@ -128,11 +141,17 @@ public class DetalheDestinoActivity extends AppCompatActivity {
 
             Toast.makeText(
                     this,
-                    agoraFavorito ? "Destino adicionado aos favoritos" : "Destino removido dos favoritos",
+                    agoraFavorito ? "Destino adicionado aos favoritos." : "Destino removido dos favoritos.",
                     Toast.LENGTH_SHORT
             ).show();
+
+            v.postDelayed(() -> {
+                alterandoFavorito = false;
+                v.setEnabled(true);
+            }, 250);
         });
-        findViewById(R.id.botaoAvaliarDestino).setOnClickListener(v -> abrirDialogNovaAvaliacao());
+
+        botaoAvaliarDestino.setOnClickListener(v -> abrirDialogNovaAvaliacao());
 
         preencherCabecalho();
         carregarAvaliacoes();
@@ -166,6 +185,7 @@ public class DetalheDestinoActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        aplicarModoImersivo();
 
         if (destinoAtual != null) {
             Destino atualizado = destinoStorage.buscarDestinoPorId(destinoAtual.getId());
@@ -180,6 +200,25 @@ public class DetalheDestinoActivity extends AppCompatActivity {
             carregarAvaliacoes();
             ultimoHashDestino = hashAtual;
         }
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            aplicarModoImersivo();
+        }
+    }
+
+    private void aplicarModoImersivo() {
+        getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+        );
     }
 
     private void atualizarBotaoFavorito(boolean favorito) {
@@ -207,12 +246,12 @@ public class DetalheDestinoActivity extends AppCompatActivity {
         int drawableId = ImageUtils.getDrawableId(this, destinoAtual.getImagemNome());
         imagem.setImageResource(drawableId != 0 ? drawableId : R.drawable.ic_world);
 
-        nome.setText(destinoAtual.getNome());
-        pais.setText(destinoAtual.getPais());
-        idioma.setText(destinoAtual.getIdioma());
-        moeda.setText(destinoAtual.getMoeda());
+        nome.setText(textoSeguro(destinoAtual.getNome(), "Destino"));
+        pais.setText(textoSeguro(destinoAtual.getPais(), "-"));
+        idioma.setText(textoSeguro(destinoAtual.getIdioma(), "-"));
+        moeda.setText(textoSeguro(destinoAtual.getMoeda(), "-"));
 
-        descricaoCompleta = destinoAtual.getDescricao();
+        descricaoCompleta = textoSeguro(destinoAtual.getDescricao(), "");
         descricao.setText(descricaoCompleta);
 
         descricao.post(() -> {
@@ -234,7 +273,7 @@ public class DetalheDestinoActivity extends AppCompatActivity {
                         : notaMedia + " • " + quantidade + " avaliações"
         );
 
-        if (sessionManager.estaLogado() && destinoAtual != null) {
+        if (sessionManager.estaLogado()) {
             boolean favorito = favoritosStorage.isFavorito(
                     sessionManager.getEmailUsuario(),
                     destinoAtual.getId()
@@ -243,7 +282,6 @@ public class DetalheDestinoActivity extends AppCompatActivity {
         } else {
             atualizarBotaoFavorito(false);
         }
-
     }
 
     private void carregarAvaliacoes() {
@@ -258,12 +296,12 @@ public class DetalheDestinoActivity extends AppCompatActivity {
 
     private void abrirDialogNovaAvaliacao() {
         if (!sessionManager.estaLogado()) {
-            Toast.makeText(this, "Entre em sua conta para avaliar", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Entre em sua conta para avaliar.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (destinoAtual == null) {
-            Toast.makeText(this, "Destino não encontrado", Toast.LENGTH_SHORT).show();
+        if (destinoAtual == null || publicandoAvaliacao) {
+            Toast.makeText(this, "Destino não encontrado.", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -273,10 +311,14 @@ public class DetalheDestinoActivity extends AppCompatActivity {
         RatingBar ratingBar = view.findViewById(R.id.ratingNovaAvaliacao);
         Spinner spinnerAgencia = view.findViewById(R.id.spinnerAgenciaAvaliacao);
 
+        List<String> agencias = destinoAtual.getAgencias() != null
+                ? destinoAtual.getAgencias()
+                : new ArrayList<>();
+
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_spinner_dropdown_item,
-                destinoAtual.getAgencias()
+                agencias
         );
         spinnerAgencia.setAdapter(spinnerAdapter);
 
@@ -285,19 +327,40 @@ public class DetalheDestinoActivity extends AppCompatActivity {
                 .setView(view)
                 .setNegativeButton("Cancelar", null)
                 .setPositiveButton("Publicar", (dialog, which) -> {
-                    String mensagem = inputMensagem.getText().toString().trim();
-                    float nota = ratingBar.getRating();
-                    String agencia = spinnerAgencia.getSelectedItem().toString();
+                    if (publicandoAvaliacao) {
+                        return;
+                    }
 
-                    if (mensagem.isEmpty()) {
-                        Toast.makeText(this, "Digite sua avaliação", Toast.LENGTH_SHORT).show();
+                    String mensagem = InputSecurityUtils.sanitizeUserText(
+                            inputMensagem.getText().toString()
+                    );
+                    float nota = ratingBar.getRating();
+                    String agencia = spinnerAgencia.getSelectedItem() != null
+                            ? spinnerAgencia.getSelectedItem().toString()
+                            : "";
+
+                    if (InputSecurityUtils.isNullOrBlank(mensagem)) {
+                        Toast.makeText(this, "Digite sua avaliação.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (InputSecurityUtils.containsSuspiciousPattern(mensagem)) {
+                        Toast.makeText(this, "Conteúdo inválido detectado.", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
                     if (nota <= 0) {
-                        Toast.makeText(this, "Selecione uma nota em estrelas", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Selecione uma nota em estrelas.", Toast.LENGTH_SHORT).show();
                         return;
                     }
+
+                    if (InputSecurityUtils.isNullOrBlank(agencia)) {
+                        Toast.makeText(this, "Selecione uma agência.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    publicandoAvaliacao = true;
+                    botaoAvaliarDestino.setEnabled(false);
 
                     AvaliacaoDestino novaAvaliacao = new AvaliacaoDestino(
                             sessionManager.getNomeUsuario(),
@@ -320,11 +383,21 @@ public class DetalheDestinoActivity extends AppCompatActivity {
                         preencherCabecalho();
                         carregarAvaliacoes();
 
-                        Toast.makeText(this, "Avaliação publicada com sucesso", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Avaliação publicada com sucesso.", Toast.LENGTH_SHORT).show();
                     } else {
-                        Toast.makeText(this, "Erro ao publicar avaliação", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Erro ao publicar avaliação.", Toast.LENGTH_SHORT).show();
                     }
+
+                    botaoAvaliarDestino.postDelayed(() -> {
+                        publicandoAvaliacao = false;
+                        botaoAvaliarDestino.setEnabled(true);
+                    }, 300);
                 })
                 .show();
+    }
+
+    private String textoSeguro(String valor, String fallback) {
+        String texto = InputSecurityUtils.sanitizeUserText(valor != null ? valor : "");
+        return texto.isEmpty() ? fallback : texto;
     }
 }

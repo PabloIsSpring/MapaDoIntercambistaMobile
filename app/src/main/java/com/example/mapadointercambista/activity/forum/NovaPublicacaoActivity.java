@@ -17,8 +17,10 @@ import com.example.mapadointercambista.R;
 import com.example.mapadointercambista.model.forum.ForumStorage;
 import com.example.mapadointercambista.model.forum.PostForum;
 import com.example.mapadointercambista.model.user.SessionManager;
+import com.example.mapadointercambista.navigation.NavigationHelper;
 import com.example.mapadointercambista.util.InputSecurityUtils;
 import com.example.mapadointercambista.util.TimeUtils;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 
 public class NovaPublicacaoActivity extends AppCompatActivity {
@@ -52,6 +54,9 @@ public class NovaPublicacaoActivity extends AppCompatActivity {
         configurarLimites();
         configurarContadores();
         configurarEventos();
+
+        BottomNavigationView bottomNav = findViewById(R.id.bottomNavigation);
+        NavigationHelper.configurarBottomNavigation(this, bottomNav, R.id.nav_forum);
     }
 
     private void initViews() {
@@ -157,7 +162,7 @@ public class NovaPublicacaoActivity extends AppCompatActivity {
     private void setPublicando(boolean publicando) {
         this.publicando = publicando;
         botaoPublicar.setEnabled(!publicando);
-        botaoPublicar.setText(publicando ? "Publicando..." : "+ Publicar");
+        botaoPublicar.setText(publicando ? "Publicando..." : "Publicar");
         inputTitulo.setEnabled(!publicando);
         inputMensagem.setEnabled(!publicando);
     }

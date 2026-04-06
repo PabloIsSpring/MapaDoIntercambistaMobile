@@ -26,6 +26,7 @@ import com.example.mapadointercambista.model.destino.FavoritosStorage;
 import com.example.mapadointercambista.model.user.SessionManager;
 import com.example.mapadointercambista.navigation.NavigationHelper;
 import com.example.mapadointercambista.ui.decoration.GridSpacingItemDecoration;
+import com.example.mapadointercambista.util.InputSecurityUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
@@ -65,9 +66,12 @@ public class DestinosActivity extends AppCompatActivity {
         listaTodosDestinos.setLayoutManager(new GridLayoutManager(this, 2));
         listaTodosDestinos.setHasFixedSize(true);
         listaTodosDestinos.setItemViewCacheSize(10);
+        listaTodosDestinos.setItemAnimator(null);
 
-        int spacing = 24;
-        listaTodosDestinos.addItemDecoration(new GridSpacingItemDecoration(2, spacing, true));
+        if (listaTodosDestinos.getItemDecorationCount() == 0) {
+            int spacing = 24;
+            listaTodosDestinos.addItemDecoration(new GridSpacingItemDecoration(2, spacing, true));
+        }
 
         adapter = new DestinoAdapter(destinosExibidos);
         listaTodosDestinos.setAdapter(adapter);
@@ -78,13 +82,21 @@ public class DestinosActivity extends AppCompatActivity {
         iconeFiltro.setOnClickListener(v -> abrirBottomSheetFiltros());
 
         EditText barraPesquisa = findViewById(R.id.barraPesquisa);
+        barraPesquisa.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus) {
+                aplicarModoImersivo();
+            }
+        });
+
         barraPesquisa.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                textoBuscaAtual = s != null ? s.toString() : "";
+                textoBuscaAtual = InputSecurityUtils.sanitizeUserText(
+                        s != null ? s.toString() : ""
+                );
                 aplicarFiltros();
             }
 
@@ -103,6 +115,14 @@ public class DestinosActivity extends AppCompatActivity {
         super.onResume();
         aplicarModoImersivo();
         sincronizarDestinos();
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            aplicarModoImersivo();
+        }
     }
 
     private void aplicarModoImersivo() {
@@ -124,16 +144,7 @@ public class DestinosActivity extends AppCompatActivity {
 
         if (!precisaRecriar) {
             for (Destino destino : destinos) {
-                boolean continenteInvalido = destino.getContinente() == null || destino.getContinente().trim().isEmpty();
-                boolean imagemInvalida = destino.getImagemNome() == null || destino.getImagemNome().trim().isEmpty();
-
-                boolean imagemAntigaErrada =
-                        "destino_sydney".equals(destino.getId()) && !"australia".equals(destino.getImagemNome());
-
-                boolean imagemAntigaLisboa =
-                        "destino_lisboa".equals(destino.getId()) && !"lisboa".equals(destino.getImagemNome());
-
-                if (continenteInvalido || imagemInvalida || imagemAntigaErrada || imagemAntigaLisboa) {
+                if (destinoInvalido(destino)) {
                     precisaRecriar = true;
                     break;
                 }
@@ -159,16 +170,7 @@ public class DestinosActivity extends AppCompatActivity {
 
         if (!precisaRecriar) {
             for (Destino destino : atualizados) {
-                boolean continenteInvalido = destino.getContinente() == null || destino.getContinente().trim().isEmpty();
-                boolean imagemInvalida = destino.getImagemNome() == null || destino.getImagemNome().trim().isEmpty();
-
-                boolean imagemAntigaErrada =
-                        "destino_sydney".equals(destino.getId()) && !"australia".equals(destino.getImagemNome());
-
-                boolean imagemAntigaLisboa =
-                        "destino_lisboa".equals(destino.getId()) && !"lisboa".equals(destino.getImagemNome());
-
-                if (continenteInvalido || imagemInvalida || imagemAntigaErrada || imagemAntigaLisboa) {
+                if (destinoInvalido(destino)) {
                     precisaRecriar = true;
                     break;
                 }
@@ -187,13 +189,11 @@ public class DestinosActivity extends AppCompatActivity {
                 Destino antigo = destinosOriginais.get(i);
                 Destino novo = atualizados.get(i);
 
-                if (!antigo.getId().equals(novo.getId())
+                if (!textoSeguro(antigo.getId()).equals(textoSeguro(novo.getId()))
                         || antigo.getNota() != novo.getNota()
                         || antigo.getAvaliacoes() != novo.getAvaliacoes()
-                        || (antigo.getContinente() == null && novo.getContinente() != null)
-                        || (antigo.getContinente() != null && !antigo.getContinente().equals(novo.getContinente()))
-                        || (antigo.getImagemNome() == null && novo.getImagemNome() != null)
-                        || (antigo.getImagemNome() != null && !antigo.getImagemNome().equals(novo.getImagemNome()))) {
+                        || !textoSeguro(antigo.getContinente()).equals(textoSeguro(novo.getContinente()))
+                        || !textoSeguro(antigo.getImagemNome()).equals(textoSeguro(novo.getImagemNome()))) {
                     mudou = true;
                     break;
                 }
@@ -210,7 +210,7 @@ public class DestinosActivity extends AppCompatActivity {
     }
 
     private void aplicarFiltros() {
-        String busca = textoBuscaAtual != null ? textoBuscaAtual.trim().toLowerCase() : "";
+        String busca = textoSeguro(textoBuscaAtual).toLowerCase();
 
         SessionManager sessionManager = new SessionManager(this);
         FavoritosStorage favoritosStorage = new FavoritosStorage(this);
@@ -221,10 +221,10 @@ public class DestinosActivity extends AppCompatActivity {
         destinosExibidos.clear();
 
         for (Destino destino : destinosOriginais) {
-            String nome = destino.getNome() != null ? destino.getNome().toLowerCase() : "";
-            String pais = destino.getPais() != null ? destino.getPais().toLowerCase() : "";
-            String idioma = destino.getIdioma() != null ? destino.getIdioma().toLowerCase() : "";
-            String continente = destino.getContinente() != null ? destino.getContinente().toLowerCase() : "";
+            String nome = textoSeguro(destino.getNome()).toLowerCase();
+            String pais = textoSeguro(destino.getPais()).toLowerCase();
+            String idioma = textoSeguro(destino.getIdioma()).toLowerCase();
+            String continente = textoSeguro(destino.getContinente()).toLowerCase();
 
             boolean correspondeBusca = busca.isEmpty()
                     || nome.contains(busca)
@@ -331,6 +331,21 @@ public class DestinosActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    private boolean destinoInvalido(Destino destino) {
+        if (destino == null) return true;
+
+        boolean continenteInvalido = destino.getContinente() == null || destino.getContinente().trim().isEmpty();
+        boolean imagemInvalida = destino.getImagemNome() == null || destino.getImagemNome().trim().isEmpty();
+
+        boolean imagemAntigaErrada =
+                "destino_sydney".equals(destino.getId()) && !"australia".equals(destino.getImagemNome());
+
+        boolean imagemAntigaLisboa =
+                "destino_lisboa".equals(destino.getId()) && !"lisboa".equals(destino.getImagemNome());
+
+        return continenteInvalido || imagemInvalida || imagemAntigaErrada || imagemAntigaLisboa;
+    }
+
     private List<String> criarListaIdiomas() {
         Set<String> unicos = new LinkedHashSet<>();
         unicos.add("Todos");
@@ -375,5 +390,9 @@ public class DestinosActivity extends AppCompatActivity {
         lista.add("Melhor nota");
         lista.add("Mais avaliações");
         return lista;
+    }
+
+    private String textoSeguro(String valor) {
+        return InputSecurityUtils.sanitizeUserText(valor != null ? valor : "");
     }
 }

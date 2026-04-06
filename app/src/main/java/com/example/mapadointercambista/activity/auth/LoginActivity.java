@@ -165,6 +165,7 @@ public class LoginActivity extends AppCompatActivity {
                         && response.body().getToken() != null
                         && !response.body().getToken().trim().isEmpty()) {
 
+                    sessionManager.salvarUsuarioLocalSeNaoExistir("Usuário", email, senha);
                     sessionManager.salvarLoginApi(email, response.body().getToken(), 6 * 60 * 60 * 1000L);
                     Toast.makeText(LoginActivity.this, "Login realizado com sucesso!", Toast.LENGTH_SHORT).show();
                     abrirConta();

@@ -2,14 +2,17 @@ package com.example.mapadointercambista.navigation;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.view.View;
+
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import com.example.mapadointercambista.R;
-import com.example.mapadointercambista.activity.auth.LoginActivity;
 import com.example.mapadointercambista.activity.destinos.DestinosActivity;
 import com.example.mapadointercambista.activity.forum.ForumActivity;
 import com.example.mapadointercambista.activity.main.MainActivity;
 import com.example.mapadointercambista.activity.perfil.ContaActivity;
-import com.example.mapadointercambista.model.user.SessionManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class NavigationHelper {
@@ -18,7 +21,11 @@ public class NavigationHelper {
                                                   BottomNavigationView bottomNav,
                                                   int itemSelecionado) {
 
-        SessionManager sessionManager = new SessionManager(activity);
+        if (bottomNav == null) {
+            return;
+        }
+
+        aplicarInsetsNoBottomNavigation(bottomNav);
 
         bottomNav.setSelectedItemId(itemSelecionado);
 
@@ -30,7 +37,6 @@ public class NavigationHelper {
             }
 
             Intent intent = null;
-            boolean deveFinalizarTelaAtual = true;
 
             if (itemId == R.id.nav_home) {
                 intent = new Intent(activity, MainActivity.class);
@@ -39,28 +45,38 @@ public class NavigationHelper {
             } else if (itemId == R.id.nav_mundo) {
                 intent = new Intent(activity, DestinosActivity.class);
             } else if (itemId == R.id.nav_perfil) {
-                if (sessionManager.estaLogado()) {
-                    intent = new Intent(activity, ContaActivity.class);
-                } else {
-                    intent = new Intent(activity, ContaActivity.class);
-                    deveFinalizarTelaAtual = false;
-                }
+                intent = new Intent(activity, ContaActivity.class);
             }
 
             if (intent != null) {
-                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 activity.startActivity(intent);
                 activity.overridePendingTransition(0, 0);
-
-                if (deveFinalizarTelaAtual) {
-                    activity.finish();
-                }
-
+                activity.finish();
                 return true;
             }
 
             return false;
         });
+    }
+
+    private static void aplicarInsetsNoBottomNavigation(BottomNavigationView bottomNav) {
+        ViewCompat.setOnApplyWindowInsetsListener(bottomNav, (view, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+
+            int top = view.getPaddingTop();
+            int left = view.getPaddingLeft();
+            int right = view.getPaddingRight();
+            int baseBottom = dpToPx(view, 6);
+
+            view.setPadding(left, top, right, baseBottom + systemBars.bottom);
+            return insets;
+        });
+    }
+
+    private static int dpToPx(View view, int dp) {
+        float density = view.getResources().getDisplayMetrics().density;
+        return Math.round(dp * density);
     }
 }

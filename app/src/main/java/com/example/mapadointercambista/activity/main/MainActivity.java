@@ -4,7 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -22,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.mapadointercambista.R;
+import com.example.mapadointercambista.activity.auth.LoginActivity;
 import com.example.mapadointercambista.activity.destinos.DestinosActivity;
 import com.example.mapadointercambista.activity.forum.ForumActivity;
 import com.example.mapadointercambista.adapter.destino.DestinoAdapter;
@@ -36,41 +40,54 @@ import com.example.mapadointercambista.model.forum.ForumStorage;
 import com.example.mapadointercambista.model.forum.PostForum;
 import com.example.mapadointercambista.model.user.SessionManager;
 import com.example.mapadointercambista.navigation.NavigationHelper;
+import com.example.mapadointercambista.util.InputSecurityUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.mapadointercambista.activity.auth.LoginActivity;
-
 public class MainActivity extends AppCompatActivity {
 
     private static final long AUTO_SLIDE_DELAY_MS = 4500L;
+    private static final int LIMITE_DESTINOS_HOME = 3;
+    private static final int LIMITE_POSTS_HOME = 3;
 
     private final Handler handler = new Handler(Looper.getMainLooper());
+
     private final List<Destino> destinosHome = new ArrayList<>();
     private final List<PostForum> postsHome = new ArrayList<>();
+    private final List<Destino> favoritosHome = new ArrayList<>();
+
+    private final List<Destino> todosDestinosHome = new ArrayList<>();
+    private final List<PostForum> todosPostsHome = new ArrayList<>();
+    private final List<Destino> todosFavoritosHome = new ArrayList<>();
 
     private Runnable autoSlideRunnable;
     private ViewPager2 carrossel;
     private RecyclerView listaDestinos;
     private RecyclerView listaForum;
+    private RecyclerView listaFavoritosHome;
 
     private DestinoAdapter adapterDestinos;
     private PostForumAdapter adapterForum;
+    private DestinoAdapter adapterFavoritos;
 
     private boolean dadosCarregados = false;
     private LinearLayout indicadorCarrossel;
     private int totalBanners = 0;
-    private RecyclerView listaFavoritosHome;
-    private DestinoAdapter adapterFavoritos;
-    private final List<Destino> favoritosHome = new ArrayList<>();
-
     private LinearLayout secaoFavoritosHome;
+    private LinearLayout secaoDestinosHome;
+    private LinearLayout secaoForumHome;
     private TextView textoResumoFavoritosHome;
+
+    private TextView verTodosDestinos;
+    private TextView verTodosForum;
+    private EditText barraPesquisa;
 
     private SessionManager sessionManager;
     private FavoritosStorage favoritosStorage;
+
+    private String textoBuscaAtual = "";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -93,26 +110,13 @@ public class MainActivity extends AppCompatActivity {
 
         favoritosStorage = new FavoritosStorage(this);
 
-        secaoFavoritosHome = findViewById(R.id.secaoFavoritosHome);
-        textoResumoFavoritosHome = findViewById(R.id.textoResumoFavoritosHome);
-
-        listaFavoritosHome = findViewById(R.id.listaFavoritosHome);
-        listaFavoritosHome.setLayoutManager(
-                new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        );
-        listaFavoritosHome.setHasFixedSize(true);
-        listaFavoritosHome.setItemViewCacheSize(6);
-
-        adapterFavoritos = new DestinoAdapter(favoritosHome);
-        listaFavoritosHome.setAdapter(adapterFavoritos);
-
         aplicarModoImersivo();
         configurarInsets();
         inicializarViews();
-        indicadorCarrossel = findViewById(R.id.indicadorCarrossel);
         configurarCarrossel();
-        configurarAcoes();
         configurarListas();
+        configurarBusca();
+        configurarAcoes();
         carregarDadosIniciais();
 
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavigation);
@@ -123,7 +127,14 @@ public class MainActivity extends AppCompatActivity {
         View root = findViewById(R.id.main);
         ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+
+            v.setPadding(
+                    systemBars.left,
+                    systemBars.top,
+                    systemBars.right,
+                    0
+            );
+
             return insets;
         });
     }
@@ -132,6 +143,16 @@ public class MainActivity extends AppCompatActivity {
         carrossel = findViewById(R.id.carrossel);
         listaDestinos = findViewById(R.id.listaDestinos);
         listaForum = findViewById(R.id.listaForum);
+        listaFavoritosHome = findViewById(R.id.listaFavoritosHome);
+        indicadorCarrossel = findViewById(R.id.indicadorCarrossel);
+        secaoFavoritosHome = findViewById(R.id.secaoFavoritosHome);
+        textoResumoFavoritosHome = findViewById(R.id.textoResumoFavoritosHome);
+        barraPesquisa = findViewById(R.id.barraPesquisa);
+        verTodosDestinos = findViewById(R.id.verTodosDestinos);
+        verTodosForum = findViewById(R.id.verTodosForum);
+
+        secaoDestinosHome = (LinearLayout) listaDestinos.getParent();
+        secaoForumHome = (LinearLayout) listaForum.getParent();
     }
 
     private void configurarCarrossel() {
@@ -154,6 +175,7 @@ public class MainActivity extends AppCompatActivity {
                 atualizarIndicador(position);
             }
         });
+
         carrossel.setOffscreenPageLimit(1);
 
         ImageView setaEsquerda = findViewById(R.id.setaEsquerda);
@@ -205,10 +227,33 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void configurarAcoes() {
-        TextView verTodosDestinos = findViewById(R.id.verTodosDestinos);
-        TextView verTodosForum = findViewById(R.id.verTodosForum);
+    private void configurarBusca() {
+        barraPesquisa.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus) {
+                aplicarModoImersivo();
+            }
+        });
 
+        barraPesquisa.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                textoBuscaAtual = InputSecurityUtils.sanitizeUserText(
+                        s != null ? s.toString() : ""
+                );
+                aplicarBuscaHome();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+    }
+
+    private void configurarAcoes() {
         verTodosDestinos.setOnClickListener(v ->
                 startActivity(new Intent(MainActivity.this, DestinosActivity.class)));
 
@@ -216,47 +261,16 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, ForumActivity.class)));
     }
 
-    private void carregarFavoritosHome() {
-        if (!sessionManager.estaLogado()) {
-            secaoFavoritosHome.setVisibility(View.GONE);
-            favoritosHome.clear();
-            adapterFavoritos.notifyDataSetChanged();
-            return;
-        }
-
-        List<Destino> todosDestinos = new DestinoStorage(this).carregarDestinos();
-
-        if (todosDestinos.isEmpty()) {
-            todosDestinos = DestinoRepository.getDestinos();
-            new DestinoStorage(this).salvarDestinos(todosDestinos);
-        }
-
-        java.util.Set<String> favoritosIds =
-                favoritosStorage.carregarFavoritos(sessionManager.getEmailUsuario());
-
-        favoritosHome.clear();
-
-        for (Destino destino : todosDestinos) {
-            if (favoritosIds.contains(destino.getId())) {
-                favoritosHome.add(destino);
-            }
-        }
-
-        if (favoritosHome.isEmpty()) {
-            secaoFavoritosHome.setVisibility(View.GONE);
-        } else {
-            secaoFavoritosHome.setVisibility(View.VISIBLE);
-            textoResumoFavoritosHome.setText(
-                    favoritosHome.size() == 1
-                            ? "1 destino salvo por você"
-                            : favoritosHome.size() + " destinos salvos por você"
-            );
-        }
-
-        adapterFavoritos.notifyDataSetChanged();
-    }
-
     private void configurarListas() {
+        listaFavoritosHome.setLayoutManager(
+                new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        );
+        listaFavoritosHome.setHasFixedSize(true);
+        listaFavoritosHome.setItemViewCacheSize(6);
+
+        adapterFavoritos = new DestinoAdapter(favoritosHome);
+        listaFavoritosHome.setAdapter(adapterFavoritos);
+
         listaDestinos.setLayoutManager(
                 new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         );
@@ -278,13 +292,15 @@ public class MainActivity extends AppCompatActivity {
     private void carregarDadosIniciais() {
         if (dadosCarregados) return;
 
-        carregarDestinosHome();
-        carregarForumHome();
-        carregarFavoritosHome();
+        carregarDestinosHomeBase();
+        carregarForumHomeBase();
+        carregarFavoritosHomeBase();
+        aplicarBuscaHome();
+
         dadosCarregados = true;
     }
 
-    private void carregarDestinosHome() {
+    private void carregarDestinosHomeBase() {
         DestinoStorage destinoStorage = new DestinoStorage(this);
         List<Destino> destinos = destinoStorage.carregarDestinos();
 
@@ -293,12 +309,15 @@ public class MainActivity extends AppCompatActivity {
             destinoStorage.salvarDestinos(destinos);
         }
 
-        destinosHome.clear();
-        destinosHome.addAll(destinos.size() > 3 ? destinos.subList(0, 3) : destinos);
-        adapterDestinos.notifyDataSetChanged();
+        todosDestinosHome.clear();
+
+        int limite = Math.min(destinos.size(), LIMITE_DESTINOS_HOME);
+        for (int i = 0; i < limite; i++) {
+            todosDestinosHome.add(destinos.get(i));
+        }
     }
 
-    private void carregarForumHome() {
+    private void carregarForumHomeBase() {
         ForumStorage forumStorage = new ForumStorage(this);
         List<PostForum> posts = forumStorage.carregarPosts();
 
@@ -307,14 +326,124 @@ public class MainActivity extends AppCompatActivity {
             forumStorage.salvarPosts(posts);
         }
 
-        postsHome.clear();
+        todosPostsHome.clear();
 
-        int limite = Math.min(posts.size(), 3);
+        int limite = Math.min(posts.size(), LIMITE_POSTS_HOME);
         for (int i = 0; i < limite; i++) {
-            postsHome.add(posts.get(i));
+            todosPostsHome.add(posts.get(i));
+        }
+    }
+
+    private void carregarFavoritosHomeBase() {
+        todosFavoritosHome.clear();
+
+        if (!sessionManager.estaLogado()) {
+            secaoFavoritosHome.setVisibility(View.GONE);
+            return;
         }
 
+        List<Destino> todosDestinos = new DestinoStorage(this).carregarDestinos();
+
+        if (todosDestinos.isEmpty()) {
+            todosDestinos = DestinoRepository.getDestinos();
+            new DestinoStorage(this).salvarDestinos(todosDestinos);
+        }
+
+        java.util.Set<String> favoritosIds =
+                favoritosStorage.carregarFavoritos(sessionManager.getEmailUsuario());
+
+        for (Destino destino : todosDestinos) {
+            if (favoritosIds.contains(destino.getId())) {
+                todosFavoritosHome.add(destino);
+            }
+        }
+    }
+
+    private void aplicarBuscaHome() {
+        String busca = textoBuscaAtual != null
+                ? textoBuscaAtual.trim().toLowerCase()
+                : "";
+
+        favoritosHome.clear();
+        destinosHome.clear();
+        postsHome.clear();
+
+        if (busca.isEmpty()) {
+            favoritosHome.addAll(todosFavoritosHome);
+            destinosHome.addAll(todosDestinosHome);
+            postsHome.addAll(todosPostsHome);
+        } else {
+            for (Destino destino : todosFavoritosHome) {
+                if (destinoCorrespondeBusca(destino, busca)) {
+                    favoritosHome.add(destino);
+                }
+            }
+
+            for (Destino destino : todosDestinosHome) {
+                if (destinoCorrespondeBusca(destino, busca)) {
+                    destinosHome.add(destino);
+                }
+            }
+
+            for (PostForum post : todosPostsHome) {
+                if (postCorrespondeBusca(post, busca)) {
+                    postsHome.add(post);
+                }
+            }
+        }
+
+        atualizarSecoesHome(busca.isEmpty());
+
+        adapterFavoritos.notifyDataSetChanged();
+        adapterDestinos.notifyDataSetChanged();
         adapterForum.notifyDataSetChanged();
+    }
+
+    private boolean destinoCorrespondeBusca(Destino destino, String busca) {
+        if (destino == null) return false;
+
+        String nome = textoSeguro(destino.getNome());
+        String pais = textoSeguro(destino.getPais());
+        String idioma = textoSeguro(destino.getIdioma());
+        String continente = textoSeguro(destino.getContinente());
+
+        return nome.contains(busca)
+                || pais.contains(busca)
+                || idioma.contains(busca)
+                || continente.contains(busca);
+    }
+
+    private boolean postCorrespondeBusca(PostForum post, String busca) {
+        if (post == null) return false;
+
+        String autor = textoSeguro(post.getAutorNome());
+        String titulo = textoSeguro(post.getTitulo());
+        String mensagem = textoSeguro(post.getMensagem());
+
+        return autor.contains(busca)
+                || titulo.contains(busca)
+                || mensagem.contains(busca);
+    }
+
+    private void atualizarSecoesHome(boolean buscaVazia) {
+        if (!sessionManager.estaLogado() || todosFavoritosHome.isEmpty()) {
+            secaoFavoritosHome.setVisibility(View.GONE);
+        } else {
+            secaoFavoritosHome.setVisibility(favoritosHome.isEmpty() && !buscaVazia ? View.GONE : View.VISIBLE);
+
+            if (favoritosHome.isEmpty() && !buscaVazia) {
+                textoResumoFavoritosHome.setText("Nenhum favorito encontrado");
+            } else {
+                textoResumoFavoritosHome.setText(
+                        favoritosHome.size() == 1
+                                ? "1 destino salvo por você"
+                                : favoritosHome.size() + " destinos salvos por você"
+                );
+            }
+        }
+
+        secaoDestinosHome.setVisibility(destinosHome.isEmpty() ? View.GONE : View.VISIBLE);
+        secaoForumHome.setVisibility(postsHome.isEmpty() ? View.GONE : View.VISIBLE);
     }
 
     private void avancarCarrossel() {
@@ -349,6 +478,12 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
+    private String textoSeguro(String valor) {
+        return InputSecurityUtils.sanitizeUserText(
+                valor != null ? valor.toLowerCase() : ""
+        );
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -364,9 +499,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onRestart() {
         super.onRestart();
-        carregarDestinosHome();
-        carregarForumHome();
-        carregarFavoritosHome();
+        carregarDestinosHomeBase();
+        carregarForumHomeBase();
+        carregarFavoritosHomeBase();
+        aplicarBuscaHome();
     }
 
     @Override

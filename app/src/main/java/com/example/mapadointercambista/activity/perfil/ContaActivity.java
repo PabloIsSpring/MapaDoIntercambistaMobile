@@ -407,7 +407,7 @@ public class ContaActivity extends AppCompatActivity {
             }
         }
 
-        favoritosAdapter.notifyDataSetChanged();
+        favoritosAdapter.notifyItemRangeChanged(0, favoritosExibidos.size());
 
         int quantidade = favoritosExibidos.size();
 

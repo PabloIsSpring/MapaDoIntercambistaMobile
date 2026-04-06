@@ -79,6 +79,13 @@ public class RespostasForumActivity extends AppCompatActivity {
 
         inicializarViews();
         inicializarPost();
+
+        if (postAtual == null) {
+            Toast.makeText(this, "Publicação não encontrada.", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
         configurarLista();
         configurarCaixaResponder();
         configurarAcoesPostOriginal();
@@ -108,6 +115,14 @@ public class RespostasForumActivity extends AppCompatActivity {
             preencherPostOriginal();
             carregarRespostas();
             ultimoHashPost = hashAtual;
+        }
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            aplicarModoImersivo();
         }
     }
 
@@ -162,7 +177,7 @@ public class RespostasForumActivity extends AppCompatActivity {
     private void inicializarPost() {
         PostForum postRecebido = (PostForum) getIntent().getSerializableExtra("postSelecionado");
 
-        if (postRecebido != null) {
+        if (postRecebido != null && postRecebido.getId() != null) {
             postAtual = forumStorage.buscarPostPorId(postRecebido.getId());
             if (postAtual == null) {
                 postAtual = postRecebido;
@@ -179,7 +194,7 @@ public class RespostasForumActivity extends AppCompatActivity {
 
         adapter = new RespostaForumAdapter(
                 this,
-                postAtual != null ? postAtual.getId() : "",
+                postAtual.getId(),
                 respostasExibidas,
                 sessionManager.estaLogado()
         );
@@ -188,7 +203,7 @@ public class RespostasForumActivity extends AppCompatActivity {
     }
 
     private void sincronizarPostAtual() {
-        if (postAtual != null) {
+        if (postAtual != null && postAtual.getId() != null) {
             PostForum recarregado = forumStorage.buscarPostPorId(postAtual.getId());
             if (recarregado != null) {
                 postAtual = recarregado;
@@ -202,7 +217,7 @@ public class RespostasForumActivity extends AppCompatActivity {
             return;
         }
 
-        if (postAtual == null) {
+        if (postAtual == null || postAtual.getId() == null) {
             Toast.makeText(this, "Post não encontrado.", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -246,14 +261,18 @@ public class RespostasForumActivity extends AppCompatActivity {
                 return;
             }
 
-            if (postAtual == null) return;
+            if (postAtual == null || postAtual.getId() == null || !v.isEnabled()) return;
 
+            v.setEnabled(false);
             animarClique(botaoLikePostOriginal);
+
             boolean sucesso = forumStorage.toggleLikePost(postAtual.getId(), sessionManager.getEmailUsuario());
 
             if (sucesso) {
                 recarregarPostAtual();
             }
+
+            v.postDelayed(() -> v.setEnabled(true), 250);
         });
 
         botaoDislikePostOriginal.setOnClickListener(v -> {
@@ -262,14 +281,18 @@ public class RespostasForumActivity extends AppCompatActivity {
                 return;
             }
 
-            if (postAtual == null) return;
+            if (postAtual == null || postAtual.getId() == null || !v.isEnabled()) return;
 
+            v.setEnabled(false);
             animarClique(botaoDislikePostOriginal);
+
             boolean sucesso = forumStorage.toggleDislikePost(postAtual.getId(), sessionManager.getEmailUsuario());
 
             if (sucesso) {
                 recarregarPostAtual();
             }
+
+            v.postDelayed(() -> v.setEnabled(true), 250);
         });
 
         boolean ehAutor = postAtual != null
@@ -348,7 +371,7 @@ public class RespostasForumActivity extends AppCompatActivity {
 
         textoBadgeVocePostOriginal.setVisibility(ehAutor ? View.VISIBLE : View.GONE);
 
-        nome.setText(postAtual.getAutorNome());
+        nome.setText(textoSeguro(postAtual.getAutorNome(), "Usuário"));
         tempo.setText("· " + postAtual.getTempoPostagem());
         tituloPostOriginal.setText(textoSeguro(postAtual.getTitulo(), "Sem título"));
         mensagem.setText(textoSeguro(postAtual.getMensagem(), ""));
@@ -370,6 +393,8 @@ public class RespostasForumActivity extends AppCompatActivity {
     }
 
     private void abrirDialogEditarPostOriginal() {
+        if (postAtual == null) return;
+
         LinearLayout container = new LinearLayout(this);
         container.setOrientation(LinearLayout.VERTICAL);
         container.setPadding(40, 24, 40, 8);
@@ -410,19 +435,27 @@ public class RespostasForumActivity extends AppCompatActivity {
                         return;
                     }
 
+                    if (InputSecurityUtils.containsSuspiciousPattern(novoTitulo)
+                            || InputSecurityUtils.containsSuspiciousPattern(novaMensagem)) {
+                        Toast.makeText(this, "Conteúdo inválido detectado.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
                     boolean sucesso = forumStorage.editarPost(postAtual.getId(), novoTitulo, novaMensagem);
 
                     if (sucesso) {
                         recarregarPostAtual();
                         Toast.makeText(this, "Post editado com sucesso.", Toast.LENGTH_SHORT).show();
                     } else {
-                        Toast.makeText(this, "Erro ao editar post.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Não foi possível editar o post.", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .show();
     }
 
     private void confirmarExclusaoPostOriginal() {
+        if (postAtual == null) return;
+
         new AlertDialog.Builder(this)
                 .setTitle("Excluir post")
                 .setMessage("Tem certeza que deseja excluir esta publicação?")
@@ -434,7 +467,7 @@ public class RespostasForumActivity extends AppCompatActivity {
                         Toast.makeText(this, "Post excluído com sucesso.", Toast.LENGTH_SHORT).show();
                         finish();
                     } else {
-                        Toast.makeText(this, "Erro ao excluir post.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Não foi possível excluir o post.", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .show();
@@ -445,6 +478,7 @@ public class RespostasForumActivity extends AppCompatActivity {
         configurarAcoesPostOriginal();
         preencherPostOriginal();
         carregarRespostas();
+        ultimoHashPost = calcularHashPostAtual();
     }
 
     private void animarClique(View view) {

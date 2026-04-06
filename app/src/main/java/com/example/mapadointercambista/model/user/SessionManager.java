@@ -81,7 +81,8 @@ public class SessionManager {
         String modo = prefs.getString(KEY_AUTH_MODE, "");
 
         if (AUTH_MODE_API.equals(modo)) {
-            return isTokenValido() && getUsuarioLogado() != null;
+            String emailLogado = prefs.getString(KEY_EMAIL_LOGADO, null);
+            return isTokenValido() && emailLogado != null && !emailLogado.trim().isEmpty();
         }
 
         if (AUTH_MODE_LOCAL.equals(modo)) {
@@ -89,6 +90,14 @@ public class SessionManager {
         }
 
         return false;
+    }
+
+
+
+
+    public boolean possuiEmailLogado() {
+        String emailLogado = prefs.getString(KEY_EMAIL_LOGADO, null);
+        return emailLogado != null && !emailLogado.trim().isEmpty();
     }
 
     public boolean isTokenValido() {
