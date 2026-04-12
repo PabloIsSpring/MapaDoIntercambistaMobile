@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/color_primary"
+    android:background="@drawable/bg_topbar_gradient"
     android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="20dp"
+        android:paddingStart="20dp"
+        android:paddingTop="20dp"
+        android:paddingEnd="20dp"
         android:paddingBottom="28dp">
 
         <ImageView
@@ -25,53 +26,70 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="24dp"
-            android:gravity="center"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="28dp"
             android:orientation="vertical">
 
             <ImageView
-                android:layout_width="260dp"
-                android:layout_height="120dp"
-                android:scaleType="fitCenter"
+                android:layout_width="220dp"
+                android:layout_height="96dp"
+                android:adjustViewBounds="true"
+                android:scaleType="fitStart"
                 android:src="@drawable/logo" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="Bem-vindo de volta"
+                android:layout_marginTop="18dp"
+                android:text="Seu próximo destino começa aqui"
                 android:textColor="@color/text_on_primary"
-                android:textSize="24sp"
+                android:textSize="30sp"
                 android:textStyle="bold" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:alpha="0.92"
-                android:gravity="center"
-                android:text="Entre para responder publicações, favoritar destinos e continuar sua jornada"
+                android:layout_marginTop="8dp"
+                android:alpha="0.94"
+                android:lineSpacingExtra="2dp"
+                android:text="Entre para responder publicações, favoritar destinos e continuar sua jornada internacional."
                 android:textColor="@color/text_on_primary"
-                android:textSize="14sp" />
+                android:textSize="15sp" />
         </LinearLayout>
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardBackgroundColor="@color/card_background"
-            app:cardCornerRadius="24dp"
-            app:cardElevation="6dp">
+            app:cardCornerRadius="28dp"
+            app:cardElevation="4dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="18dp">
+                android:padding="20dp">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:text="Entrar na sua conta"
+                    android:textColor="@color/text_primary"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Use seu e-mail e senha para continuar"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
                     android:text="E-mail"
                     android:textColor="@color/text_primary"
                     android:textStyle="bold" />
@@ -79,32 +97,34 @@
                 <EditText
                     android:id="@+id/inputEmail"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_marginTop="6dp"
-                    android:layout_marginBottom="14dp"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="8dp"
                     android:background="@drawable/bg_input"
                     android:hint="Digite seu e-mail"
                     android:importantForAutofill="yes"
                     android:inputType="textEmailAddress"
-                    android:padding="12dp"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp"
                     android:textColor="@color/text_primary"
-                    android:textColorHint="@color/text_secondary" />
+                    android:textColorHint="@color/text_secondary"
+                    android:textSize="15sp" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
                     android:text="Senha"
                     android:textColor="@color/text_primary"
                     android:textStyle="bold" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_marginTop="6dp"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="8dp"
                     android:background="@drawable/bg_input"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:paddingEnd="12dp">
+                    android:paddingEnd="14dp">
 
                     <EditText
                         android:id="@+id/inputSenha"
@@ -116,9 +136,11 @@
                         android:hint="Digite sua senha"
                         android:importantForAutofill="yes"
                         android:inputType="textPassword"
-                        android:padding="12dp"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="12dp"
                         android:textColor="@color/text_primary"
-                        android:textColorHint="@color/text_secondary" />
+                        android:textColorHint="@color/text_secondary"
+                        android:textSize="15sp" />
 
                     <ImageView
                         android:id="@+id/iconeOlhoSenhaLogin"
@@ -131,29 +153,31 @@
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/botaoEntrar"
                     android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:layout_marginTop="18dp"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="22dp"
                     android:text="Entrar"
                     android:textAllCaps="false"
                     android:textColor="@color/text_on_primary"
+                    android:textSize="16sp"
                     android:textStyle="bold"
                     app:backgroundTint="@color/color_accent"
-                    app:cornerRadius="16dp" />
+                    app:cornerRadius="18dp" />
 
                 <TextView
                     android:id="@+id/textoEsqueceuSenha"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
+                    android:layout_marginTop="14dp"
                     android:gravity="center"
-                    android:text="Esqueceu a senha?"
-                    android:textColor="@color/color_accent"
+                    android:text="Esqueceu sua senha?"
+                    android:textColor="@color/brand_blue"
+                    android:textSize="14sp"
                     android:textStyle="bold" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_marginTop="18dp"
+                    android:layout_marginTop="20dp"
                     android:layout_marginBottom="18dp"
                     android:background="@color/divider_color" />
 
@@ -169,12 +193,14 @@
                     android:id="@+id/textoCriarConta"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
+                    android:layout_marginTop="16dp"
                     android:gravity="center"
-                    android:text="Não tem conta? Crie uma"
-                    android:textColor="@color/text_secondary"
+                    android:text="Criar conta grátis"
+                    android:textColor="@color/brand_blue"
+                    android:textSize="15sp"
                     android:textStyle="bold" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
+
     </LinearLayout>
 </ScrollView>

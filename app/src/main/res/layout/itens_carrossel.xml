@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -14,10 +13,11 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/overlay_dark_soft" />
+        android:background="@color/overlay_dark_soft"
+        android:alpha="0.58" />
 
     <LinearLayout
-        android:layout_width="270dp"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_gravity="start|center_vertical"
         android:orientation="vertical"
@@ -28,32 +28,33 @@
             android:id="@+id/tituloBanner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="PROGRAMAS DE INTERCÂMBIO"
+            android:text="Seu próximo intercâmbio começa aqui"
             android:textColor="@color/text_on_primary"
-            android:textSize="24sp"
-            android:textStyle="bold" />
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:lineSpacingExtra="2dp" />
 
         <TextView
             android:id="@+id/subtituloBanner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Confira já os nossos planos de viagens"
+            android:layout_marginTop="10dp"
+            android:text="Descubra programas, destinos e agências confiáveis para viver sua próxima experiência internacional."
             android:textColor="@color/text_on_primary"
             android:textSize="14sp"
-            android:alpha="0.92" />
+            android:alpha="0.95" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/botaoBanner"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="18dp"
             android:text="Explorar"
             android:textAllCaps="false"
             android:textColor="@color/text_on_primary"
             android:textStyle="bold"
             app:backgroundTint="@color/color_accent"
-            app:cornerRadius="16dp"
+            app:cornerRadius="18dp"
             app:elevation="2dp" />
 
     </LinearLayout>

@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -25,48 +24,57 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Perfil do usuário"
+                android:layout_marginTop="6dp"
+                android:text="Sua conta"
                 android:textColor="@color/text_primary"
-                android:textSize="26sp"
-                android:textStyle="bold"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="12dp" />
+                android:textSize="28sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Gerencie seu perfil, favoritos e preferências"
+                android:textColor="@color/text_secondary"
+                android:textSize="14sp" />
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardBackgroundColor="@color/color_primary"
-                app:cardCornerRadius="24dp"
-                app:cardElevation="6dp">
+                android:layout_marginTop="14dp"
+                app:cardBackgroundColor="@android:color/transparent"
+                app:cardCornerRadius="28dp"
+                app:cardElevation="4dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
+                    android:background="@drawable/bg_profile_hero"
                     android:padding="20dp">
 
                     <TextView
                         android:id="@+id/textoSubtituloHeroConta"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Carteirinha do Intercambista"
+                        android:text="Seu perfil no Mapa do Intercambista"
                         android:textColor="@color/text_on_primary"
-                        android:textSize="14sp"
+                        android:textSize="13sp"
                         android:textStyle="bold"
-                        android:alpha="0.95" />
+                        android:alpha="0.92" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="14dp"
+                        android:layout_marginTop="16dp"
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
 
                         <com.google.android.material.imageview.ShapeableImageView
                             android:id="@+id/imagemPerfilConta"
-                            android:layout_width="82dp"
-                            android:layout_height="82dp"
-                            android:backgroundTint="@color/color_primary_dark"
+                            android:layout_width="84dp"
+                            android:layout_height="84dp"
+                            android:backgroundTint="@color/overlay_dark_soft"
                             android:contentDescription="Foto de perfil"
                             android:padding="5dp"
                             android:scaleType="centerCrop"
@@ -88,7 +96,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="Nome do usuário"
                                 android:textColor="@color/text_on_primary"
-                                android:textSize="20sp"
+                                android:textSize="21sp"
                                 android:textStyle="bold" />
 
                             <TextView
@@ -99,18 +107,20 @@
                                 android:text="email@teste.com"
                                 android:textColor="@color/text_on_primary"
                                 android:textSize="14sp"
-                                android:alpha="0.94" />
+                                android:alpha="0.92" />
 
                             <TextView
                                 android:id="@+id/textoAlterarFoto"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="10dp"
-                                android:text="Toque para alterar a foto"
+                                android:text="Alterar foto de perfil"
                                 android:textColor="@color/text_on_primary"
                                 android:textSize="12sp"
                                 android:textStyle="bold"
-                                android:alpha="0.92" />
+                                android:alpha="0.88"
+                                android:clickable="true"
+                                android:focusable="true"/>
                         </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
@@ -120,16 +130,17 @@
                 android:id="@+id/secaoAcoesVisitante"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
+                android:layout_marginTop="16dp"
                 android:orientation="vertical"
                 android:visibility="gone">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/botaoEntrarConta"
                     android:layout_width="match_parent"
-                    android:layout_height="52dp"
+                    android:layout_height="54dp"
                     android:text="Entrar"
                     android:textAllCaps="false"
+                    android:textColor="@color/text_on_primary"
                     android:textStyle="bold"
                     app:backgroundTint="@color/color_accent"
                     app:cornerRadius="18dp"
@@ -140,13 +151,14 @@
                     android:id="@+id/botaoCriarConta"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="match_parent"
-                    android:layout_height="52dp"
+                    android:layout_height="54dp"
                     android:layout_marginTop="10dp"
                     android:text="Criar conta"
                     android:textAllCaps="false"
+                    android:textColor="@color/brand_blue"
                     android:textStyle="bold"
                     app:cornerRadius="18dp"
-                    app:strokeColor="@color/color_accent"
+                    app:strokeColor="@color/brand_blue"
                     app:strokeWidth="1dp" />
             </LinearLayout>
 
@@ -154,13 +166,15 @@
                 android:id="@+id/secaoAcoesLogado"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
+                android:layout_marginTop="16dp"
                 android:orientation="vertical"
                 android:visibility="gone">
 
                 <LinearLayout
+                    android:id="@+id/secaoResumoPerfil"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
                     android:orientation="horizontal">
 
                     <androidx.cardview.widget.CardView
@@ -170,29 +184,63 @@
                         android:layout_marginEnd="6dp"
                         app:cardBackgroundColor="@color/card_background"
                         app:cardCornerRadius="18dp"
-                        app:cardElevation="3dp">
+                        app:cardElevation="2dp">
 
                         <LinearLayout
-                            android:id="@+id/atalhoFavoritos"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:minHeight="88dp"
                             android:orientation="vertical"
-                            android:padding="16dp">
+                            android:padding="14dp">
 
                             <TextView
+                                android:id="@+id/textoNumeroFavoritosConta"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Destinos favoritos"
-                                android:textColor="@color/color_primary"
-                                android:textSize="16sp"
+                                android:text="0"
+                                android:textColor="@color/brand_blue"
+                                android:textSize="20sp"
                                 android:textStyle="bold" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:text="Abra sua seleção"
+                                android:layout_marginTop="2dp"
+                                android:text="Favoritos"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="13sp" />
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="3dp"
+                        android:layout_marginEnd="3dp"
+                        app:cardBackgroundColor="@color/card_background"
+                        app:cardCornerRadius="18dp"
+                        app:cardElevation="2dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="14dp">
+
+                            <TextView
+                                android:id="@+id/textoNumeroPostsConta"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0"
+                                android:textColor="@color/brand_blue"
+                                android:textSize="20sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="Posts"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="13sp" />
                         </LinearLayout>
@@ -205,21 +253,61 @@
                         android:layout_marginStart="6dp"
                         app:cardBackgroundColor="@color/card_background"
                         app:cardCornerRadius="18dp"
-                        app:cardElevation="3dp">
+                        app:cardElevation="2dp">
 
                         <LinearLayout
-                            android:id="@+id/atalhoConversas"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:minHeight="88dp"
+                            android:orientation="vertical"
+                            android:padding="14dp">
+
+                            <TextView
+                                android:id="@+id/textoNumeroAvaliacoesConta"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0"
+                                android:textColor="@color/brand_blue"
+                                android:textSize="20sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="Avaliações"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="13sp" />
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="6dp"
+                        app:cardBackgroundColor="@color/card_background"
+                        app:cardCornerRadius="20dp"
+                        app:cardElevation="2dp">
+
+                        <LinearLayout
+                            android:id="@+id/atalhoFavoritos"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:minHeight="96dp"
                             android:orientation="vertical"
                             android:padding="16dp">
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Suas conversas"
-                                android:textColor="@color/color_primary"
+                                android:text="Destinos favoritos"
+                                android:textColor="@color/brand_blue"
                                 android:textSize="16sp"
                                 android:textStyle="bold" />
 
@@ -227,7 +315,42 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
-                                android:text="Em breve"
+                                android:text="Veja seus destinos salvos"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="13sp" />
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="6dp"
+                        app:cardBackgroundColor="@color/card_background"
+                        app:cardCornerRadius="20dp"
+                        app:cardElevation="2dp">
+
+                        <LinearLayout
+                            android:id="@+id/atalhoConversas"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:minHeight="96dp"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Suas conversas"
+                                android:textColor="@color/brand_blue"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:text="Novidades em breve"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="13sp" />
                         </LinearLayout>
@@ -239,8 +362,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     app:cardBackgroundColor="@color/card_background"
-                    app:cardCornerRadius="18dp"
-                    app:cardElevation="3dp">
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="2dp">
 
                     <LinearLayout
                         android:id="@+id/atalhoEditarPerfil"
@@ -255,7 +378,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Editar perfil"
+                            android:text="Editar perfil (em breve)"
                             android:textColor="@color/text_primary"
                             android:textSize="16sp"
                             android:textStyle="bold" />
@@ -269,6 +392,7 @@
                             android:textStyle="bold" />
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
+
             </LinearLayout>
 
             <androidx.cardview.widget.CardView
@@ -278,8 +402,8 @@
                 android:layout_marginTop="14dp"
                 android:visibility="gone"
                 app:cardBackgroundColor="@color/card_background"
-                app:cardCornerRadius="18dp"
-                app:cardElevation="3dp">
+                app:cardCornerRadius="20dp"
+                app:cardElevation="2dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -297,6 +421,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
+                        android:lineSpacingExtra="2dp"
                         android:text="Você pode navegar pelo app normalmente. Para responder publicações, curtir, descurtir e favoritar destinos, entre em uma conta."
                         android:textColor="@color/text_secondary"
                         android:textSize="14sp" />
@@ -309,8 +434,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
                 app:cardBackgroundColor="@color/card_background"
-                app:cardCornerRadius="18dp"
-                app:cardElevation="3dp">
+                app:cardCornerRadius="20dp"
+                app:cardElevation="2dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -337,7 +462,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="14dp"
-                        android:text="Você ainda não favoritou nenhum destino."
+                        android:text="Você ainda não salvou nenhum destino. Explore opções e monte sua jornada."
                         android:textColor="@color/text_secondary"
                         android:textSize="14sp"
                         android:visibility="gone" />
@@ -356,7 +481,7 @@
                 android:id="@+id/textoTituloSecaoConfiguracoes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="18dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginBottom="10dp"
                 android:text="Configurações"
                 android:textColor="@color/text_primary"
@@ -373,8 +498,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:cardBackgroundColor="@color/card_background"
-                    app:cardCornerRadius="18dp"
-                    app:cardElevation="3dp">
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="2dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -384,7 +509,7 @@
                         <LinearLayout
                             android:id="@+id/itemIdioma"
                             android:layout_width="match_parent"
-                            android:layout_height="56dp"
+                            android:layout_height="58dp"
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
                             android:paddingStart="18dp"
@@ -415,7 +540,7 @@
                         <LinearLayout
                             android:id="@+id/itemNotificacoes"
                             android:layout_width="match_parent"
-                            android:layout_height="56dp"
+                            android:layout_height="58dp"
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
                             android:paddingStart="18dp"
@@ -446,7 +571,7 @@
                         <LinearLayout
                             android:id="@+id/itemLocalizacao"
                             android:layout_width="match_parent"
-                            android:layout_height="56dp"
+                            android:layout_height="58dp"
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
                             android:paddingStart="18dp"
@@ -477,7 +602,7 @@
                         <LinearLayout
                             android:id="@+id/itemAcessibilidade"
                             android:layout_width="match_parent"
-                            android:layout_height="56dp"
+                            android:layout_height="58dp"
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
                             android:paddingStart="18dp"
@@ -509,7 +634,7 @@
                         <LinearLayout
                             android:id="@+id/itemPrivacidade"
                             android:layout_width="match_parent"
-                            android:layout_height="56dp"
+                            android:layout_height="58dp"
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
                             android:paddingStart="18dp"
@@ -541,7 +666,7 @@
                         <LinearLayout
                             android:id="@+id/itemSeguranca"
                             android:layout_width="match_parent"
-                            android:layout_height="56dp"
+                            android:layout_height="58dp"
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
                             android:paddingStart="18dp"
@@ -572,8 +697,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     app:cardBackgroundColor="@color/card_background"
-                    app:cardCornerRadius="18dp"
-                    app:cardElevation="3dp">
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="2dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -583,7 +708,7 @@
                         <LinearLayout
                             android:id="@+id/itemSuporte"
                             android:layout_width="match_parent"
-                            android:layout_height="56dp"
+                            android:layout_height="58dp"
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
                             android:paddingStart="18dp"
@@ -615,7 +740,7 @@
                         <LinearLayout
                             android:id="@+id/itemAdicionarConta"
                             android:layout_width="match_parent"
-                            android:layout_height="56dp"
+                            android:layout_height="58dp"
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
                             android:paddingStart="18dp"
@@ -647,7 +772,7 @@
                         <LinearLayout
                             android:id="@+id/itemTermos"
                             android:layout_width="match_parent"
-                            android:layout_height="56dp"
+                            android:layout_height="58dp"
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
                             android:paddingStart="18dp"
@@ -683,9 +808,9 @@
                 android:text="Sair da conta"
                 android:textAllCaps="false"
                 android:textColor="@color/text_on_primary"
-                android:textSize="16sp"
+                android:textSize="15sp"
                 android:textStyle="bold"
-                app:backgroundTint="@color/color_accent"
+                app:backgroundTint="@color/color_primary"
                 app:cornerRadius="18dp"
                 app:icon="@drawable/ic_logout"
                 app:iconPadding="10dp"

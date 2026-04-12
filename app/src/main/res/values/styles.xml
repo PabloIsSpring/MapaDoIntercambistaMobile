@@ -4,15 +4,16 @@
     <!-- Bottom Navigation -->
     <style name="Widget.App.BottomNavigationView" parent="Widget.Material3.BottomNavigationView">
         <item name="itemActiveIndicatorStyle">@style/BottomNavActiveIndicator</item>
+        <item name="android:background">@color/card_background</item>
     </style>
 
     <style name="BottomNavActiveIndicator">
-        <item name="android:color">@color/color_primary_light</item>
+        <item name="android:color">@color/brand_blue_soft</item>
         <item name="shapeAppearance">@style/ShapeAppearance.BottomNavActiveIndicator</item>
     </style>
 
     <style name="ShapeAppearance.BottomNavActiveIndicator" parent="ShapeAppearance.Material3.Corner.Full">
-        <item name="cornerSize">16dp</item>
+        <item name="cornerSize">18dp</item>
     </style>
 
     <!-- Imagem circular -->
@@ -23,13 +24,14 @@
 
     <!-- Títulos -->
     <style name="TextScreenTitle">
-        <item name="android:textSize">22sp</item>
+        <item name="android:textSize">28sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/text_primary</item>
+        <item name="android:letterSpacing">0.01</item>
     </style>
 
     <style name="TextSectionTitle">
-        <item name="android:textSize">18sp</item>
+        <item name="android:textSize">20sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/text_primary</item>
     </style>
@@ -41,7 +43,7 @@
     </style>
 
     <style name="TextBodyPrimary">
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">15sp</item>
         <item name="android:textColor">@color/text_primary</item>
     </style>
 
@@ -51,25 +53,25 @@
     </style>
 
     <style name="TextCaptionMuted">
-        <item name="android:textSize">13sp</item>
+        <item name="android:textSize">12sp</item>
         <item name="android:textColor">@color/text_muted</item>
     </style>
 
     <style name="TextActionLink">
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/color_accent</item>
+        <item name="android:textColor">@color/brand_blue</item>
     </style>
 
     <!-- Cards -->
     <style name="CardDefault">
-        <item name="cardCornerRadius">12dp</item>
-        <item name="cardElevation">4dp</item>
+        <item name="cardCornerRadius">18dp</item>
+        <item name="cardElevation">2dp</item>
         <item name="cardBackgroundColor">@color/card_background</item>
     </style>
 
     <style name="CardLarge">
-        <item name="cardCornerRadius">16dp</item>
-        <item name="cardElevation">6dp</item>
+        <item name="cardCornerRadius">24dp</item>
+        <item name="cardElevation">4dp</item>
         <item name="cardBackgroundColor">@color/card_background</item>
     </style>
 
@@ -78,6 +80,7 @@
         <item name="android:textColor">@color/text_primary</item>
         <item name="android:textColorHint">@color/text_secondary</item>
         <item name="android:background">@null</item>
+        <item name="android:textSize">15sp</item>
     </style>
 
 </resources>

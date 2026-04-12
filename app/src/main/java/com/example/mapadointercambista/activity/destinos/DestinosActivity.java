@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -26,6 +27,7 @@ import com.example.mapadointercambista.model.destino.FavoritosStorage;
 import com.example.mapadointercambista.model.user.SessionManager;
 import com.example.mapadointercambista.navigation.NavigationHelper;
 import com.example.mapadointercambista.ui.decoration.GridSpacingItemDecoration;
+import com.example.mapadointercambista.util.AnimationUtils;
 import com.example.mapadointercambista.util.InputSecurityUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -52,6 +54,12 @@ public class DestinosActivity extends AppCompatActivity {
     private String filtroOrdenacaoSelecionado = "Melhor nota";
     private boolean somenteFavoritos = false;
     private String textoBuscaAtual = "";
+    private LinearLayout containerVazioDestinos;
+    private TextView textoTituloVazioDestinos;
+    private TextView textoDescricaoVazioDestinos;
+    private ImageView iconeFiltroDestinos;
+    private EditText barraPesquisa;
+    private com.facebook.shimmer.ShimmerFrameLayout shimmerDestinosTela;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,19 +81,21 @@ public class DestinosActivity extends AppCompatActivity {
             listaTodosDestinos.addItemDecoration(new GridSpacingItemDecoration(2, spacing, true));
         }
 
-        adapter = new DestinoAdapter(destinosExibidos);
+        adapter = new DestinoAdapter(this, destinosExibidos);
         listaTodosDestinos.setAdapter(adapter);
 
         textoResultadosDestinos = findViewById(R.id.textoResultadosDestinos);
+        containerVazioDestinos = findViewById(R.id.containerVazioDestinos);
+        textoTituloVazioDestinos = findViewById(R.id.textoTituloVazioDestinos);
+        textoDescricaoVazioDestinos = findViewById(R.id.textoDescricaoVazioDestinos);
+        shimmerDestinosTela = findViewById(R.id.shimmerDestinosTela);
 
-        ImageView iconeFiltro = findViewById(R.id.iconeFiltroDestinos);
-        iconeFiltro.setOnClickListener(v -> abrirBottomSheetFiltros());
+        iconeFiltroDestinos = findViewById(R.id.iconeFiltroDestinos);
+        barraPesquisa = findViewById(R.id.barraPesquisa);
 
-        EditText barraPesquisa = findViewById(R.id.barraPesquisa);
-        barraPesquisa.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus) {
-                aplicarModoImersivo();
-            }
+        iconeFiltroDestinos.setOnClickListener(v -> {
+            AnimationUtils.playBounce(v);
+            abrirBottomSheetFiltros();
         });
 
         barraPesquisa.addTextChangedListener(new TextWatcher() {
@@ -104,7 +114,10 @@ public class DestinosActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) { }
         });
 
+        mostrarSkeletonDestinos(true);
         carregarDestinos();
+        mostrarSkeletonDestinos(false);
+        aplicarMicrointeracoesDestinos();
 
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavigation);
         NavigationHelper.configurarBottomNavigation(this, bottomNav, R.id.nav_mundo);
@@ -125,6 +138,11 @@ public class DestinosActivity extends AppCompatActivity {
         }
     }
 
+    private void aplicarMicrointeracoesDestinos() {
+        AnimationUtils.applyPressAnimation(iconeFiltroDestinos);
+        AnimationUtils.applyPressAnimation(barraPesquisa);
+    }
+
     private void aplicarModoImersivo() {
         getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
@@ -134,6 +152,18 @@ public class DestinosActivity extends AppCompatActivity {
                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
         );
+    }
+
+    private void mostrarSkeletonDestinos(boolean mostrar) {
+        if (mostrar) {
+            shimmerDestinosTela.setVisibility(View.VISIBLE);
+            shimmerDestinosTela.startShimmer();
+            listaTodosDestinos.setVisibility(View.GONE);
+        } else {
+            shimmerDestinosTela.stopShimmer();
+            shimmerDestinosTela.setVisibility(View.GONE);
+            listaTodosDestinos.setVisibility(View.VISIBLE);
+        }
     }
 
     private void carregarDestinos() {
@@ -262,6 +292,36 @@ public class DestinosActivity extends AppCompatActivity {
 
         adapter.notifyDataSetChanged();
         atualizarResultados();
+        atualizarEstadoVazio();
+    }
+
+    private void atualizarEstadoVazio() {
+        boolean vazio = destinosExibidos.isEmpty();
+
+        containerVazioDestinos.setVisibility(vazio ? View.VISIBLE : View.GONE);
+        listaTodosDestinos.setVisibility(vazio ? View.GONE : View.VISIBLE);
+
+        if (!vazio) {
+            return;
+        }
+
+        boolean haBusca = textoBuscaAtual != null && !textoBuscaAtual.trim().isEmpty();
+        boolean haFiltros = !"Todos".equals(filtroIdiomaSelecionado)
+                || !"Todos".equals(filtroContinenteSelecionado)
+                || !"Todos".equals(filtroPaisSelecionado)
+                || somenteFavoritos;
+
+        if (haBusca || haFiltros) {
+            textoTituloVazioDestinos.setText("Nenhum destino encontrado");
+            textoDescricaoVazioDestinos.setText(
+                    "Tente ajustar os filtros ou buscar por outro país, idioma ou cidade"
+            );
+        } else {
+            textoTituloVazioDestinos.setText("Nenhum destino disponível");
+            textoDescricaoVazioDestinos.setText(
+                    "Os destinos aparecerão aqui assim que estiverem disponíveis"
+            );
+        }
     }
 
     private void atualizarResultados() {
@@ -289,6 +349,11 @@ public class DestinosActivity extends AppCompatActivity {
         BottomSheetDialog dialog = new BottomSheetDialog(this);
         View view = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_filtros_destinos, null);
         dialog.setContentView(view);
+
+        View bottomSheet = dialog.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+        if (bottomSheet != null) {
+            bottomSheet.setBackgroundResource(android.R.color.transparent);
+        }
 
         Spinner spinnerIdioma = view.findViewById(R.id.spinnerFiltroIdioma);
         Spinner spinnerContinente = view.findViewById(R.id.spinnerFiltroContinente);

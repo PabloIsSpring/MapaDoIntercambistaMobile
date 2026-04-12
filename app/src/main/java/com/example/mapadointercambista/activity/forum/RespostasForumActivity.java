@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputFilter;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -28,6 +29,7 @@ import com.example.mapadointercambista.model.forum.PostForum;
 import com.example.mapadointercambista.model.forum.RespostaForum;
 import com.example.mapadointercambista.model.user.SessionManager;
 import com.example.mapadointercambista.navigation.NavigationHelper;
+import com.example.mapadointercambista.util.AnimationUtils;
 import com.example.mapadointercambista.util.AvatarUtils;
 import com.example.mapadointercambista.util.ForumLimits;
 import com.example.mapadointercambista.util.InputSecurityUtils;
@@ -43,7 +45,6 @@ public class RespostasForumActivity extends AppCompatActivity {
     private ForumStorage forumStorage;
     private SessionManager sessionManager;
     private PostForum postAtual;
-
     private ShapeableImageView fotoPerfilPostOriginal;
     private ShapeableImageView iconeAvatarResponder;
     private TextView nome;
@@ -61,7 +62,7 @@ public class RespostasForumActivity extends AppCompatActivity {
     private ImageView iconeLikePostOriginal;
     private ImageView iconeDislikePostOriginal;
     private TextView textoBadgeVocePostOriginal;
-
+    private TextView textoVazioRespostas;
     private RespostaForumAdapter adapter;
     private final List<RespostaForum> respostasExibidas = new ArrayList<>();
     private int ultimoHashPost = -1;
@@ -89,13 +90,25 @@ public class RespostasForumActivity extends AppCompatActivity {
         configurarLista();
         configurarCaixaResponder();
         configurarAcoesPostOriginal();
+        aplicarMicrointeracoesRespostas();
         preencherPostOriginal();
         carregarRespostas();
         ultimoHashPost = calcularHashPostAtual();
 
-        findViewById(R.id.botaoResponderAcao).setOnClickListener(v -> abrirTelaNovaResposta());
-        findViewById(R.id.cardResponder).setOnClickListener(v -> abrirTelaNovaResposta());
-        findViewById(R.id.botaoVoltarRespostas).setOnClickListener(v -> finish());
+        findViewById(R.id.botaoResponderAcao).setOnClickListener(v -> {
+            AnimationUtils.playBounce(v);
+            abrirTelaNovaResposta();
+        });
+
+        findViewById(R.id.cardResponder).setOnClickListener(v -> {
+            AnimationUtils.playBounce(v);
+            abrirTelaNovaResposta();
+        });
+
+        findViewById(R.id.botaoVoltarRespostas).setOnClickListener(v -> {
+            AnimationUtils.playBounce(v);
+            finish();
+        });
 
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavigation);
         NavigationHelper.configurarBottomNavigation(this, bottomNav, R.id.nav_forum);
@@ -172,6 +185,8 @@ public class RespostasForumActivity extends AppCompatActivity {
 
         textoBadgeVocePostOriginal = findViewById(R.id.textoBadgeVocePostOriginal);
         listaRespostas = findViewById(R.id.listaRespostas);
+
+        textoVazioRespostas = findViewById(R.id.textoVazioRespostas);
     }
 
     private void inicializarPost() {
@@ -229,7 +244,7 @@ public class RespostasForumActivity extends AppCompatActivity {
 
     private void configurarCaixaResponder() {
         if (sessionManager.estaLogado()) {
-            textoResponder.setText("Postar sua resposta");
+            textoResponder.setText("Escreva uma resposta para esta conversa");
 
             String fotoUsuario = sessionManager.getFotoUsuario();
             iconeAvatarResponder.setImageTintList(null);
@@ -246,7 +261,7 @@ public class RespostasForumActivity extends AppCompatActivity {
                 iconeAvatarResponder.setImageBitmap(avatar);
             }
         } else {
-            textoResponder.setText("Entre em sua conta para responder");
+            textoResponder.setText("Entre em sua conta para participar da conversa");
             iconeAvatarResponder.setImageResource(R.drawable.ic_user);
             iconeAvatarResponder.setImageTintList(
                     ContextCompat.getColorStateList(this, android.R.color.white)
@@ -257,14 +272,14 @@ public class RespostasForumActivity extends AppCompatActivity {
     private void configurarAcoesPostOriginal() {
         botaoLikePostOriginal.setOnClickListener(v -> {
             if (!sessionManager.estaLogado()) {
-                Toast.makeText(this, "Entre em uma conta para responder.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Entre em uma conta para curtir publicações.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             if (postAtual == null || postAtual.getId() == null || !v.isEnabled()) return;
 
             v.setEnabled(false);
-            animarClique(botaoLikePostOriginal);
+            AnimationUtils.playBounce(botaoLikePostOriginal);
 
             boolean sucesso = forumStorage.toggleLikePost(postAtual.getId(), sessionManager.getEmailUsuario());
 
@@ -277,14 +292,14 @@ public class RespostasForumActivity extends AppCompatActivity {
 
         botaoDislikePostOriginal.setOnClickListener(v -> {
             if (!sessionManager.estaLogado()) {
-                Toast.makeText(this, "Entre em uma conta para responder.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Entre em uma conta para interagir com publicações.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             if (postAtual == null || postAtual.getId() == null || !v.isEnabled()) return;
 
             v.setEnabled(false);
-            animarClique(botaoDislikePostOriginal);
+            AnimationUtils.playBounce(botaoDislikePostOriginal);
 
             boolean sucesso = forumStorage.toggleDislikePost(postAtual.getId(), sessionManager.getEmailUsuario());
 
@@ -382,12 +397,40 @@ public class RespostasForumActivity extends AppCompatActivity {
         atualizarEstadoVisualPostOriginal();
     }
 
+    private int dpToPxInt(int dp) {
+        return (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                dp,
+                getResources().getDisplayMetrics()
+        );
+    }
+
+    private void aplicarMicrointeracoesRespostas() {
+        View botaoVoltar = findViewById(R.id.botaoVoltarRespostas);
+        View cardResponder = findViewById(R.id.cardResponder);
+        View botaoResponderAcao = findViewById(R.id.botaoResponderAcao);
+
+        AnimationUtils.applyPressAnimation(botaoVoltar);
+        AnimationUtils.applyPressAnimation(botaoLikePostOriginal);
+        AnimationUtils.applyPressAnimation(botaoDislikePostOriginal);
+        AnimationUtils.applyPressAnimation(cardResponder);
+        AnimationUtils.applyPressAnimation(botaoResponderAcao);
+
+        if (botaoOpcoesPostOriginal != null) {
+            AnimationUtils.applyPressAnimation(botaoOpcoesPostOriginal);
+        }
+    }
+
     private void carregarRespostas() {
         if (adapter == null) return;
 
-        if (postAtual != null && postAtual.getRespostas() != null) {
+        if (postAtual != null && postAtual.getRespostas() != null && !postAtual.getRespostas().isEmpty()) {
+            textoVazioRespostas.setVisibility(View.GONE);
+            listaRespostas.setVisibility(View.VISIBLE);
             adapter.atualizarDadosPreservandoVisibilidade(postAtual.getRespostas());
         } else {
+            textoVazioRespostas.setVisibility(View.VISIBLE);
+            listaRespostas.setVisibility(View.GONE);
             adapter.atualizarDados(new ArrayList<>());
         }
     }
@@ -397,7 +440,7 @@ public class RespostasForumActivity extends AppCompatActivity {
 
         LinearLayout container = new LinearLayout(this);
         container.setOrientation(LinearLayout.VERTICAL);
-        container.setPadding(40, 24, 40, 8);
+        container.setPadding(dpToPxInt(16), dpToPxInt(12), dpToPxInt(16), dpToPxInt(8));
 
         EditText inputTitulo = new EditText(this);
         inputTitulo.setHint("Título");
@@ -479,15 +522,6 @@ public class RespostasForumActivity extends AppCompatActivity {
         preencherPostOriginal();
         carregarRespostas();
         ultimoHashPost = calcularHashPostAtual();
-    }
-
-    private void animarClique(View view) {
-        ObjectAnimator diminuirX = ObjectAnimator.ofFloat(view, "scaleX", 1f, 0.96f, 1f);
-        ObjectAnimator diminuirY = ObjectAnimator.ofFloat(view, "scaleY", 1f, 0.96f, 1f);
-        diminuirX.setDuration(120);
-        diminuirY.setDuration(120);
-        diminuirX.start();
-        diminuirY.start();
     }
 
     private void aplicarAvatar(ShapeableImageView imageView, String fotoUri, String nomeAutor) {

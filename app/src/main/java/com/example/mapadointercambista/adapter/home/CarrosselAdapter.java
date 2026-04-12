@@ -16,15 +16,15 @@ public class CarrosselAdapter extends RecyclerView.Adapter<CarrosselAdapter.View
 
     private final int[] imagens;
     private final String[] titulos = {
-            "PROGRAMAS DE INTERCÂMBIO",
-            "DESCUBRA NOVOS DESTINOS",
-            "ENCONTRE SUA AGÊNCIA IDEAL"
+            "Seu próximo intercâmbio começa aqui",
+            "Descubra novos destinos",
+            "Encontre sua agência ideal"
     };
 
     private final String[] subtitulos = {
-            "Confira já os nossos planos de viagens",
-            "Explore países incríveis para estudar",
-            "Veja avaliações e experiências reais"
+            "Confira programas incríveis para sua jornada internacional",
+            "Explore países bem avaliados pela comunidade",
+            "Veja experiências reais antes de escolher"
     };
 
     public CarrosselAdapter(int[] imagens) {

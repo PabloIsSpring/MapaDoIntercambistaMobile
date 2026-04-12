@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -8,25 +7,25 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:background="@color/background_secondary"
-    android:paddingStart="8dp"
-    android:paddingEnd="8dp"
+    android:paddingStart="10dp"
+    android:paddingEnd="10dp"
     android:paddingTop="6dp"
     android:paddingBottom="6dp">
 
     <View
         android:id="@+id/linhaThread"
-        android:layout_width="2dp"
+        android:layout_width="1dp"
         android:layout_height="match_parent"
         android:layout_marginStart="4dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="10dp"
         android:background="@color/thread_line" />
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/fotoPerfilResposta"
-        android:layout_width="34dp"
-        android:layout_height="34dp"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
         android:layout_marginTop="4dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="10dp"
         android:scaleType="centerCrop"
         android:src="@drawable/ic_user"
         app:shapeAppearanceOverlay="@style/CircleImageShape"
@@ -39,10 +38,11 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:orientation="vertical"
-        android:paddingTop="6dp"
-        android:paddingBottom="6dp"
-        android:paddingStart="4dp"
-        android:paddingEnd="4dp">
+        android:background="@drawable/bg_resposta_thread"
+        android:paddingStart="12dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="10dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -91,6 +91,7 @@
                 android:layout_width="18dp"
                 android:layout_height="18dp"
                 android:layout_marginStart="8dp"
+                android:contentDescription="Mais opções"
                 android:src="@drawable/ic_more_vert"
                 android:visibility="gone"
                 app:tint="@color/text_muted" />
@@ -119,12 +120,12 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_action_chip_soft"
                 android:gravity="center_vertical"
-                android:minHeight="30dp"
+                android:minHeight="32dp"
                 android:orientation="horizontal"
                 android:paddingStart="10dp"
-                android:paddingTop="6dp"
+                android:paddingTop="7dp"
                 android:paddingEnd="10dp"
-                android:paddingBottom="6dp">
+                android:paddingBottom="7dp">
 
                 <ImageView
                     android:id="@+id/iconeLikeResposta"
@@ -150,12 +151,12 @@
                 android:layout_marginStart="8dp"
                 android:background="@drawable/bg_action_chip_soft"
                 android:gravity="center_vertical"
-                android:minHeight="30dp"
+                android:minHeight="32dp"
                 android:orientation="horizontal"
                 android:paddingStart="10dp"
-                android:paddingTop="6dp"
+                android:paddingTop="7dp"
                 android:paddingEnd="10dp"
-                android:paddingBottom="6dp">
+                android:paddingBottom="7dp">
 
                 <ImageView
                     android:id="@+id/iconeDislikeResposta"
@@ -181,12 +182,12 @@
                 android:layout_marginStart="8dp"
                 android:background="@drawable/bg_action_chip_soft"
                 android:gravity="center_vertical"
-                android:minHeight="30dp"
+                android:minHeight="32dp"
                 android:orientation="horizontal"
                 android:paddingStart="10dp"
-                android:paddingTop="6dp"
+                android:paddingTop="7dp"
                 android:paddingEnd="10dp"
-                android:paddingBottom="6dp">
+                android:paddingBottom="7dp">
 
                 <ImageView
                     android:layout_width="15dp"
@@ -215,14 +216,19 @@
             android:textColor="@color/color_accent"
             android:textSize="12sp"
             android:textStyle="bold"
-            android:visibility="gone" />
+            android:visibility="gone"
+            android:background="@drawable/bg_action_chip_soft"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"/>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginTop="8dp"
             android:background="@color/divider_color"
-            android:alpha="0.45" />
+            android:alpha="0.40" />
 
     </LinearLayout>
 

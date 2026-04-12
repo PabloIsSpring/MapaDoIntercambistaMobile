@@ -24,7 +24,9 @@ import com.example.mapadointercambista.model.forum.ForumStorage;
 import com.example.mapadointercambista.model.forum.PostForum;
 import com.example.mapadointercambista.model.user.SessionManager;
 import com.example.mapadointercambista.navigation.NavigationHelper;
+import com.example.mapadointercambista.util.AnimationUtils;
 import com.example.mapadointercambista.util.InputSecurityUtils;
+import com.example.mapadointercambista.util.TransitionHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
@@ -78,6 +80,8 @@ public class ForumActivity extends AppCompatActivity {
 
         EditText barraPesquisa = findViewById(R.id.barraPesquisaForum);
         ImageView iconeFiltro = findViewById(R.id.iconeFiltroForum);
+        AnimationUtils.applyPressAnimation(barraPesquisa);
+        AnimationUtils.applyPressAnimation(iconeFiltro);
 
         criterioOrdenacao = getSharedPreferences(PREF_FORUM_UI, MODE_PRIVATE)
                 .getString(KEY_ORDENACAO, "recentes");
@@ -96,7 +100,10 @@ public class ForumActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) { }
         });
 
-        iconeFiltro.setOnClickListener(v -> abrirBottomSheetFiltrosForum());
+        iconeFiltro.setOnClickListener(v -> {
+            AnimationUtils.playBounce(v);
+            abrirBottomSheetFiltrosForum();
+        });
 
         carregarPostsIniciais();
 
@@ -106,8 +113,13 @@ public class ForumActivity extends AppCompatActivity {
                 return;
             }
 
+            AnimationUtils.playBounce(v);
             startActivity(new Intent(this, NovaPublicacaoActivity.class));
+            TransitionHelper.slideForward(this);
         });
+
+        View botaoNovoForum = findViewById(R.id.botaoNovoForum);
+        AnimationUtils.applyPressAnimation(botaoNovoForum);
 
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavigation);
         NavigationHelper.configurarBottomNavigation(this, bottomNav, R.id.nav_forum);
@@ -246,9 +258,24 @@ public class ForumActivity extends AppCompatActivity {
         View view = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_filtros_forum, null);
         dialog.setContentView(view);
 
+        View bottomSheet = dialog.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+        if (bottomSheet != null) {
+            bottomSheet.setBackgroundResource(android.R.color.transparent);
+        }
+
         RadioButton radioRecentes = view.findViewById(R.id.radioRecentesForum);
         RadioButton radioCurtidos = view.findViewById(R.id.radioCurtidosForum);
         RadioButton radioRespondidos = view.findViewById(R.id.radioRespondidosForum);
+
+        View.OnClickListener selecionarUnico = v -> {
+            radioRecentes.setChecked(v == radioRecentes);
+            radioCurtidos.setChecked(v == radioCurtidos);
+            radioRespondidos.setChecked(v == radioRespondidos);
+        };
+
+        radioRecentes.setOnClickListener(selecionarUnico);
+        radioCurtidos.setOnClickListener(selecionarUnico);
+        radioRespondidos.setOnClickListener(selecionarUnico);
 
         switch (criterioOrdenacao) {
             case "curtidos":

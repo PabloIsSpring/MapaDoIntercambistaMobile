@@ -26,7 +26,9 @@ import com.example.mapadointercambista.model.destino.DestinoStorage;
 import com.example.mapadointercambista.model.destino.FavoritosStorage;
 import com.example.mapadointercambista.model.user.SessionManager;
 import com.example.mapadointercambista.navigation.NavigationHelper;
+import com.example.mapadointercambista.util.AnimationUtils;
 import com.example.mapadointercambista.util.AvatarUtils;
+import com.example.mapadointercambista.util.TransitionHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
@@ -78,7 +80,9 @@ public class ContaActivity extends AppCompatActivity {
 
     private DestinoAdapter favoritosAdapter;
     private final List<Destino> favoritosExibidos = new ArrayList<>();
-
+    private TextView textoNumeroFavoritosConta;
+    private TextView textoNumeroPostsConta;
+    private TextView textoNumeroAvaliacoesConta;
     private ActivityResultLauncher<Intent> launcherGaleria;
 
     @Override
@@ -96,6 +100,7 @@ public class ContaActivity extends AppCompatActivity {
         inicializarViews();
         configurarListaFavoritos();
         configurarAcoes();
+        aplicarMicrointeracoesConta();
         atualizarInterface();
 
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavigation);
@@ -189,6 +194,10 @@ public class ContaActivity extends AppCompatActivity {
         itemSuporte = findViewById(R.id.itemSuporte);
         itemTermos = findViewById(R.id.itemTermos);
         itemAdicionarConta = findViewById(R.id.itemAdicionarConta);
+
+        textoNumeroFavoritosConta = findViewById(R.id.textoNumeroFavoritosConta);
+        textoNumeroPostsConta = findViewById(R.id.textoNumeroPostsConta);
+        textoNumeroAvaliacoesConta = findViewById(R.id.textoNumeroAvaliacoesConta);
     }
 
     private void configurarAcoes() {
@@ -197,6 +206,7 @@ public class ContaActivity extends AppCompatActivity {
                 Toast.makeText(this, "Entre em uma conta para alterar a foto", Toast.LENGTH_SHORT).show();
                 return;
             }
+            AnimationUtils.playBounce(v);
             selecionarFoto();
         });
 
@@ -205,18 +215,22 @@ public class ContaActivity extends AppCompatActivity {
                 Toast.makeText(this, "Entre em uma conta para alterar a foto", Toast.LENGTH_SHORT).show();
                 return;
             }
+            AnimationUtils.playBounce(v);
             selecionarFoto();
         });
 
-        botaoEntrarConta.setOnClickListener(v ->
-                startActivity(new Intent(this, LoginActivity.class))
-        );
+        botaoEntrarConta.setOnClickListener(v -> {
+            startActivity(new Intent(this, LoginActivity.class));
+            TransitionHelper.slideForward(this);
+        });
 
-        botaoCriarConta.setOnClickListener(v ->
-                startActivity(new Intent(this, CadastroActivity.class))
-        );
+        botaoCriarConta.setOnClickListener(v -> {
+            startActivity(new Intent(this, CadastroActivity.class));
+            TransitionHelper.slideForward(this);
+        });
 
         botaoSairConta.setOnClickListener(v -> {
+            AnimationUtils.playBounce(v);
             sessionManager.logout();
             Toast.makeText(this, "Você saiu da conta", Toast.LENGTH_SHORT).show();
             atualizarInterface();
@@ -227,6 +241,8 @@ public class ContaActivity extends AppCompatActivity {
                 Toast.makeText(this, "Entre em uma conta para ver seus favoritos", Toast.LENGTH_SHORT).show();
                 return;
             }
+
+            AnimationUtils.playBounce(v);
 
             if (favoritosExibidos.isEmpty()) {
                 Toast.makeText(this, "Você ainda não favoritou nenhum destino", Toast.LENGTH_SHORT).show();
@@ -245,7 +261,7 @@ public class ContaActivity extends AppCompatActivity {
                 Toast.makeText(this, "Entre em uma conta para editar seu perfil", Toast.LENGTH_SHORT).show();
                 return;
             }
-            selecionarFoto();
+            Toast.makeText(this, "A edição completa do perfil será liberada em breve", Toast.LENGTH_SHORT).show();
         });
 
         itemIdioma.setOnClickListener(v ->
@@ -285,6 +301,29 @@ public class ContaActivity extends AppCompatActivity {
         );
     }
 
+    private void aplicarMicrointeracoesConta() {
+        AnimationUtils.applyPressAnimation(imagemPerfilConta);
+        AnimationUtils.applyPressAnimation(textoAlterarFoto);
+
+        AnimationUtils.applyPressAnimation(botaoEntrarConta);
+        AnimationUtils.applyPressAnimation(botaoCriarConta);
+        AnimationUtils.applyPressAnimation(botaoSairConta);
+
+        AnimationUtils.applyPressAnimation(atalhoFavoritos);
+        AnimationUtils.applyPressAnimation(atalhoConversas);
+        AnimationUtils.applyPressAnimation(atalhoEditarPerfil);
+
+        AnimationUtils.applyPressAnimation(itemIdioma);
+        AnimationUtils.applyPressAnimation(itemNotificacoes);
+        AnimationUtils.applyPressAnimation(itemLocalizacao);
+        AnimationUtils.applyPressAnimation(itemAcessibilidade);
+        AnimationUtils.applyPressAnimation(itemPrivacidade);
+        AnimationUtils.applyPressAnimation(itemSeguranca);
+        AnimationUtils.applyPressAnimation(itemSuporte);
+        AnimationUtils.applyPressAnimation(itemTermos);
+        AnimationUtils.applyPressAnimation(itemAdicionarConta);
+    }
+
     private void configurarListaFavoritos() {
         listaFavoritosConta.setLayoutManager(
                 new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
@@ -293,7 +332,7 @@ public class ContaActivity extends AppCompatActivity {
         listaFavoritosConta.setItemViewCacheSize(6);
         listaFavoritosConta.setItemAnimator(null);
 
-        favoritosAdapter = new DestinoAdapter(favoritosExibidos);
+        favoritosAdapter = new DestinoAdapter(this, favoritosExibidos);
         listaFavoritosConta.setAdapter(favoritosAdapter);
     }
 
@@ -316,8 +355,11 @@ public class ContaActivity extends AppCompatActivity {
         cardFavoritosConta.setVisibility(View.VISIBLE);
         blocoConfiguracoesConta.setVisibility(View.VISIBLE);
 
-        textoTituloSecaoConfiguracoes.setText("Configurações");
-        textoSubtituloHeroConta.setText("Carteirinha do Intercambista");
+
+        textoTituloSecaoConfiguracoes.setText("Preferências e conta");
+        textoSubtituloHeroConta.setText("Seu perfil no Mapa do Intercambista");
+        textoAlterarFoto.setText("Alterar foto de perfil");
+        botaoSairConta.setVisibility(View.VISIBLE);
 
         preencherDadosUsuario();
         carregarFavoritos();
@@ -330,11 +372,12 @@ public class ContaActivity extends AppCompatActivity {
         cardFavoritosConta.setVisibility(View.GONE);
         blocoConfiguracoesConta.setVisibility(View.VISIBLE);
 
-        textoNomeUsuarioConta.setText("Visitante");
-        textoEmailUsuarioConta.setText("Explore o app livremente e entre em uma conta para interagir");
+
+        textoEmailUsuarioConta.setText("Entre para salvar favoritos, participar do fórum e personalizar seu perfil");
         textoAlterarFoto.setText("Faça login para personalizar seu perfil");
-        textoSubtituloHeroConta.setText("Mapa do Intercambista");
-        textoTituloSecaoConfiguracoes.setText("Explorar e configurações");
+        textoSubtituloHeroConta.setText("Seu espaço no Mapa do Intercambista");
+        textoTituloSecaoConfiguracoes.setText("Preferências e conta");
+        botaoSairConta.setVisibility(View.GONE);
 
         Glide.with(this).clear(imagemPerfilConta);
         imagemPerfilConta.setImageDrawable(null);
@@ -342,6 +385,10 @@ public class ContaActivity extends AppCompatActivity {
 
         Bitmap avatar = AvatarUtils.criarAvatarComInicial(this, "Visitante", 120);
         imagemPerfilConta.setImageBitmap(avatar);
+
+        textoNumeroFavoritosConta.setText("0");
+        textoNumeroPostsConta.setText("0");
+        textoNumeroAvaliacoesConta.setText("0");
 
         favoritosExibidos.clear();
         favoritosAdapter.notifyDataSetChanged();
@@ -372,7 +419,7 @@ public class ContaActivity extends AppCompatActivity {
 
         textoNomeUsuarioConta.setText(nome != null && !nome.isEmpty() ? nome : "Usuário");
         textoEmailUsuarioConta.setText(email != null ? email : "");
-        textoAlterarFoto.setText("Toque para alterar a foto");
+        textoAlterarFoto.setText("Alterar foto de perfil");
 
         Glide.with(this).clear(imagemPerfilConta);
         imagemPerfilConta.setImageDrawable(null);
@@ -401,15 +448,20 @@ public class ContaActivity extends AppCompatActivity {
         Set<String> favoritosIds = favoritosStorage.carregarFavoritos(emailUsuario);
         List<Destino> todosDestinos = destinoStorage.carregarDestinos();
 
+
         for (Destino destino : todosDestinos) {
             if (favoritosIds.contains(destino.getId())) {
                 favoritosExibidos.add(destino);
             }
         }
 
-        favoritosAdapter.notifyItemRangeChanged(0, favoritosExibidos.size());
+        favoritosAdapter.notifyDataSetChanged();
 
         int quantidade = favoritosExibidos.size();
+
+        textoNumeroFavoritosConta.setText(String.valueOf(quantidade));
+        textoNumeroPostsConta.setText("0");
+        textoNumeroAvaliacoesConta.setText("0");
 
         if (quantidade == 0) {
             textoResumoFavoritosConta.setText("Seus destinos favoritos aparecerão aqui");
@@ -422,5 +474,7 @@ public class ContaActivity extends AppCompatActivity {
             textoVazioFavoritosConta.setVisibility(View.GONE);
             listaFavoritosConta.setVisibility(View.VISIBLE);
         }
+
+
     }
 }

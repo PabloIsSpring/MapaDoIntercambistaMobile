@@ -37,15 +37,16 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Respostas"
+                android:text="Discussão"
                 style="@style/TextScreenTitle" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="Veja as respostas desta publicação"
-                android:textColor="@color/text_muted" />
+                android:text="Acompanhe respostas e participe da conversa"
+                android:textColor="@color/text_secondary"
+                android:textSize="14sp" />
         </LinearLayout>
 
         <androidx.core.widget.NestedScrollView
@@ -70,8 +71,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     app:cardBackgroundColor="@color/card_background"
-                    app:cardCornerRadius="18dp"
-                    app:cardElevation="2dp">
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="3dp"
+                    app:cardUseCompatPadding="true"
+                    app:cardPreventCornerOverlap="true">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -282,7 +285,7 @@
                     android:layout_marginTop="12dp"
                     app:cardBackgroundColor="@color/card_background"
                     app:cardCornerRadius="18dp"
-                    app:cardElevation="1dp">
+                    app:cardElevation="2dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -312,7 +315,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:paddingEnd="10dp"
-                            android:text="Postar sua resposta"
+                            android:text="Escreva uma resposta para esta conversa"
                             android:textColor="@color/text_muted"
                             android:textSize="15sp" />
 
@@ -335,12 +338,23 @@
                     android:id="@+id/textoSecaoComentarios"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginBottom="6dp"
-                    android:text="Comentários"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="13sp"
+                    android:layout_marginTop="18dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="Respostas da comunidade"
+                    android:textColor="@color/text_primary"
+                    android:textSize="15sp"
                     android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/textoVazioRespostas"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center"
+                    android:text="Ainda não há respostas. Seja o primeiro a participar."
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp"
+                    android:visibility="gone" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/listaRespostas"

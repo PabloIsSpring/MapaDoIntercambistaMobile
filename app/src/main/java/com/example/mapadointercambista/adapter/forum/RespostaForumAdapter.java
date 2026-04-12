@@ -29,6 +29,7 @@ import com.example.mapadointercambista.model.forum.ForumStorage;
 import com.example.mapadointercambista.model.forum.PostForum;
 import com.example.mapadointercambista.model.forum.RespostaForum;
 import com.example.mapadointercambista.model.user.SessionManager;
+import com.example.mapadointercambista.util.AnimationUtils;
 import com.example.mapadointercambista.util.AvatarUtils;
 import com.example.mapadointercambista.util.ForumLimits;
 import com.example.mapadointercambista.util.InputSecurityUtils;
@@ -41,15 +42,21 @@ import java.util.Map;
 
 public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdapter.ViewHolder> {
 
-    private static final int MAX_NIVEL_VISUAL = 3;
-    private static final int INDENT_DP = 12;
-
+    private static final int MAX_NIVEL_VISUAL = 2;
+    private static final int INDENT_DP = 10;
     private final Context context;
     private final String postId;
     private final List<RespostaForum> lista;
     private final SessionManager sessionManager;
     private final ForumStorage forumStorage;
     private final LruCache<String, Bitmap> avatarCache = new LruCache<>(60);
+    private int dpToPxInt(int dp) {
+        return (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                dp,
+                context.getResources().getDisplayMetrics()
+        );
+    }
 
     public RespostaForumAdapter(Context context, String postId, List<RespostaForum> lista, boolean usuarioLogado) {
         this.context = context;
@@ -119,6 +126,8 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
     public RespostaForumAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_resposta_forum, parent, false);
+
+        AnimationUtils.applyPressAnimation(view);
         return new ViewHolder(view);
     }
 
@@ -158,6 +167,18 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
         holder.botaoOpcoesResposta.setVisibility(ehAutor ? View.VISIBLE : View.GONE);
         holder.botaoOpcoesResposta.setOnClickListener(v -> abrirMenuResposta(v, resposta));
 
+        AnimationUtils.applyPressAnimation(holder.botaoLike);
+        AnimationUtils.applyPressAnimation(holder.botaoDislike);
+        AnimationUtils.applyPressAnimation(holder.botaoResponder);
+
+        if (holder.botaoOpcoesResposta != null) {
+            AnimationUtils.applyPressAnimation(holder.botaoOpcoesResposta);
+        }
+
+        if (holder.textoToggleRespostas != null) {
+            AnimationUtils.applyPressAnimation(holder.textoToggleRespostas);
+        }
+
         aplicarIndentacao(holder, resposta.getNivel());
         atualizarEstadoVisualReacoes(holder, resposta);
 
@@ -170,7 +191,7 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
             if (!v.isEnabled()) return;
             v.setEnabled(false);
 
-            animarClique(holder.botaoLike);
+            AnimationUtils.playBounce(holder.botaoLike);
 
             boolean sucesso = forumStorage.toggleLikeResposta(
                     postId,
@@ -200,7 +221,7 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
             if (!v.isEnabled()) return;
             v.setEnabled(false);
 
-            animarClique(holder.botaoDislike);
+            AnimationUtils.playBounce(holder.botaoDislike);
 
             boolean sucesso = forumStorage.toggleDislikeResposta(
                     postId,
@@ -221,7 +242,10 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
             v.postDelayed(() -> v.setEnabled(true), 250);
         });
 
-        holder.botaoResponder.setOnClickListener(v -> abrirDialogNovaRespostaFilha(resposta));
+        holder.botaoResponder.setOnClickListener(v -> {
+            AnimationUtils.playBounce(v);
+            abrirDialogNovaRespostaFilha(resposta);
+        });
 
         if (resposta.isTemRespostas()) {
             holder.textoToggleRespostas.setVisibility(View.VISIBLE);
@@ -229,7 +253,11 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
             boolean filhasVisiveis = temFilhasVisiveis(position, resposta.getNivel());
 
             if (filhasVisiveis) {
-                holder.textoToggleRespostas.setText("Ocultar respostas");
+                holder.textoToggleRespostas.setText(
+                        totalFilhasDiretas == 1
+                                ? "Ocultar 1 resposta"
+                                : "Ocultar " + totalFilhasDiretas + " respostas"
+                );
             } else {
                 holder.textoToggleRespostas.setText(
                         totalFilhasDiretas == 1
@@ -239,6 +267,7 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
             }
 
             holder.textoToggleRespostas.setOnClickListener(v -> {
+                AnimationUtils.playBounce(v);
                 alternarRespostasFilhas(position, resposta.getNivel());
                 notifyDataSetChanged();
             });
@@ -284,15 +313,6 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
                 dp,
                 context.getResources().getDisplayMetrics()
         );
-    }
-
-    private void animarClique(View view) {
-        ObjectAnimator diminuirX = ObjectAnimator.ofFloat(view, "scaleX", 1f, 0.96f, 1f);
-        ObjectAnimator diminuirY = ObjectAnimator.ofFloat(view, "scaleY", 1f, 0.96f, 1f);
-        diminuirX.setDuration(120);
-        diminuirY.setDuration(120);
-        diminuirX.start();
-        diminuirY.start();
     }
 
     private RespostaForum buscarRespostaAtualizada(String respostaId) {
@@ -382,7 +402,7 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
         EditText input = new EditText(context);
         input.setHint("Digite sua resposta");
         input.setMinLines(3);
-        input.setPadding(40, 30, 40, 30);
+        input.setPadding(dpToPxInt(16), dpToPxInt(14), dpToPxInt(16), dpToPxInt(14));
         input.setFilters(new InputFilter[]{
                 new InputFilter.LengthFilter(ForumLimits.MAX_RESPOSTA)
         });
@@ -461,7 +481,7 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
         EditText input = new EditText(context);
         input.setText(textoSeguro(resposta.getMensagem(), ""));
         input.setMinLines(3);
-        input.setPadding(40, 30, 40, 30);
+        input.setPadding(dpToPxInt(16), dpToPxInt(14), dpToPxInt(16), dpToPxInt(14));
         input.setFilters(new InputFilter[]{
                 new InputFilter.LengthFilter(ForumLimits.MAX_RESPOSTA)
         });

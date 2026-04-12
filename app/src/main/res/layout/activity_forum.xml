@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     android:id="@+id/main"
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -23,23 +22,23 @@
             android:background="@color/background_primary"
             android:orientation="vertical"
             android:paddingStart="16dp"
-            android:paddingTop="18dp"
+            android:paddingTop="20dp"
             android:paddingEnd="16dp"
-            android:paddingBottom="12dp">
+            android:paddingBottom="14dp">
 
             <TextView
                 android:id="@+id/tituloForum"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Fórum da comunidade"
+                android:text="Comunidade"
                 style="@style/TextScreenTitle" />
 
             <TextView
                 android:id="@+id/subtituloForum"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="Explore as discussões, compartilhe experiências e tire dúvidas"
+                android:layout_marginTop="6dp"
+                android:text="Compartilhe experiências, tire dúvidas e veja relatos reais de intercâmbio"
                 style="@style/TextBodySecondary" />
         </LinearLayout>
 
@@ -50,18 +49,18 @@
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingStart="16dp"
-            android:paddingTop="12dp"
+            android:paddingTop="10dp"
             android:paddingEnd="16dp"
-            android:paddingBottom="12dp">
+            android:paddingBottom="14dp">
 
             <androidx.cardview.widget.CardView
                 android:layout_width="0dp"
-                android:layout_height="54dp"
+                android:layout_height="56dp"
                 android:layout_weight="1"
                 android:layout_marginEnd="10dp"
                 app:cardBackgroundColor="@color/card_background"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="3dp">
+                app:cardCornerRadius="18dp"
+                app:cardElevation="2dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -83,7 +82,7 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:background="@null"
-                        android:hint="Pesquisar publicações..."
+                        android:hint="Buscar autor, título ou publicação"
                         android:paddingStart="10dp"
                         android:textColor="@color/text_primary"
                         android:textColorHint="@color/text_secondary"
@@ -93,21 +92,22 @@
                         android:id="@+id/iconeFiltroForum"
                         android:layout_width="20dp"
                         android:layout_height="20dp"
+                        android:contentDescription="Abrir filtros"
                         android:src="@drawable/ic_filter"
-                        app:tint="@color/text_secondary" />
+                        app:tint="@color/brand_blue" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/botaoNovoForum"
                 android:layout_width="wrap_content"
-                android:layout_height="54dp"
-                android:text="Novo"
+                android:layout_height="56dp"
+                android:text="Novo post"
                 android:textAllCaps="false"
                 android:textColor="@color/text_on_primary"
                 android:textStyle="bold"
                 app:backgroundTint="@color/color_accent"
-                app:cornerRadius="16dp"
+                app:cornerRadius="18dp"
                 app:icon="@drawable/ic_add_circle"
                 app:iconPadding="8dp"
                 app:iconTint="@color/text_on_primary" />
@@ -119,7 +119,7 @@
             android:background="@color/background_primary"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
-            android:paddingBottom="10dp">
+            android:paddingBottom="12dp">
 
             <TextView
                 android:id="@+id/textoResultadosForum"
@@ -140,8 +140,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:clipToPadding="false"
-                android:paddingTop="8dp"
-                android:paddingBottom="12dp" />
+                android:paddingTop="10dp"
+                android:paddingBottom="14dp" />
 
             <LinearLayout
                 android:id="@+id/containerVazioForum"
@@ -153,8 +153,8 @@
                 android:visibility="gone">
 
                 <ImageView
-                    android:layout_width="52dp"
-                    android:layout_height="52dp"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
                     android:src="@drawable/ic_chat"
                     app:tint="@color/text_muted" />
 
@@ -165,7 +165,7 @@
                     android:layout_marginTop="12dp"
                     android:text="Nenhuma publicação encontrada"
                     android:textColor="@color/text_muted"
-                    android:textSize="16sp"
+                    android:textSize="17sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -173,7 +173,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
                     android:gravity="center"
-                    android:text="Tente outro termo de busca ou crie uma nova publicação"
+                    android:text="Tente outro termo de busca ou crie um novo post"
                     android:textColor="@color/text_secondary"
                     android:textSize="14sp" />
             </LinearLayout>

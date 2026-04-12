@@ -20,6 +20,7 @@ import com.example.mapadointercambista.model.user.SessionManager;
 import com.example.mapadointercambista.navigation.NavigationHelper;
 import com.example.mapadointercambista.util.InputSecurityUtils;
 import com.example.mapadointercambista.util.TimeUtils;
+import com.example.mapadointercambista.util.TransitionHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 
@@ -67,7 +68,10 @@ public class NovaPublicacaoActivity extends AppCompatActivity {
         textoContadorMensagem = findViewById(R.id.textoContadorMensagemNovaPublicacao);
         botaoPublicar = findViewById(R.id.botaoPublicarNovaPublicacao);
 
-        botaoVoltar.setOnClickListener(v -> finish());
+        botaoVoltar.setOnClickListener(v -> {
+            finish();
+            TransitionHelper.slideBack(this);
+        });
     }
 
     private void configurarLimites() {

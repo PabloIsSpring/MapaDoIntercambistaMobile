@@ -3,11 +3,11 @@
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="172dp"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginEnd="12dp"
-    app:cardCornerRadius="18dp"
-    app:cardElevation="4dp"
+    android:layout_margin="6dp"
+    app:cardCornerRadius="22dp"
+    app:cardElevation="3dp"
     app:cardBackgroundColor="@color/card_background">
 
     <LinearLayout
@@ -17,60 +17,90 @@
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="118dp">
+            android:layout_height="136dp">
 
             <ImageView
                 android:id="@+id/imagemDestino"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="centerCrop"/>
+                android:contentDescription="Imagem do destino"
+                android:scaleType="centerCrop" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/overlay_dark_soft"
+                android:alpha="0.10" />
 
             <ImageView
                 android:id="@+id/iconeFavoritoDestino"
-                android:layout_width="34dp"
-                android:layout_height="34dp"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
                 android:layout_gravity="top|end"
                 android:layout_margin="10dp"
                 android:background="@drawable/bg_carrossel_nav"
-                android:padding="7dp"
+                android:padding="8dp"
                 android:src="@drawable/ic_favorite"
-                app:tint="@color/white"/>
+                app:tint="@color/white" />
         </FrameLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingStart="10dp"
-            android:paddingTop="10dp"
-            android:paddingEnd="10dp"
-            android:paddingBottom="10dp">
+            android:paddingStart="12dp"
+            android:paddingTop="12dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="14dp">
 
             <TextView
                 android:id="@+id/textoDestino"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:ellipsize="end"
                 android:textColor="@color/text_primary"
-                android:textSize="15sp"
-                android:textStyle="bold"/>
-
-            <RatingBar
-                android:id="@+id/ratingDestino"
-                style="?android:attr/ratingBarStyleSmall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:numStars="5"
-                android:stepSize="0.5"/>
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/textoReviews"
-                android:layout_width="wrap_content"
+                android:id="@+id/textoSubinfoDestino"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="4.8 (120 avaliações)"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:text="País • Idioma"
                 android:textColor="@color/text_secondary"
-                android:textSize="12sp"/>
+                android:textSize="13sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <RatingBar
+                    android:id="@+id/ratingDestino"
+                    style="?android:attr/ratingBarStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:isIndicator="true"
+                    android:numStars="5"
+                    android:stepSize="0.5" />
+
+                <TextView
+                    android:id="@+id/textoReviews"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:text="4.8 (120 avaliações)"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp" />
+            </LinearLayout>
 
         </LinearLayout>
 

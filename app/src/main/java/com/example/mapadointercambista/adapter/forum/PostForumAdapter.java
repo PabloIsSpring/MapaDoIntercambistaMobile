@@ -1,6 +1,7 @@
 package com.example.mapadointercambista.adapter.forum;
 
 import android.animation.ObjectAnimator;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -8,6 +9,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.text.InputFilter;
 import android.util.LruCache;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,9 +30,11 @@ import com.example.mapadointercambista.activity.forum.RespostasForumActivity;
 import com.example.mapadointercambista.model.forum.ForumStorage;
 import com.example.mapadointercambista.model.forum.PostForum;
 import com.example.mapadointercambista.model.user.SessionManager;
+import com.example.mapadointercambista.util.AnimationUtils;
 import com.example.mapadointercambista.util.AvatarUtils;
 import com.example.mapadointercambista.util.ForumLimits;
 import com.example.mapadointercambista.util.InputSecurityUtils;
+import com.example.mapadointercambista.util.TransitionHelper;
 import com.google.android.material.imageview.ShapeableImageView;
 
 import java.util.List;
@@ -101,6 +105,8 @@ public class PostForumAdapter extends RecyclerView.Adapter<PostForumAdapter.View
     public PostForumAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_post_forum, parent, false);
+
+        AnimationUtils.applyPressAnimation(view);
         return new ViewHolder(view);
     }
 
@@ -137,6 +143,14 @@ public class PostForumAdapter extends RecyclerView.Adapter<PostForumAdapter.View
 
         atualizarEstadoVisualReacoes(holder, post);
 
+        AnimationUtils.applyPressAnimation(holder.botaoLikeContainer);
+        AnimationUtils.applyPressAnimation(holder.botaoDislikeContainer);
+        AnimationUtils.applyPressAnimation(holder.botaoRespostas);
+
+        if (holder.botaoOpcoesPost != null) {
+            AnimationUtils.applyPressAnimation(holder.botaoOpcoesPost);
+        }
+
         holder.botaoLikeContainer.setOnClickListener(v -> {
             if (!sessionManager.estaLogado()) {
                 Toast.makeText(context, "Entre em uma conta para interagir.", Toast.LENGTH_SHORT).show();
@@ -146,7 +160,7 @@ public class PostForumAdapter extends RecyclerView.Adapter<PostForumAdapter.View
             if (!v.isEnabled()) return;
             v.setEnabled(false);
 
-            animarClique(holder.botaoLikeContainer);
+            AnimationUtils.playBounce(holder.botaoLikeContainer);
 
             boolean sucesso = forumStorage.toggleLikePost(post.getId(), sessionManager.getEmailUsuario());
             if (sucesso) {
@@ -171,7 +185,7 @@ public class PostForumAdapter extends RecyclerView.Adapter<PostForumAdapter.View
             if (!v.isEnabled()) return;
             v.setEnabled(false);
 
-            animarClique(holder.botaoDislikeContainer);
+            AnimationUtils.playBounce(holder.botaoDislikeContainer);
 
             boolean sucesso = forumStorage.toggleDislikePost(post.getId(), sessionManager.getEmailUsuario());
             if (sucesso) {
@@ -188,19 +202,23 @@ public class PostForumAdapter extends RecyclerView.Adapter<PostForumAdapter.View
         });
 
         holder.botaoRespostas.setOnClickListener(v -> {
+            AnimationUtils.playBounce(v);
+
             Intent intent = new Intent(context, RespostasForumActivity.class);
             intent.putExtra("postSelecionado", post);
             context.startActivity(intent);
+            if (context instanceof Activity) {
+                TransitionHelper.slideForward((Activity) context);
+            }
         });
     }
 
-    private void animarClique(View view) {
-        ObjectAnimator diminuirX = ObjectAnimator.ofFloat(view, "scaleX", 1f, 0.96f, 1f);
-        ObjectAnimator diminuirY = ObjectAnimator.ofFloat(view, "scaleY", 1f, 0.96f, 1f);
-        diminuirX.setDuration(120);
-        diminuirY.setDuration(120);
-        diminuirX.start();
-        diminuirY.start();
+    private int dpToPxInt(int dp) {
+        return (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                dp,
+                context.getResources().getDisplayMetrics()
+        );
     }
 
     private void aplicarAvatar(ShapeableImageView imageView, String fotoUri, String nomeAutor) {
@@ -294,7 +312,7 @@ public class PostForumAdapter extends RecyclerView.Adapter<PostForumAdapter.View
     private void abrirDialogEditarPost(PostForum post) {
         LinearLayout container = new LinearLayout(context);
         container.setOrientation(LinearLayout.VERTICAL);
-        container.setPadding(40, 24, 40, 8);
+        container.setPadding(dpToPxInt(16), dpToPxInt(12), dpToPxInt(16), dpToPxInt(8));
 
         EditText inputTitulo = new EditText(context);
         inputTitulo.setHint("Título");

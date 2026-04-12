@@ -20,6 +20,7 @@ import com.example.mapadointercambista.network.ApiService;
 import com.example.mapadointercambista.util.EmailUtils;
 import com.example.mapadointercambista.util.FiltroSenha;
 import com.example.mapadointercambista.util.SenhaUtils;
+import com.example.mapadointercambista.util.TransitionHelper;
 import com.google.android.material.button.MaterialButton;
 
 import retrofit2.Call;
@@ -69,7 +70,10 @@ public class CadastroActivity extends AppCompatActivity {
         olhoSenha.setOnClickListener(v -> alternarSenhaPrincipal());
         olhoConfirmarSenha.setOnClickListener(v -> alternarConfirmacaoSenha());
 
-        findViewById(R.id.botaoVoltarCadastro).setOnClickListener(v -> finish());
+        findViewById(R.id.botaoVoltarCadastro).setOnClickListener(v -> {
+            finish();
+            TransitionHelper.slideBack(this);
+        });
 
         botaoCadastrar.setOnClickListener(v -> {
             String nome = inputNome.getText().toString().trim();

@@ -29,6 +29,7 @@ import com.example.mapadointercambista.navigation.NavigationHelper;
 import com.example.mapadointercambista.util.InputSecurityUtils;
 import com.example.mapadointercambista.util.ImageUtils;
 import com.example.mapadointercambista.util.TimeUtils;
+import com.example.mapadointercambista.util.TransitionHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 
@@ -117,7 +118,10 @@ public class DetalheDestinoActivity extends AppCompatActivity {
         );
         listaAvaliacoes.setAdapter(avaliacaoAdapter);
 
-        botaoVoltar.setOnClickListener(v -> finish());
+        botaoVoltar.setOnClickListener(v -> {
+            finish();
+            TransitionHelper.slideBack(this);
+        });
 
         botaoFavoritoDestino.setOnClickListener(v -> {
             if (!sessionManager.estaLogado()) {

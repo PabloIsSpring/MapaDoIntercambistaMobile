@@ -22,6 +22,7 @@ import com.example.mapadointercambista.network.ApiService;
 import com.example.mapadointercambista.util.EmailUtils;
 import com.example.mapadointercambista.util.FiltroSenha;
 import com.example.mapadointercambista.util.SenhaUtils;
+import com.example.mapadointercambista.util.TransitionHelper;
 import com.google.android.material.button.MaterialButton;
 
 import retrofit2.Call;
@@ -59,7 +60,10 @@ public class LoginActivity extends AppCompatActivity {
 
         iconeOlho.setOnClickListener(v -> alternarVisibilidadeSenha());
 
-        findViewById(R.id.botaoVoltar).setOnClickListener(v -> finish());
+        findViewById(R.id.botaoVoltar).setOnClickListener(v -> {
+            finish();
+            TransitionHelper.slideBack(this);
+        });
 
         findViewById(R.id.textoCriarConta).setOnClickListener(v ->
                 startActivity(new Intent(LoginActivity.this, CadastroActivity.class))

@@ -1,61 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
+    android:background="@drawable/bg_bottomsheet_handle"
     android:paddingStart="20dp"
-    android:paddingTop="20dp"
+    android:paddingTop="14dp"
     android:paddingEnd="20dp"
     android:paddingBottom="24dp">
+
+    <View
+        android:layout_width="42dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="16dp"
+        android:background="@color/divider_color" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Filtros do fórum"
+        android:text="Organizar publicações"
+        android:textColor="@color/text_primary"
         android:textSize="20sp"
-        android:textStyle="bold"
-        android:textColor="@color/text_primary"/>
+        android:textStyle="bold" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:text="Escolha como deseja organizar as publicações"
-        android:textSize="14sp"
-        android:textColor="@color/text_secondary"/>
+        android:text="Escolha como deseja ordenar os posts da comunidade"
+        android:textColor="@color/text_secondary"
+        android:textSize="14sp" />
 
-    <RadioGroup
+    <LinearLayout
         android:id="@+id/radioGroupOrdenacaoForum"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="18dp"
         android:orientation="vertical">
 
-        <RadioButton
-            android:id="@+id/radioRecentesForum"
-            android:layout_width="wrap_content"
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Mais recentes"
-            android:textColor="@color/text_primary"/>
+            android:layout_marginBottom="10dp"
+            app:cardBackgroundColor="@color/card_background"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/divider_color"
+            app:strokeWidth="1dp">
 
-        <RadioButton
-            android:id="@+id/radioCurtidosForum"
-            android:layout_width="wrap_content"
+            <RadioButton
+                android:id="@+id/radioRecentesForum"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/brand_blue"
+                android:paddingStart="16dp"
+                android:paddingTop="16dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="16dp"
+                android:text="Mais recentes"
+                android:textColor="@color/text_primary"
+                android:textSize="15sp" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:text="Mais curtidos"
-            android:textColor="@color/text_primary"/>
+            android:layout_marginBottom="10dp"
+            app:cardBackgroundColor="@color/card_background"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/divider_color"
+            app:strokeWidth="1dp">
 
-        <RadioButton
-            android:id="@+id/radioRespondidosForum"
-            android:layout_width="wrap_content"
+            <RadioButton
+                android:id="@+id/radioCurtidosForum"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/brand_blue"
+                android:paddingStart="16dp"
+                android:paddingTop="16dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="16dp"
+                android:text="Mais curtidos"
+                android:textColor="@color/text_primary"
+                android:textSize="15sp" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:text="Mais respondidos"
-            android:textColor="@color/text_primary"/>
+            app:cardBackgroundColor="@color/card_background"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/divider_color"
+            app:strokeWidth="1dp">
 
-    </RadioGroup>
+            <RadioButton
+                android:id="@+id/radioRespondidosForum"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/brand_blue"
+                android:paddingStart="16dp"
+                android:paddingTop="16dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="16dp"
+                android:text="Mais respondidos"
+                android:textColor="@color/text_primary"
+                android:textSize="15sp" />
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -68,11 +125,12 @@
             android:id="@+id/botaoFecharFiltrosForum"
             android:layout_width="wrap_content"
             android:layout_height="48dp"
-            android:text="Fechar"
+            android:text="Cancelar"
             android:textAllCaps="false"
-            android:textColor="@color/color_accent"
-            app:backgroundTint="@color/color_primary_light"
-            app:cornerRadius="14dp"/>
+            android:textColor="@color/brand_blue"
+            android:textStyle="bold"
+            app:backgroundTint="@color/brand_blue_soft"
+            app:cornerRadius="16dp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/botaoAplicarFiltrosForum"
@@ -82,8 +140,9 @@
             android:text="Aplicar"
             android:textAllCaps="false"
             android:textColor="@color/text_on_primary"
+            android:textStyle="bold"
             app:backgroundTint="@color/color_accent"
-            app:cornerRadius="14dp"/>
+            app:cornerRadius="16dp" />
 
     </LinearLayout>
 

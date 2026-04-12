@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <com.google.android.material.bottomnavigation.BottomNavigationView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/bottomNavigation"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="64dp"
     android:layout_gravity="bottom"
-    android:background="@color/color_primary_dark"
-    android:paddingTop="6dp"
-    android:paddingBottom="6dp"
+    android:minHeight="68dp"
+    android:background="@color/card_background"
+    android:paddingTop="8dp"
+    android:paddingBottom="10dp"
     android:clipToPadding="false"
+    android:elevation="12dp"
     app:itemIconTint="@color/bottom_nav_colors"
     app:itemTextColor="@color/bottom_nav_colors"
     app:itemIconSize="22dp"
-    app:labelVisibilityMode="unlabeled"
-    app:menu="@menu/bottom_menu"/>
+    app:labelVisibilityMode="labeled"
+    app:menu="@menu/bottom_menu" />

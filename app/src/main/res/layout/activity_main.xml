@@ -111,7 +111,7 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:background="@null"
-                        android:hint="Pesquise destinos ou cursos"
+                        android:hint="Buscar destinos, idiomas ou temas do fórum"
                         android:paddingStart="12dp"
                         android:textColor="@color/text_primary"
                         android:textColorHint="@color/text_secondary"
@@ -160,6 +160,29 @@
                     </LinearLayout>
 
                 </LinearLayout>
+
+                <com.facebook.shimmer.ShimmerFrameLayout
+                    android:id="@+id/shimmerFavoritosHome"
+                    android:layout_width="match_parent"
+                    android:layout_height="220dp"
+                    android:layout_marginTop="14dp"
+                    android:visibility="gone"
+                    app:shimmer_auto_start="false"
+                    app:shimmer_duration="900">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="8dp">
+
+                        <include layout="@layout/item_skeleton_card" />
+                        <include layout="@layout/item_skeleton_card" />
+                        <include layout="@layout/item_skeleton_card" />
+                    </LinearLayout>
+
+                </com.facebook.shimmer.ShimmerFrameLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/listaFavoritosHome"
@@ -216,6 +239,29 @@
                         android:text="Ver todos"
                         style="@style/TextActionLink"/>
                 </LinearLayout>
+
+                <com.facebook.shimmer.ShimmerFrameLayout
+                    android:id="@+id/shimmerDestinosHome"
+                    android:layout_width="match_parent"
+                    android:layout_height="220dp"
+                    android:layout_marginTop="14dp"
+                    android:visibility="gone"
+                    app:shimmer_auto_start="false"
+                    app:shimmer_duration="900">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="8dp">
+
+                        <include layout="@layout/item_skeleton_card" />
+                        <include layout="@layout/item_skeleton_card" />
+                        <include layout="@layout/item_skeleton_card" />
+                    </LinearLayout>
+
+                </com.facebook.shimmer.ShimmerFrameLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/listaDestinos"
@@ -279,6 +325,46 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="14dp"
                     android:nestedScrollingEnabled="false"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/containerVazioHome"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="20dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="24dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:src="@drawable/ic_world"
+                    app:tint="@color/text_muted" />
+
+                <TextView
+                    android:id="@+id/textoTituloVazioHome"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="Nenhum resultado encontrado"
+                    android:textColor="@color/text_muted"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/textoDescricaoVazioHome"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:gravity="center"
+                    android:text="Tente buscar por outro destino, curso ou tema do fórum"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp" />
             </LinearLayout>
 
         </LinearLayout>

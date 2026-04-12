@@ -1,5 +1,6 @@
 package com.example.mapadointercambista.adapter.destino;
 
+import android.content.Context;
 import android.content.Intent;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -20,6 +21,7 @@ import com.example.mapadointercambista.activity.destinos.DetalheDestinoActivity;
 import com.example.mapadointercambista.model.destino.Destino;
 import com.example.mapadointercambista.model.destino.FavoritosStorage;
 import com.example.mapadointercambista.model.user.SessionManager;
+import com.example.mapadointercambista.util.AnimationUtils;
 import com.example.mapadointercambista.util.ImageUtils;
 
 import java.util.List;
@@ -27,11 +29,17 @@ import java.util.Locale;
 
 public class DestinoAdapter extends RecyclerView.Adapter<DestinoAdapter.ViewHolder> {
 
+    private final Context context;
     private final List<Destino> lista;
     private final SparseArray<Integer> imageCache = new SparseArray<>();
+    private final SessionManager sessionManager;
+    private final FavoritosStorage favoritosStorage;
 
-    public DestinoAdapter(List<Destino> lista) {
+    public DestinoAdapter(Context context, List<Destino> lista) {
+        this.context = context;
         this.lista = lista;
+        this.sessionManager = new SessionManager(context);
+        this.favoritosStorage = new FavoritosStorage(context);
         setHasStableIds(true);
     }
 
@@ -39,6 +47,7 @@ public class DestinoAdapter extends RecyclerView.Adapter<DestinoAdapter.ViewHold
         ImageView imagem;
         ImageView iconeFavorito;
         TextView nome;
+        TextView subinfo;
         RatingBar rating;
         TextView reviews;
 
@@ -47,6 +56,7 @@ public class DestinoAdapter extends RecyclerView.Adapter<DestinoAdapter.ViewHold
             imagem = itemView.findViewById(R.id.imagemDestino);
             iconeFavorito = itemView.findViewById(R.id.iconeFavoritoDestino);
             nome = itemView.findViewById(R.id.textoDestino);
+            subinfo = itemView.findViewById(R.id.textoSubinfoDestino);
             rating = itemView.findViewById(R.id.ratingDestino);
             reviews = itemView.findViewById(R.id.textoReviews);
         }
@@ -63,6 +73,8 @@ public class DestinoAdapter extends RecyclerView.Adapter<DestinoAdapter.ViewHold
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_destino, parent, false);
+
+        AnimationUtils.applyPressAnimation(view);
         return new ViewHolder(view);
     }
 
@@ -71,6 +83,7 @@ public class DestinoAdapter extends RecyclerView.Adapter<DestinoAdapter.ViewHold
         Destino destino = lista.get(position);
 
         holder.nome.setText(destino.getNome());
+        holder.subinfo.setText(montarSubinfo(destino));
         holder.rating.setRating(destino.getNota());
         holder.reviews.setText(String.format(
                 Locale.getDefault(),
@@ -84,10 +97,7 @@ public class DestinoAdapter extends RecyclerView.Adapter<DestinoAdapter.ViewHold
 
         Integer drawableId = imageCache.get(cacheKey);
         if (drawableId == null) {
-            int resolvedId = ImageUtils.getDrawableId(
-                    holder.itemView.getContext(),
-                    imagemNome
-            );
+            int resolvedId = ImageUtils.getDrawableId(context, imagemNome);
 
             if (resolvedId == 0) {
                 resolvedId = R.drawable.ic_world;
@@ -99,23 +109,20 @@ public class DestinoAdapter extends RecyclerView.Adapter<DestinoAdapter.ViewHold
 
         holder.imagem.setImageResource(drawableId);
 
-        SessionManager sessionManager = new SessionManager(holder.itemView.getContext());
-        FavoritosStorage favoritosStorage = new FavoritosStorage(holder.itemView.getContext());
-
         boolean logado = sessionManager.estaLogado();
         String emailUsuario = sessionManager.getEmailUsuario();
-
         boolean favorito = logado && favoritosStorage.isFavorito(emailUsuario, destino.getId());
 
-        holder.iconeFavorito.setColorFilter(ContextCompat.getColor(
-                holder.itemView.getContext(),
-                favorito ? R.color.favorite_active : R.color.white
-        ));
+        atualizarIconeFavorito(holder, favorito);
+
+        holder.iconeFavorito.setContentDescription(
+                favorito ? "Remover dos favoritos" : "Adicionar aos favoritos"
+        );
 
         holder.iconeFavorito.setOnClickListener(v -> {
             if (!sessionManager.estaLogado()) {
-                Toast.makeText(v.getContext(), "Entre em sua conta para favoritar", Toast.LENGTH_SHORT).show();
-                v.getContext().startActivity(new Intent(v.getContext(), LoginActivity.class));
+                Toast.makeText(context, "Entre em sua conta para favoritar", Toast.LENGTH_SHORT).show();
+                context.startActivity(new Intent(context, LoginActivity.class));
                 return;
             }
 
@@ -124,17 +131,49 @@ public class DestinoAdapter extends RecyclerView.Adapter<DestinoAdapter.ViewHold
                     destino.getId()
             );
 
-            holder.iconeFavorito.setColorFilter(ContextCompat.getColor(
-                    v.getContext(),
-                    agoraFavorito ? R.color.favorite_active : R.color.white
-            ));
+            atualizarIconeFavorito(holder, agoraFavorito);
+            holder.iconeFavorito.setContentDescription(
+                    agoraFavorito ? "Remover dos favoritos" : "Adicionar aos favoritos"
+            );
+            AnimationUtils.playBounce(holder.iconeFavorito);
         });
 
         holder.itemView.setOnClickListener(v -> {
-            Intent intent = new Intent(v.getContext(), DetalheDestinoActivity.class);
+            Intent intent = new Intent(context, DetalheDestinoActivity.class);
             intent.putExtra("destino", destino);
-            v.getContext().startActivity(intent);
+            context.startActivity(intent);
         });
+    }
+
+    private void atualizarIconeFavorito(@NonNull ViewHolder holder, boolean favorito) {
+        holder.iconeFavorito.setColorFilter(ContextCompat.getColor(
+                context,
+                favorito ? R.color.favorite_active : R.color.white
+        ));
+        holder.iconeFavorito.setAlpha(favorito ? 1f : 0.92f);
+    }
+
+    private String montarSubinfo(Destino destino) {
+        String pais = safe(destino.getPais());
+        String idioma = safe(destino.getIdioma());
+
+        if (!pais.isEmpty() && !idioma.isEmpty()) {
+            return pais + " • " + idioma;
+        }
+
+        if (!pais.isEmpty()) {
+            return pais;
+        }
+
+        if (!idioma.isEmpty()) {
+            return idioma;
+        }
+
+        return "Destino internacional";
+    }
+
+    private String safe(String valor) {
+        return valor == null ? "" : valor.trim();
     }
 
     @Override

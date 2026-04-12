@@ -93,8 +93,6 @@ public class SessionManager {
     }
 
 
-
-
     public boolean possuiEmailLogado() {
         String emailLogado = prefs.getString(KEY_EMAIL_LOGADO, null);
         return emailLogado != null && !emailLogado.trim().isEmpty();

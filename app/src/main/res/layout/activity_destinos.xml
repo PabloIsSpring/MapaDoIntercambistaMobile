@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     android:id="@+id/main"
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -11,9 +10,9 @@
     <include layout="@layout/menu_superior"/>
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         android:paddingBottom="84dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
@@ -23,22 +22,22 @@
             android:orientation="vertical"
             android:background="@color/background_primary"
             android:paddingStart="16dp"
-            android:paddingTop="18dp"
+            android:paddingTop="20dp"
             android:paddingEnd="16dp"
-            android:paddingBottom="12dp">
+            android:paddingBottom="14dp">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Destinos de Intercâmbio"
-                style="@style/TextScreenTitle"/>
+                android:text="Explore destinos"
+                style="@style/TextScreenTitle" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="Explore os melhores lugares para estudar"
-                style="@style/TextBodySecondary"/>
+                android:layout_marginTop="6dp"
+                android:text="Descubra países, idiomas e oportunidades para estudar fora"
+                style="@style/TextBodySecondary" />
         </LinearLayout>
 
         <LinearLayout
@@ -47,22 +46,22 @@
             android:orientation="vertical"
             android:background="@color/background_primary"
             android:paddingStart="16dp"
-            android:paddingTop="14dp"
+            android:paddingTop="10dp"
             android:paddingEnd="16dp"
-            android:paddingBottom="14dp">
+            android:paddingBottom="16dp">
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="54dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="3dp"
+                android:layout_height="56dp"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="2dp"
                 app:cardBackgroundColor="@color/card_background">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="horizontal"
                     android:gravity="center_vertical"
+                    android:orientation="horizontal"
                     android:paddingStart="14dp"
                     android:paddingEnd="14dp">
 
@@ -70,79 +69,153 @@
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:src="@android:drawable/ic_menu_search"
-                        app:tint="@color/text_secondary"/>
+                        app:tint="@color/text_secondary" />
 
                     <EditText
                         android:id="@+id/barraPesquisa"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:hint="Pesquisar destino..."
                         android:background="@null"
+                        android:hint="Buscar país, idioma ou cidade"
                         android:paddingStart="10dp"
                         android:textColor="@color/text_primary"
                         android:textColorHint="@color/text_secondary"
-                        android:textSize="15sp"/>
+                        android:textSize="15sp" />
 
                     <ImageView
                         android:id="@+id/iconeFiltroDestinos"
                         android:layout_width="20dp"
                         android:layout_height="20dp"
-                        android:src="@drawable/ic_filter"
                         android:contentDescription="Abrir filtros"
-                        app:tint="@color/text_secondary"/>
-
+                        android:src="@drawable/ic_filter"
+                        app:tint="@color/brand_blue" />
                 </LinearLayout>
-
             </androidx.cardview.widget.CardView>
-
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:orientation="vertical"
-            android:layout_marginTop="12dp"
             android:background="@color/background_primary"
             android:paddingStart="16dp"
             android:paddingTop="16dp"
             android:paddingEnd="16dp"
-            android:paddingBottom="10dp">
+            android:paddingBottom="12dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Destinos populares"
-                style="@style/TextSectionTitle"/>
+                style="@style/TextSectionTitle" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:text="Encontre opções por país, idioma e avaliações"
-                style="@style/TextBodySecondary"/>
+                android:layout_marginTop="4dp"
+                android:text="Compare opções por país, idioma e avaliações"
+                style="@style/TextBodySecondary" />
 
             <TextView
                 android:id="@+id/textoResultadosDestinos"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
+                android:layout_marginTop="8dp"
                 android:text="0 resultados"
-                style="@style/TextCaptionMuted"/>
-
+                style="@style/TextCaptionMuted" />
         </LinearLayout>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/listaTodosDestinos"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:background="@color/background_secondary"
-            android:clipToPadding="false"
-            android:paddingStart="12dp"
-            android:paddingTop="8dp"
-            android:paddingEnd="12dp"
-            android:paddingBottom="100dp"/>
+            android:background="@color/background_secondary">
+
+            <com.facebook.shimmer.ShimmerFrameLayout
+                android:id="@+id/shimmerDestinosTela"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                app:shimmer_auto_start="false"
+                app:shimmer_duration="900">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="10dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <include layout="@layout/item_skeleton_card" />
+                        <include layout="@layout/item_skeleton_card" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="12dp">
+
+                        <include layout="@layout/item_skeleton_card" />
+                        <include layout="@layout/item_skeleton_card" />
+                    </LinearLayout>
+                </LinearLayout>
+
+            </com.facebook.shimmer.ShimmerFrameLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/listaTodosDestinos"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingStart="10dp"
+                android:paddingTop="10dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="100dp" />
+
+            <LinearLayout
+                android:id="@+id/containerVazioDestinos"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="24dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:src="@drawable/ic_world"
+                    app:tint="@color/text_muted" />
+
+                <TextView
+                    android:id="@+id/textoTituloVazioDestinos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="Nenhum destino encontrado"
+                    android:textColor="@color/text_muted"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/textoDescricaoVazioDestinos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:gravity="center"
+                    android:text="Tente ajustar os filtros ou buscar por outro país, idioma ou cidade"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+        </FrameLayout>
 
     </LinearLayout>
 
