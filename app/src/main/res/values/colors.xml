@@ -6,32 +6,32 @@
     <color name="white">#FFFFFFFF</color>
 
     <!-- Identidade visual principal -->
-    <color name="color_primary">#0F172A</color>
-    <color name="color_primary_dark">#020817</color>
-    <color name="color_primary_light">#E2E8F0</color>
-    <color name="color_accent">#14B8D4</color>
+    <color name="color_primary">#123B6A</color>
+    <color name="color_primary_dark">#0B2747</color>
+    <color name="color_primary_light">#DCEBFA</color>
+    <color name="color_accent">#1DB7D8</color>
 
     <!-- Apoio de marca -->
-    <color name="brand_blue">#1D4ED8</color>
-    <color name="brand_blue_soft">#DBEAFE</color>
-    <color name="brand_cyan_soft">#CFFAFE</color>
+    <color name="brand_blue">#2563EB</color>
+    <color name="brand_blue_soft">#DCEBFA</color>
+    <color name="brand_cyan_soft">#D9F6FB</color>
     <color name="favorite_active">#F4B740</color>
 
     <!-- Fundos -->
-    <color name="background_primary">#F8FAFC</color>
-    <color name="background_secondary">#EEF2F7</color>
+    <color name="background_primary">#F8FBFF</color>
+    <color name="background_secondary">#EEF4FA</color>
     <color name="card_background">#FFFFFFFF</color>
-    <color name="surface_light">#F1F5F9</color>
+    <color name="surface_light">#F1F7FC</color>
 
     <!-- Textos -->
-    <color name="text_primary">#0F172A</color>
+    <color name="text_primary">#102A43</color>
     <color name="text_secondary">#64748B</color>
     <color name="text_muted">#94A3B8</color>
     <color name="text_on_primary">#FFFFFFFF</color>
 
     <!-- Bordas e divisores -->
-    <color name="divider_color">#E5EAF1</color>
-    <color name="border_light">#CBD5E1</color>
+    <color name="divider_color">#E3ECF5</color>
+    <color name="border_light">#C9D8E6</color>
 
     <!-- Estados -->
     <color name="green_like">#22C55E</color>
@@ -40,10 +40,10 @@
     <color name="red_dislike_active">#B91C1C</color>
 
     <!-- Apoio -->
-    <color name="filter_chip_bg">#E0F2FE</color>
-    <color name="filter_chip_text">#0F172A</color>
+    <color name="filter_chip_bg">#D9F1FB</color>
+    <color name="filter_chip_text">#102A43</color>
     <color name="overlay_dark_soft">#66000000</color>
-    <color name="shadow_dark_soft">#220F172A</color>
-    <color name="thread_line">#D9E2EC</color>
+    <color name="shadow_dark_soft">#22123B6A</color>
+    <color name="thread_line">#D9E6F2</color>
 
 </resources>
