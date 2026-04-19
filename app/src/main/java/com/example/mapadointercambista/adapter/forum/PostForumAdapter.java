@@ -315,6 +315,9 @@ public class PostForumAdapter extends RecyclerView.Adapter<PostForumAdapter.View
         container.setPadding(dpToPxInt(16), dpToPxInt(12), dpToPxInt(16), dpToPxInt(8));
 
         EditText inputTitulo = new EditText(context);
+        inputTitulo.setInputType(android.text.InputType.TYPE_CLASS_TEXT
+                | android.text.InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+        inputTitulo.setSingleLine(false);
         inputTitulo.setHint("Título");
         inputTitulo.setText(textoSeguro(post.getTitulo(), ""));
         inputTitulo.setFilters(new InputFilter[]{
@@ -322,6 +325,10 @@ public class PostForumAdapter extends RecyclerView.Adapter<PostForumAdapter.View
         });
 
         EditText inputMensagem = new EditText(context);
+        inputMensagem.setInputType(android.text.InputType.TYPE_CLASS_TEXT
+                | android.text.InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+                | android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE
+                | android.text.InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
         inputMensagem.setHint("Mensagem");
         inputMensagem.setText(textoSeguro(post.getMensagem(), ""));
         inputMensagem.setMinLines(4);
@@ -347,6 +354,32 @@ public class PostForumAdapter extends RecyclerView.Adapter<PostForumAdapter.View
 
                     if (InputSecurityUtils.isNullOrBlank(novaMensagem)) {
                         Toast.makeText(context, "Digite uma mensagem.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (novoTitulo.length() < 3) {
+                        Toast.makeText(context, "Digite um título mais completo.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (novaMensagem.length() < 5) {
+                        Toast.makeText(context, "Digite uma mensagem mais completa.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (InputSecurityUtils.exceedsMaxLength(novoTitulo, ForumLimits.MAX_TITULO_POST)) {
+                        Toast.makeText(context, "Título muito longo.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (InputSecurityUtils.exceedsMaxLength(novaMensagem, ForumLimits.MAX_TEXTO_POST)) {
+                        Toast.makeText(context, "Mensagem muito longa.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (InputSecurityUtils.containsSuspiciousPattern(novoTitulo)
+                            || InputSecurityUtils.containsSuspiciousPattern(novaMensagem)) {
+                        Toast.makeText(context, "Conteúdo inválido detectado.", Toast.LENGTH_SHORT).show();
                         return;
                     }
 

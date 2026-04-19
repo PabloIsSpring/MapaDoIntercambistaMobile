@@ -21,18 +21,23 @@ public class AuthInterceptor implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {
         SessionManager sessionManager = new SessionManager(context);
-        String token = sessionManager.getToken();
-
         Request originalRequest = chain.request();
 
-        if (token != null && !token.trim().isEmpty() && sessionManager.isModoApi()) {
-            Request newRequest = originalRequest.newBuilder()
-                    .addHeader("Authorization", "Bearer " + token)
-                    .build();
-
-            return chain.proceed(newRequest);
+        if (!sessionManager.isModoApi()) {
+            return chain.proceed(originalRequest);
         }
 
-        return chain.proceed(originalRequest);
+        String token = sessionManager.getToken();
+
+        if (token == null || token.trim().isEmpty() || !sessionManager.isTokenValido()) {
+            sessionManager.logout();
+            return chain.proceed(originalRequest);
+        }
+
+        Request newRequest = originalRequest.newBuilder()
+                .header("Authorization", "Bearer " + token.trim())
+                .build();
+
+        return chain.proceed(newRequest);
     }
 }

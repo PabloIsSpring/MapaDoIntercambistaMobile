@@ -104,6 +104,18 @@ public class PostForum implements Serializable {
         this.mensagem = mensagem;
     }
 
+    public void setAutorNome(String autorNome) {
+        this.autorNome = autorNome;
+    }
+
+    public void setAutorEmail(String autorEmail) {
+        this.autorEmail = autorEmail;
+    }
+
+    public void setAutorFotoUri(String autorFotoUri) {
+        this.autorFotoUri = autorFotoUri;
+    }
+
     public void setRespostas(List<RespostaForum> respostas) {
         this.respostas = respostas != null ? respostas : new ArrayList<>();
     }
@@ -121,14 +133,23 @@ public class PostForum implements Serializable {
     }
 
     public boolean usuarioCurtiu(String emailUsuario) {
-        return emailUsuario != null
+        String emailNormalizado = normalizarEmail(emailUsuario);
+        return !emailNormalizado.isEmpty()
                 && usuariosLike != null
-                && usuariosLike.contains(emailUsuario);
+                && usuariosLike.contains(emailNormalizado);
     }
 
     public boolean usuarioDescurtiu(String emailUsuario) {
-        return emailUsuario != null
+        String emailNormalizado = normalizarEmail(emailUsuario);
+        return !emailNormalizado.isEmpty()
                 && usuariosDislike != null
-                && usuariosDislike.contains(emailUsuario);
+                && usuariosDislike.contains(emailNormalizado);
+    }
+
+    private String normalizarEmail(String email) {
+        if (email == null) {
+            return "";
+        }
+        return email.trim().toLowerCase();
     }
 }

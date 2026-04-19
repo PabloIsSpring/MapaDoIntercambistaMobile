@@ -6,6 +6,10 @@ android {
     namespace = "com.example.mapadointercambista"
     compileSdk = 36
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     defaultConfig {
         applicationId = "com.example.mapadointercambista"
         minSdk = 24
@@ -17,12 +21,14 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField("String", "API_BASE_URL", "\"http://10.0.2.2:8080/\"")
+        }
+
         release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+            buildConfigField("String", "API_BASE_URL", "\"http://10.0.2.2:8080/\"")
+            isMinifyEnabled = true
+            isShrinkResources = true
         }
     }
 

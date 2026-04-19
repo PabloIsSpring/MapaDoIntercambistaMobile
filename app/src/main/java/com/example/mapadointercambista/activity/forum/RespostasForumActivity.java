@@ -443,6 +443,9 @@ public class RespostasForumActivity extends AppCompatActivity {
         container.setPadding(dpToPxInt(16), dpToPxInt(12), dpToPxInt(16), dpToPxInt(8));
 
         EditText inputTitulo = new EditText(this);
+        inputTitulo.setInputType(android.text.InputType.TYPE_CLASS_TEXT
+                | android.text.InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+        inputTitulo.setSingleLine(false);
         inputTitulo.setHint("Título");
         inputTitulo.setText(textoSeguro(postAtual.getTitulo(), ""));
         inputTitulo.setFilters(new InputFilter[]{
@@ -450,6 +453,10 @@ public class RespostasForumActivity extends AppCompatActivity {
         });
 
         EditText inputMensagem = new EditText(this);
+        inputMensagem.setInputType(android.text.InputType.TYPE_CLASS_TEXT
+                | android.text.InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+                | android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE
+                | android.text.InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
         inputMensagem.setHint("Mensagem");
         inputMensagem.setText(textoSeguro(postAtual.getMensagem(), ""));
         inputMensagem.setMinLines(4);
@@ -475,6 +482,26 @@ public class RespostasForumActivity extends AppCompatActivity {
 
                     if (InputSecurityUtils.isNullOrBlank(novaMensagem)) {
                         Toast.makeText(this, "Digite uma mensagem.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (novoTitulo.length() < 3) {
+                        Toast.makeText(this, "Digite um título mais completo.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (novaMensagem.length() < 5) {
+                        Toast.makeText(this, "Digite uma mensagem mais completa.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (InputSecurityUtils.exceedsMaxLength(novoTitulo, ForumLimits.MAX_TITULO_POST)) {
+                        Toast.makeText(this, "Título muito longo.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (InputSecurityUtils.exceedsMaxLength(novaMensagem, ForumLimits.MAX_TEXTO_POST)) {
+                        Toast.makeText(this, "Mensagem muito longa.", Toast.LENGTH_SHORT).show();
                         return;
                     }
 

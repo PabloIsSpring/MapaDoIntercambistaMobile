@@ -400,6 +400,10 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
         }
 
         EditText input = new EditText(context);
+        input.setInputType(android.text.InputType.TYPE_CLASS_TEXT
+                | android.text.InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+                | android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE
+                | android.text.InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
         input.setHint("Digite sua resposta");
         input.setMinLines(3);
         input.setPadding(dpToPxInt(16), dpToPxInt(14), dpToPxInt(16), dpToPxInt(14));
@@ -418,6 +422,16 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
 
                     if (InputSecurityUtils.isNullOrBlank(texto)) {
                         Toast.makeText(context, "Digite uma resposta.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (texto.length() < 2) {
+                        Toast.makeText(context, "Digite uma resposta mais completa.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (InputSecurityUtils.exceedsMaxLength(texto, ForumLimits.MAX_RESPOSTA)) {
+                        Toast.makeText(context, "Resposta muito longa.", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
@@ -479,6 +493,10 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
 
     private void abrirDialogEditarResposta(RespostaForum resposta) {
         EditText input = new EditText(context);
+        input.setInputType(android.text.InputType.TYPE_CLASS_TEXT
+                | android.text.InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+                | android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE
+                | android.text.InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
         input.setText(textoSeguro(resposta.getMensagem(), ""));
         input.setMinLines(3);
         input.setPadding(dpToPxInt(16), dpToPxInt(14), dpToPxInt(16), dpToPxInt(14));
@@ -497,6 +515,16 @@ public class RespostaForumAdapter extends RecyclerView.Adapter<RespostaForumAdap
 
                     if (InputSecurityUtils.isNullOrBlank(novaMensagem)) {
                         Toast.makeText(context, "Digite uma mensagem.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (novaMensagem.length() < 2) {
+                        Toast.makeText(context, "Digite uma resposta mais completa.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (InputSecurityUtils.exceedsMaxLength(novaMensagem, ForumLimits.MAX_RESPOSTA)) {
+                        Toast.makeText(context, "Resposta muito longa.", Toast.LENGTH_SHORT).show();
                         return;
                     }
 

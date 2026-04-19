@@ -165,23 +165,20 @@ public class LoginActivity extends AppCompatActivity {
                     setLoading(false);
                 }
 
-                if (response.isSuccessful() && response.body() != null
+                if (response.isSuccessful()
+                        && response.body() != null
                         && response.body().getToken() != null
                         && !response.body().getToken().trim().isEmpty()) {
 
-                    sessionManager.salvarUsuarioLocalSeNaoExistir("Usuário", email, senha);
                     sessionManager.salvarLoginApi(email, response.body().getToken(), 6 * 60 * 60 * 1000L);
+                    inputSenha.setText("");
                     Toast.makeText(LoginActivity.this, "Login realizado com sucesso!", Toast.LENGTH_SHORT).show();
                     abrirConta();
                     return;
                 }
 
-                if (sessionManager.fazerLogin(email, senha)) {
-                    Toast.makeText(LoginActivity.this, "Login local realizado no modo demonstração", Toast.LENGTH_SHORT).show();
-                    abrirConta();
-                } else {
-                    Toast.makeText(LoginActivity.this, "Não foi possível entrar com os dados informados", Toast.LENGTH_SHORT).show();
-                }
+                inputSenha.setText("");
+                Toast.makeText(LoginActivity.this, "E-mail ou senha inválidos", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -191,9 +188,11 @@ public class LoginActivity extends AppCompatActivity {
                 }
 
                 if (sessionManager.fazerLogin(email, senha)) {
+                    inputSenha.setText("");
                     Toast.makeText(LoginActivity.this, "API indisponível. Login local realizado.", Toast.LENGTH_SHORT).show();
                     abrirConta();
                 } else {
+                    inputSenha.setText("");
                     Toast.makeText(LoginActivity.this, "Falha ao conectar. Verifique sua conexão ou tente novamente.", Toast.LENGTH_LONG).show();
                 }
             }

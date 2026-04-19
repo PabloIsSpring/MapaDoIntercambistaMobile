@@ -3,6 +3,7 @@ package com.example.mapadointercambista.activity.forum;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,21 +39,18 @@ public class ForumActivity extends AppCompatActivity {
 
     private static final String PREF_FORUM_UI = "forum_ui";
     private static final String KEY_ORDENACAO = "ordenacao";
-
     private RecyclerView listaTodosForuns;
     private ForumStorage forumStorage;
     private SessionManager sessionManager;
     private PostForumAdapter adapter;
-
     private final List<PostForum> postsOriginais = new ArrayList<>();
     private final List<PostForum> postsExibidos = new ArrayList<>();
-
     private String textoBusca = "";
     private String criterioOrdenacao = "recentes";
-
     private TextView textoResultadosForum;
     private TextView textoVazioForum;
     private View containerVazioForum;
+    private static final int MAX_BUSCA = 80;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +78,11 @@ public class ForumActivity extends AppCompatActivity {
 
         EditText barraPesquisa = findViewById(R.id.barraPesquisaForum);
         ImageView iconeFiltro = findViewById(R.id.iconeFiltroForum);
+
+        barraPesquisa.setFilters(new InputFilter[]{
+                new InputFilter.LengthFilter(MAX_BUSCA)
+        });
+
         AnimationUtils.applyPressAnimation(barraPesquisa);
         AnimationUtils.applyPressAnimation(iconeFiltro);
 
@@ -92,7 +95,10 @@ public class ForumActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                textoBusca = s != null ? s.toString().trim() : "";
+                textoBusca = InputSecurityUtils.sanitizeSearchText(
+                        s != null ? s.toString() : "",
+                        MAX_BUSCA
+                );
                 aplicarBuscaEOrdenacao();
             }
 
@@ -197,7 +203,7 @@ public class ForumActivity extends AppCompatActivity {
 
     private void aplicarBuscaEOrdenacao() {
         List<PostForum> filtrados = new ArrayList<>();
-        String busca = textoSeguro(textoBusca).toLowerCase();
+        String busca = InputSecurityUtils.sanitizeSearchText(textoBusca, MAX_BUSCA).toLowerCase();
 
         for (PostForum post : postsOriginais) {
             String autor = textoSeguro(post.getAutorNome()).toLowerCase();

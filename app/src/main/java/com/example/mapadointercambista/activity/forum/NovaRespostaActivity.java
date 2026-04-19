@@ -28,7 +28,7 @@ public class NovaRespostaActivity extends AppCompatActivity {
 
     public static final String EXTRA_POST_ID = "post_id";
     private static final int MAX_RESPOSTA = 300;
-
+    private static final int MIN_RESPOSTA = 2;
     private SessionManager sessionManager;
     private ForumStorage forumStorage;
     private String postId;
@@ -118,6 +118,12 @@ public class NovaRespostaActivity extends AppCompatActivity {
 
         if (InputSecurityUtils.isNullOrBlank(mensagem)) {
             inputMensagem.setError("Digite uma resposta.");
+            inputMensagem.requestFocus();
+            return;
+        }
+
+        if (mensagem.length() < MIN_RESPOSTA) {
+            inputMensagem.setError("Digite uma resposta mais completa.");
             inputMensagem.requestFocus();
             return;
         }

@@ -21,9 +21,12 @@ public class UnauthorizedInterceptor implements Interceptor {
     public Response intercept(Chain chain) throws IOException {
         Response response = chain.proceed(chain.request());
 
-        if (response.code() == 401) {
+        if (response.code() == 401 || response.code() == 403) {
             SessionManager sessionManager = new SessionManager(context);
-            sessionManager.logout();
+
+            if (sessionManager.isModoApi()) {
+                sessionManager.logout();
+            }
         }
 
         return response;

@@ -2,13 +2,20 @@ package com.example.mapadointercambista.model.user;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Base64;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
+import java.security.spec.KeySpec;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 
 public class SessionManager {
 
@@ -21,6 +28,10 @@ public class SessionManager {
 
     private static final String AUTH_MODE_API = "api";
     private static final String AUTH_MODE_LOCAL = "local";
+
+    private static final int PBKDF2_ITERATIONS = 120000;
+    private static final int HASH_SIZE_BITS = 256;
+    private static final int SALT_SIZE_BYTES = 16;
 
     private final SharedPreferences prefs;
     private final SharedPreferences.Editor editor;
@@ -41,7 +52,8 @@ public class SessionManager {
             }
         }
 
-        usuarios.add(new Usuario(nome, email, senha, ""));
+        String senhaHash = gerarHashSenha(senha);
+        usuarios.add(new Usuario(nome, email, senhaHash, ""));
         salvarUsuarios(usuarios);
         return true;
     }
@@ -54,7 +66,9 @@ public class SessionManager {
         List<Usuario> usuarios = carregarUsuarios();
 
         for (Usuario usuario : usuarios) {
-            if (usuario.getEmail().equalsIgnoreCase(email) && usuario.getSenha().equals(senha)) {
+            if (usuario.getEmail().equalsIgnoreCase(email)
+                    && verificarSenha(senha, usuario.getSenhaHash())) {
+
                 editor.putString(KEY_EMAIL_LOGADO, usuario.getEmail());
                 editor.putString(KEY_AUTH_MODE, AUTH_MODE_LOCAL);
                 editor.remove(KEY_TOKEN);
@@ -91,7 +105,6 @@ public class SessionManager {
 
         return false;
     }
-
 
     public boolean possuiEmailLogado() {
         String emailLogado = prefs.getString(KEY_EMAIL_LOGADO, null);
@@ -189,7 +202,8 @@ public class SessionManager {
             }
         }
 
-        usuarios.add(new Usuario(nome, email, senha, ""));
+        String senhaHash = gerarHashSenha(senha);
+        usuarios.add(new Usuario(nome, email, senhaHash, ""));
         salvarUsuarios(usuarios);
     }
 
@@ -214,5 +228,73 @@ public class SessionManager {
         long expiration = prefs.getLong(KEY_TOKEN_EXPIRATION, 0);
         long restante = expiration - System.currentTimeMillis();
         return Math.max(restante, 0);
+    }
+
+    private String gerarHashSenha(String senha) {
+        try {
+            byte[] salt = new byte[SALT_SIZE_BYTES];
+            SecureRandom secureRandom = new SecureRandom();
+            secureRandom.nextBytes(salt);
+
+            KeySpec spec = new PBEKeySpec(
+                    senha.toCharArray(),
+                    salt,
+                    PBKDF2_ITERATIONS,
+                    HASH_SIZE_BITS
+            );
+
+            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+            byte[] hash = factory.generateSecret(spec).getEncoded();
+
+            String saltBase64 = Base64.encodeToString(salt, Base64.NO_WRAP);
+            String hashBase64 = Base64.encodeToString(hash, Base64.NO_WRAP);
+
+            return PBKDF2_ITERATIONS + ":" + saltBase64 + ":" + hashBase64;
+        } catch (Exception e) {
+            throw new IllegalStateException("Erro ao gerar hash da senha", e);
+        }
+    }
+
+    private boolean verificarSenha(String senhaDigitada, String senhaHashArmazenada) {
+        try {
+            if (senhaHashArmazenada == null || senhaHashArmazenada.trim().isEmpty()) {
+                return false;
+            }
+
+            String[] partes = senhaHashArmazenada.split(":");
+            if (partes.length != 3) {
+                return false;
+            }
+
+            int iterations = Integer.parseInt(partes[0]);
+            byte[] salt = Base64.decode(partes[1], Base64.NO_WRAP);
+            byte[] hashEsperado = Base64.decode(partes[2], Base64.NO_WRAP);
+
+            KeySpec spec = new PBEKeySpec(
+                    senhaDigitada.toCharArray(),
+                    salt,
+                    iterations,
+                    hashEsperado.length * 8
+            );
+
+            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+            byte[] hashAtual = factory.generateSecret(spec).getEncoded();
+
+            return comparacaoConstante(hashEsperado, hashAtual);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private boolean comparacaoConstante(byte[] a, byte[] b) {
+        if (a == null || b == null || a.length != b.length) {
+            return false;
+        }
+
+        int resultado = 0;
+        for (int i = 0; i < a.length; i++) {
+            resultado |= a[i] ^ b[i];
+        }
+        return resultado == 0;
     }
 }

@@ -6,13 +6,13 @@ public class Usuario implements Serializable {
 
     private String nome;
     private String email;
-    private String senha;
+    private String senhaHash;
     private String fotoUri;
 
-    public Usuario(String nome, String email, String senha, String fotoUri) {
+    public Usuario(String nome, String email, String senhaHash, String fotoUri) {
         this.nome = nome;
         this.email = email;
-        this.senha = senha;
+        this.senhaHash = senhaHash;
         this.fotoUri = fotoUri;
     }
 
@@ -24,8 +24,8 @@ public class Usuario implements Serializable {
         return email;
     }
 
-    public String getSenha() {
-        return senha;
+    public String getSenhaHash() {
+        return senhaHash;
     }
 
     public String getFotoUri() {

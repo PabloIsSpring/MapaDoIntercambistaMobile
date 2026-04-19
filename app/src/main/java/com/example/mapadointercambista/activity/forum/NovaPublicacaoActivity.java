@@ -28,7 +28,8 @@ public class NovaPublicacaoActivity extends AppCompatActivity {
 
     private static final int MAX_TITULO = 80;
     private static final int MAX_MENSAGEM = 500;
-
+    private static final int MIN_TITULO = 3;
+    private static final int MIN_MENSAGEM = 5;
     private SessionManager sessionManager;
     private ForumStorage forumStorage;
 
@@ -112,6 +113,18 @@ public class NovaPublicacaoActivity extends AppCompatActivity {
 
         if (InputSecurityUtils.isNullOrBlank(mensagem)) {
             inputMensagem.setError("Digite uma publicação.");
+            inputMensagem.requestFocus();
+            return;
+        }
+
+        if (titulo.length() < MIN_TITULO) {
+            inputTitulo.setError("Digite um título mais completo.");
+            inputTitulo.requestFocus();
+            return;
+        }
+
+        if (mensagem.length() < MIN_MENSAGEM) {
+            inputMensagem.setError("Digite uma publicação mais completa.");
             inputMensagem.requestFocus();
             return;
         }
