@@ -126,6 +126,91 @@ public class SessionManager {
         editor.apply();
     }
 
+    public void entrarComGoogle(String nomeCompleto, String email, String fotoUri) {
+        String nomeSeguro = valorSeguro(nomeCompleto);
+        String emailSeguro = valorSeguro(email).toLowerCase();
+        String fotoSegura = valorSeguro(fotoUri);
+
+        if (emailSeguro.isEmpty()) {
+            return;
+        }
+
+        String primeiroNome = extrairPrimeiroNome(nomeSeguro);
+        String sobrenome = extrairSobrenome(nomeSeguro);
+
+        List<Usuario> usuarios = carregarUsuarios();
+        Usuario usuarioExistente = null;
+
+        for (Usuario usuario : usuarios) {
+            normalizarUsuarioLegado(usuario);
+            if (usuario.getEmail().equalsIgnoreCase(emailSeguro)) {
+                usuarioExistente = usuario;
+                break;
+            }
+        }
+
+        if (usuarioExistente == null) {
+            String senhaDummyHash = gerarHashSenha("google_auth_" + System.currentTimeMillis());
+
+            usuarios.add(new Usuario(
+                    primeiroNome,
+                    sobrenome,
+                    "",
+                    0,
+                    emailSeguro,
+                    senhaDummyHash,
+                    fotoSegura
+            ));
+            salvarUsuarios(usuarios);
+        } else {
+            boolean alterado = false;
+
+            if (usuarioExistente.getNome().trim().isEmpty() && !primeiroNome.isEmpty()) {
+                usuarioExistente.setNome(primeiroNome);
+                alterado = true;
+            }
+
+            if (usuarioExistente.getSobrenome().trim().isEmpty() && !sobrenome.isEmpty()) {
+                usuarioExistente.setSobrenome(sobrenome);
+                alterado = true;
+            }
+
+            if (!fotoSegura.isEmpty()) {
+                usuarioExistente.setFotoUri(fotoSegura);
+                alterado = true;
+            }
+
+            if (alterado) {
+                salvarUsuarios(usuarios);
+            }
+        }
+
+        editor.putString(KEY_EMAIL_LOGADO, emailSeguro);
+        editor.putString(KEY_AUTH_MODE, AUTH_MODE_LOCAL);
+        editor.remove(KEY_TOKEN);
+        editor.remove(KEY_TOKEN_EXPIRATION);
+        limparCachePerfilApi();
+        editor.apply();
+    }
+
+    private String extrairPrimeiroNome(String nomeCompleto) {
+        if (nomeCompleto == null || nomeCompleto.trim().isEmpty()) {
+            return "Usuário";
+        }
+
+        String[] partes = nomeCompleto.trim().split("\\s+");
+        return partes.length > 0 ? partes[0] : "Usuário";
+    }
+
+    private String extrairSobrenome(String nomeCompleto) {
+        if (nomeCompleto == null || nomeCompleto.trim().isEmpty()) {
+            return "";
+        }
+
+        String[] partes = nomeCompleto.trim().split("\\s+", 2);
+        return partes.length > 1 ? partes[1] : "";
+    }
+
     public boolean estaLogado() {
         String modo = prefs.getString(KEY_AUTH_MODE, "");
 

@@ -23,10 +23,12 @@ android {
     buildTypes {
         debug {
             buildConfigField("String", "API_BASE_URL", "\"http://10.0.2.2:8080/\"")
+            buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"COLOQUE_AQUI_O_WEB_CLIENT_ID\"")
         }
 
         release {
             buildConfigField("String", "API_BASE_URL", "\"http://10.0.2.2:8080/\"")
+            buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"COLOQUE_AQUI_O_WEB_CLIENT_ID\"")
             isMinifyEnabled = true
             isShrinkResources = true
         }
@@ -45,6 +47,10 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+
+    implementation("androidx.credentials:credentials:1.6.0")
+    implementation("androidx.credentials:credentials-play-services-auth:1.6.0")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.2.0")
 
     implementation(libs.appcompat)
     implementation(libs.activity)

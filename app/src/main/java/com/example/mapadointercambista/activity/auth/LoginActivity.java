@@ -7,11 +7,13 @@ import android.text.InputType;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.mapadointercambista.BuildConfig;
 import com.example.mapadointercambista.R;
 import com.example.mapadointercambista.activity.perfil.ContaActivity;
 import com.example.mapadointercambista.dto.request.LoginRequestDto;
@@ -29,6 +31,19 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import androidx.annotation.NonNull;
+import androidx.credentials.CredentialManager;
+import androidx.credentials.CredentialManagerCallback;
+import androidx.credentials.CustomCredential;
+import androidx.credentials.GetCredentialRequest;
+import androidx.credentials.GetCredentialResponse;
+import androidx.credentials.exceptions.GetCredentialException;
+import androidx.core.content.ContextCompat;
+
+import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption;
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential;
+import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException;
+
 public class LoginActivity extends AppCompatActivity {
 
     private static final long DURACAO_TOKEN_API_MILLIS = 4 * 60 * 60 * 1000L;
@@ -39,6 +54,9 @@ public class LoginActivity extends AppCompatActivity {
     private EditText inputSenha;
     private ImageView iconeOlho;
     private MaterialButton botaoEntrar;
+    private ScrollView scrollLogin;
+    private MaterialButton botaoGoogleLogin;
+    private CredentialManager credentialManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +72,10 @@ public class LoginActivity extends AppCompatActivity {
         inputSenha = findViewById(R.id.inputSenha);
         iconeOlho = findViewById(R.id.iconeOlhoSenhaLogin);
         botaoEntrar = findViewById(R.id.botaoEntrar);
+        botaoGoogleLogin = findViewById(R.id.botaoGoogleLogin);
+        credentialManager = CredentialManager.create(this);
+
+        botaoGoogleLogin.setOnClickListener(v -> iniciarLoginGoogle());
 
         inputSenha.setFilters(new InputFilter[]{
                 new InputFilter.LengthFilter(32),
@@ -70,6 +92,9 @@ public class LoginActivity extends AppCompatActivity {
         findViewById(R.id.textoCriarConta).setOnClickListener(v ->
                 startActivity(new Intent(LoginActivity.this, CadastroActivity.class))
         );
+
+        scrollLogin = findViewById(R.id.scrollLogin);
+        configurarScrollCampoSenha(inputSenha, scrollLogin);
 
         botaoEntrar.setOnClickListener(v -> {
             String email = inputEmail.getText().toString().trim();
@@ -121,6 +146,22 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    private void configurarScrollCampoSenha(EditText campo, ScrollView scrollView) {
+        campo.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                scrollView.postDelayed(() -> scrollView.smoothScrollTo(0, v.getBottom() + dpToPx(140)), 180);
+            }
+        });
+
+        campo.setOnClickListener(v ->
+                scrollView.postDelayed(() -> scrollView.smoothScrollTo(0, v.getBottom() + dpToPx(140)), 180)
+        );
+    }
+
+    private int dpToPx(int dp) {
+        return Math.round(dp * getResources().getDisplayMetrics().density);
+    }
+
     private void aplicarModoImersivo() {
         getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -147,6 +188,80 @@ public class LoginActivity extends AppCompatActivity {
         inputEmail.setEnabled(!loading);
         inputSenha.setEnabled(!loading);
         iconeOlho.setEnabled(!loading);
+        botaoGoogleLogin.setEnabled(!loading);
+    }
+
+    private void iniciarLoginGoogle() {
+        if ("COLOQUE_AQUI_O_WEB_CLIENT_ID".equals(BuildConfig.GOOGLE_WEB_CLIENT_ID)) {
+            Toast.makeText(this, "Falta configurar o Google Cloud client ID.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        setLoading(true);
+
+        GetSignInWithGoogleOption googleOption =
+                new GetSignInWithGoogleOption.Builder(BuildConfig.GOOGLE_WEB_CLIENT_ID)
+                        .setNonce(java.util.UUID.randomUUID().toString())
+                        .build();
+
+        GetCredentialRequest request = new GetCredentialRequest.Builder()
+                .addCredentialOption(googleOption)
+                .build();
+
+        credentialManager.getCredentialAsync(
+                this,
+                request,
+                null,
+                ContextCompat.getMainExecutor(this),
+                new CredentialManagerCallback<GetCredentialResponse, GetCredentialException>() {
+                    @Override
+                    public void onResult(GetCredentialResponse result) {
+                        if (!isFinishing() && !isDestroyed()) {
+                            setLoading(false);
+                        }
+                        tratarRespostaGoogle(result);
+                    }
+
+                    @Override
+                    public void onError(@NonNull GetCredentialException e) {
+                        if (!isFinishing() && !isDestroyed()) {
+                            setLoading(false);
+                        }
+                        Toast.makeText(LoginActivity.this, "Não foi possível entrar com Google.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
+    }
+
+    private void tratarRespostaGoogle(GetCredentialResponse result) {
+        if (!(result.getCredential() instanceof CustomCredential)) {
+            Toast.makeText(this, "Credencial Google inválida.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        CustomCredential credential = (CustomCredential) result.getCredential();
+
+        if (!GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL.equals(credential.getType())) {
+            Toast.makeText(this, "Tipo de credencial não suportado.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        GoogleIdTokenCredential googleCredential =
+                GoogleIdTokenCredential.createFrom(credential.getData());
+
+        String nome = googleCredential.getDisplayName() != null
+                ? googleCredential.getDisplayName()
+                : "Usuário";
+        String email = googleCredential.getId();
+        String foto = googleCredential.getProfilePictureUri() != null
+                ? googleCredential.getProfilePictureUri().toString()
+                : "";
+
+        SessionManager sessionManager = new SessionManager(this);
+        sessionManager.entrarComGoogle(nome, email, foto);
+
+        Toast.makeText(this, "Login com Google realizado com sucesso!", Toast.LENGTH_SHORT).show();
+        abrirConta();
     }
 
     private void tentarLoginApiComFallback(SessionManager sessionManager, String email, String senha) {
