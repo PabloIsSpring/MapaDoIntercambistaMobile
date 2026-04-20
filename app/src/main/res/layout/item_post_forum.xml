@@ -121,6 +121,23 @@
                     android:textColor="@color/text_secondary"
                     android:textSize="15sp" />
 
+                <FrameLayout
+                    android:id="@+id/containerImagemPost"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:visibility="gone">
+
+                    <ImageView
+                        android:id="@+id/imagemPost"
+                        android:layout_width="match_parent"
+                        android:layout_height="220dp"
+                        android:adjustViewBounds="true"
+                        android:background="@color/background_primary"
+                        android:contentDescription="Imagem da publicação"
+                        android:scaleType="centerCrop" />
+                </FrameLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

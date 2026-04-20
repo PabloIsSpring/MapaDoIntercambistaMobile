@@ -120,7 +120,7 @@
                                 android:textStyle="bold"
                                 android:alpha="0.88"
                                 android:clickable="true"
-                                android:focusable="true"/>
+                                android:focusable="true" />
                         </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
@@ -378,7 +378,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Editar perfil (em breve)"
+                            android:text="Editar username"
                             android:textColor="@color/text_primary"
                             android:textSize="16sp"
                             android:textStyle="bold" />
@@ -394,6 +394,88 @@
                 </androidx.cardview.widget.CardView>
 
             </LinearLayout>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardInformacoesPerfilConta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:visibility="gone"
+                app:cardBackgroundColor="@color/card_background"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="18dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Informações do perfil"
+                        style="@style/TextSectionTitle" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Username"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="13sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/textoUsernameConta"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="@usuario"
+                                android:textColor="@color/text_primary"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Idade"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="13sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/textoIdadeConta"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="Não informado"
+                                android:textColor="@color/text_primary"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardVisitanteConta"
@@ -502,299 +584,30 @@
                     app:cardElevation="2dp">
 
                     <LinearLayout
+                        android:id="@+id/itemAbrirConfiguracoes"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
+                        android:layout_height="64dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingStart="18dp"
+                        android:paddingEnd="18dp">
 
-                        <LinearLayout
-                            android:id="@+id/itemIdioma"
-                            android:layout_width="match_parent"
-                            android:layout_height="58dp"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal"
-                            android:paddingStart="18dp"
-                            android:paddingEnd="18dp">
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Abrir configurações"
+                            android:textColor="@color/text_primary"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
 
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Idioma"
-                                android:textColor="@color/text_primary"
-                                android:textSize="16sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Português - Brasil"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="15sp" />
-                        </LinearLayout>
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@color/divider_color" />
-
-                        <LinearLayout
-                            android:id="@+id/itemNotificacoes"
-                            android:layout_width="match_parent"
-                            android:layout_height="58dp"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal"
-                            android:paddingStart="18dp"
-                            android:paddingEnd="18dp">
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Notificações"
-                                android:textColor="@color/text_primary"
-                                android:textSize="16sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Todos"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="15sp" />
-                        </LinearLayout>
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@color/divider_color" />
-
-                        <LinearLayout
-                            android:id="@+id/itemLocalizacao"
-                            android:layout_width="match_parent"
-                            android:layout_height="58dp"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal"
-                            android:paddingStart="18dp"
-                            android:paddingEnd="18dp">
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Localização"
-                                android:textColor="@color/text_primary"
-                                android:textSize="16sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Sim"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="15sp" />
-                        </LinearLayout>
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@color/divider_color" />
-
-                        <LinearLayout
-                            android:id="@+id/itemAcessibilidade"
-                            android:layout_width="match_parent"
-                            android:layout_height="58dp"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal"
-                            android:paddingStart="18dp"
-                            android:paddingEnd="18dp">
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Acessibilidade"
-                                android:textColor="@color/text_primary"
-                                android:textSize="16sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text=">"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="18sp"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@color/divider_color" />
-
-                        <LinearLayout
-                            android:id="@+id/itemPrivacidade"
-                            android:layout_width="match_parent"
-                            android:layout_height="58dp"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal"
-                            android:paddingStart="18dp"
-                            android:paddingEnd="18dp">
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Privacidade"
-                                android:textColor="@color/text_primary"
-                                android:textSize="16sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text=">"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="18sp"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@color/divider_color" />
-
-                        <LinearLayout
-                            android:id="@+id/itemSeguranca"
-                            android:layout_width="match_parent"
-                            android:layout_height="58dp"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal"
-                            android:paddingStart="18dp"
-                            android:paddingEnd="18dp">
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Segurança"
-                                android:textColor="@color/text_primary"
-                                android:textSize="16sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text=">"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="18sp"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
-
-                <androidx.cardview.widget.CardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    app:cardBackgroundColor="@color/card_background"
-                    app:cardCornerRadius="20dp"
-                    app:cardElevation="2dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <LinearLayout
-                            android:id="@+id/itemSuporte"
-                            android:layout_width="match_parent"
-                            android:layout_height="58dp"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal"
-                            android:paddingStart="18dp"
-                            android:paddingEnd="18dp">
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Suporte"
-                                android:textColor="@color/text_primary"
-                                android:textSize="16sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text=">"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="18sp"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@color/divider_color" />
-
-                        <LinearLayout
-                            android:id="@+id/itemAdicionarConta"
-                            android:layout_width="match_parent"
-                            android:layout_height="58dp"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal"
-                            android:paddingStart="18dp"
-                            android:paddingEnd="18dp">
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Adicionar conta"
-                                android:textColor="@color/text_primary"
-                                android:textSize="16sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text=">"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="18sp"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@color/divider_color" />
-
-                        <LinearLayout
-                            android:id="@+id/itemTermos"
-                            android:layout_width="match_parent"
-                            android:layout_height="58dp"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal"
-                            android:paddingStart="18dp"
-                            android:paddingEnd="18dp">
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Termos de uso"
-                                android:textColor="@color/text_primary"
-                                android:textSize="16sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text=">"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="18sp"
-                                android:textStyle="bold" />
-                        </LinearLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=">"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
             </LinearLayout>

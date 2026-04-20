@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.InputFilter;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,11 +23,18 @@ import com.example.mapadointercambista.R;
 import com.example.mapadointercambista.activity.auth.CadastroActivity;
 import com.example.mapadointercambista.activity.auth.LoginActivity;
 import com.example.mapadointercambista.adapter.destino.DestinoAdapter;
+import com.example.mapadointercambista.dto.request.IntercambistaUpdtRequestDto;
+import com.example.mapadointercambista.dto.response.IntercambistaResponseDto;
+import com.example.mapadointercambista.model.destino.AvaliacaoDestino;
 import com.example.mapadointercambista.model.destino.Destino;
 import com.example.mapadointercambista.model.destino.DestinoStorage;
 import com.example.mapadointercambista.model.destino.FavoritosStorage;
+import com.example.mapadointercambista.model.forum.ForumStorage;
+import com.example.mapadointercambista.model.forum.PostForum;
 import com.example.mapadointercambista.model.user.SessionManager;
 import com.example.mapadointercambista.navigation.NavigationHelper;
+import com.example.mapadointercambista.network.ApiClient;
+import com.example.mapadointercambista.network.ApiService;
 import com.example.mapadointercambista.util.AnimationUtils;
 import com.example.mapadointercambista.util.AvatarUtils;
 import com.example.mapadointercambista.util.TransitionHelper;
@@ -37,11 +46,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class ContaActivity extends AppCompatActivity {
 
     private SessionManager sessionManager;
     private FavoritosStorage favoritosStorage;
     private DestinoStorage destinoStorage;
+    private ForumStorage forumStorage;
 
     private ShapeableImageView imagemPerfilConta;
     private TextView textoNomeUsuarioConta;
@@ -51,6 +65,9 @@ public class ContaActivity extends AppCompatActivity {
     private TextView textoVazioFavoritosConta;
     private TextView textoTituloSecaoConfiguracoes;
     private TextView textoSubtituloHeroConta;
+
+    private TextView textoUsernameConta;
+    private TextView textoIdadeConta;
 
     private RecyclerView listaFavoritosConta;
 
@@ -63,20 +80,13 @@ public class ContaActivity extends AppCompatActivity {
     private View cardVisitanteConta;
     private View cardFavoritosConta;
     private View blocoConfiguracoesConta;
+    private View cardInformacoesPerfilConta;
 
     private LinearLayout atalhoFavoritos;
     private LinearLayout atalhoConversas;
     private LinearLayout atalhoEditarPerfil;
 
-    private LinearLayout itemIdioma;
-    private LinearLayout itemNotificacoes;
-    private LinearLayout itemLocalizacao;
-    private LinearLayout itemAcessibilidade;
-    private LinearLayout itemPrivacidade;
-    private LinearLayout itemSeguranca;
-    private LinearLayout itemSuporte;
-    private LinearLayout itemTermos;
-    private LinearLayout itemAdicionarConta;
+    private LinearLayout itemAbrirConfiguracoes;
 
     private DestinoAdapter favoritosAdapter;
     private final List<Destino> favoritosExibidos = new ArrayList<>();
@@ -84,6 +94,9 @@ public class ContaActivity extends AppCompatActivity {
     private TextView textoNumeroPostsConta;
     private TextView textoNumeroAvaliacoesConta;
     private ActivityResultLauncher<Intent> launcherGaleria;
+
+    private boolean sincronizandoPerfil = false;
+    private boolean atualizandoUsername = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +107,7 @@ public class ContaActivity extends AppCompatActivity {
         sessionManager = new SessionManager(this);
         favoritosStorage = new FavoritosStorage(this);
         destinoStorage = new DestinoStorage(this);
+        forumStorage = new ForumStorage(this);
 
         aplicarModoImersivo();
         configurarLauncherGaleria();
@@ -112,6 +126,7 @@ public class ContaActivity extends AppCompatActivity {
         super.onResume();
         aplicarModoImersivo();
         atualizarInterface();
+        tentarSincronizarPerfilApi();
     }
 
     @Override
@@ -169,6 +184,9 @@ public class ContaActivity extends AppCompatActivity {
         textoTituloSecaoConfiguracoes = findViewById(R.id.textoTituloSecaoConfiguracoes);
         textoSubtituloHeroConta = findViewById(R.id.textoSubtituloHeroConta);
 
+        textoUsernameConta = findViewById(R.id.textoUsernameConta);
+        textoIdadeConta = findViewById(R.id.textoIdadeConta);
+
         listaFavoritosConta = findViewById(R.id.listaFavoritosConta);
 
         botaoSairConta = findViewById(R.id.botaoSairConta);
@@ -180,20 +198,13 @@ public class ContaActivity extends AppCompatActivity {
         cardVisitanteConta = findViewById(R.id.cardVisitanteConta);
         cardFavoritosConta = findViewById(R.id.cardFavoritosConta);
         blocoConfiguracoesConta = findViewById(R.id.blocoConfiguracoesConta);
+        cardInformacoesPerfilConta = findViewById(R.id.cardInformacoesPerfilConta);
 
         atalhoFavoritos = findViewById(R.id.atalhoFavoritos);
         atalhoConversas = findViewById(R.id.atalhoConversas);
         atalhoEditarPerfil = findViewById(R.id.atalhoEditarPerfil);
 
-        itemIdioma = findViewById(R.id.itemIdioma);
-        itemNotificacoes = findViewById(R.id.itemNotificacoes);
-        itemLocalizacao = findViewById(R.id.itemLocalizacao);
-        itemAcessibilidade = findViewById(R.id.itemAcessibilidade);
-        itemPrivacidade = findViewById(R.id.itemPrivacidade);
-        itemSeguranca = findViewById(R.id.itemSeguranca);
-        itemSuporte = findViewById(R.id.itemSuporte);
-        itemTermos = findViewById(R.id.itemTermos);
-        itemAdicionarConta = findViewById(R.id.itemAdicionarConta);
+        itemAbrirConfiguracoes = findViewById(R.id.itemAbrirConfiguracoes);
 
         textoNumeroFavoritosConta = findViewById(R.id.textoNumeroFavoritosConta);
         textoNumeroPostsConta = findViewById(R.id.textoNumeroPostsConta);
@@ -261,44 +272,16 @@ public class ContaActivity extends AppCompatActivity {
                 Toast.makeText(this, "Entre em uma conta para editar seu perfil", Toast.LENGTH_SHORT).show();
                 return;
             }
-            Toast.makeText(this, "A edição completa do perfil será liberada em breve", Toast.LENGTH_SHORT).show();
+
+            AnimationUtils.playBounce(v);
+            abrirDialogEditarUsername();
         });
 
-        itemIdioma.setOnClickListener(v ->
-                Toast.makeText(this, "Idioma: Português - Brasil", Toast.LENGTH_SHORT).show()
-        );
-
-        itemNotificacoes.setOnClickListener(v ->
-                Toast.makeText(this, "Configuração de notificações em breve", Toast.LENGTH_SHORT).show()
-        );
-
-        itemLocalizacao.setOnClickListener(v ->
-                Toast.makeText(this, "Configuração de localização em breve", Toast.LENGTH_SHORT).show()
-        );
-
-        itemAcessibilidade.setOnClickListener(v ->
-                Toast.makeText(this, "Opções de acessibilidade em breve", Toast.LENGTH_SHORT).show()
-        );
-
-        itemPrivacidade.setOnClickListener(v ->
-                Toast.makeText(this, "Políticas de privacidade em breve", Toast.LENGTH_SHORT).show()
-        );
-
-        itemSeguranca.setOnClickListener(v ->
-                Toast.makeText(this, "Configurações de segurança em breve", Toast.LENGTH_SHORT).show()
-        );
-
-        itemSuporte.setOnClickListener(v ->
-                Toast.makeText(this, "Central de suporte em breve", Toast.LENGTH_SHORT).show()
-        );
-
-        itemTermos.setOnClickListener(v ->
-                Toast.makeText(this, "Termos de uso em breve", Toast.LENGTH_SHORT).show()
-        );
-
-        itemAdicionarConta.setOnClickListener(v ->
-                Toast.makeText(this, "Suporte para múltiplas contas em breve", Toast.LENGTH_SHORT).show()
-        );
+        itemAbrirConfiguracoes.setOnClickListener(v -> {
+            AnimationUtils.playBounce(v);
+            startActivity(new Intent(this, ConfiguracoesActivity.class));
+            TransitionHelper.slideForward(this);
+        });
     }
 
     private void aplicarMicrointeracoesConta() {
@@ -312,16 +295,7 @@ public class ContaActivity extends AppCompatActivity {
         AnimationUtils.applyPressAnimation(atalhoFavoritos);
         AnimationUtils.applyPressAnimation(atalhoConversas);
         AnimationUtils.applyPressAnimation(atalhoEditarPerfil);
-
-        AnimationUtils.applyPressAnimation(itemIdioma);
-        AnimationUtils.applyPressAnimation(itemNotificacoes);
-        AnimationUtils.applyPressAnimation(itemLocalizacao);
-        AnimationUtils.applyPressAnimation(itemAcessibilidade);
-        AnimationUtils.applyPressAnimation(itemPrivacidade);
-        AnimationUtils.applyPressAnimation(itemSeguranca);
-        AnimationUtils.applyPressAnimation(itemSuporte);
-        AnimationUtils.applyPressAnimation(itemTermos);
-        AnimationUtils.applyPressAnimation(itemAdicionarConta);
+        AnimationUtils.applyPressAnimation(itemAbrirConfiguracoes);
     }
 
     private void configurarListaFavoritos() {
@@ -354,15 +328,16 @@ public class ContaActivity extends AppCompatActivity {
         cardVisitanteConta.setVisibility(View.GONE);
         cardFavoritosConta.setVisibility(View.VISIBLE);
         blocoConfiguracoesConta.setVisibility(View.VISIBLE);
+        cardInformacoesPerfilConta.setVisibility(View.VISIBLE);
 
-
-        textoTituloSecaoConfiguracoes.setText("Preferências e conta");
-        textoSubtituloHeroConta.setText("Seu perfil no Mapa do Intercambista");
+        textoTituloSecaoConfiguracoes.setText("Configurações");
+        textoSubtituloHeroConta.setText(obterSubtituloHeroLogado());
         textoAlterarFoto.setText("Alterar foto de perfil");
         botaoSairConta.setVisibility(View.VISIBLE);
 
         preencherDadosUsuario();
         carregarFavoritos();
+        atualizarResumoDoUsuario();
     }
 
     private void aplicarEstadoVisitante() {
@@ -371,12 +346,13 @@ public class ContaActivity extends AppCompatActivity {
         cardVisitanteConta.setVisibility(View.VISIBLE);
         cardFavoritosConta.setVisibility(View.GONE);
         blocoConfiguracoesConta.setVisibility(View.VISIBLE);
+        cardInformacoesPerfilConta.setVisibility(View.GONE);
 
-
+        textoNomeUsuarioConta.setText("Visitante");
         textoEmailUsuarioConta.setText("Entre para salvar favoritos, participar do fórum e personalizar seu perfil");
         textoAlterarFoto.setText("Faça login para personalizar seu perfil");
         textoSubtituloHeroConta.setText("Seu espaço no Mapa do Intercambista");
-        textoTituloSecaoConfiguracoes.setText("Preferências e conta");
+        textoTituloSecaoConfiguracoes.setText("Configurações");
         botaoSairConta.setVisibility(View.GONE);
 
         Glide.with(this).clear(imagemPerfilConta);
@@ -413,13 +389,36 @@ public class ContaActivity extends AppCompatActivity {
     }
 
     private void preencherDadosUsuario() {
-        String nome = sessionManager.getNomeUsuario();
+        String nomeCompleto = sessionManager.getNomeUsuario();
         String email = sessionManager.getEmailUsuario();
         String fotoUri = sessionManager.getFotoUsuario();
+        String username = sessionManager.getUsernameUsuario();
+        int idade = sessionManager.getIdadeUsuario();
 
-        textoNomeUsuarioConta.setText(nome != null && !nome.isEmpty() ? nome : "Usuário");
-        textoEmailUsuarioConta.setText(email != null ? email : "");
+        textoNomeUsuarioConta.setText(nomeCompleto);
+
+        StringBuilder descricao = new StringBuilder();
+        if (email != null && !email.isEmpty()) {
+            descricao.append(email);
+        }
+
+        if (username != null && !username.isEmpty()) {
+            if (descricao.length() > 0) {
+                descricao.append("\n");
+            }
+            descricao.append("@").append(username);
+        }
+
+        textoEmailUsuarioConta.setText(descricao.length() > 0 ? descricao.toString() : "Perfil ativo");
         textoAlterarFoto.setText("Alterar foto de perfil");
+
+        textoUsernameConta.setText(
+                username != null && !username.isEmpty() ? "@" + username : "Não informado"
+        );
+
+        textoIdadeConta.setText(
+                idade > 0 ? idade + " anos" : "Não informado"
+        );
 
         Glide.with(this).clear(imagemPerfilConta);
         imagemPerfilConta.setImageDrawable(null);
@@ -436,7 +435,7 @@ public class ContaActivity extends AppCompatActivity {
                     .dontAnimate()
                     .into(imagemPerfilConta);
         } else {
-            Bitmap avatar = AvatarUtils.criarAvatarComInicial(this, nome, 120);
+            Bitmap avatar = AvatarUtils.criarAvatarComInicial(this, nomeCompleto, 120);
             imagemPerfilConta.setImageBitmap(avatar);
         }
     }
@@ -448,7 +447,6 @@ public class ContaActivity extends AppCompatActivity {
         Set<String> favoritosIds = favoritosStorage.carregarFavoritos(emailUsuario);
         List<Destino> todosDestinos = destinoStorage.carregarDestinos();
 
-
         for (Destino destino : todosDestinos) {
             if (favoritosIds.contains(destino.getId())) {
                 favoritosExibidos.add(destino);
@@ -458,10 +456,7 @@ public class ContaActivity extends AppCompatActivity {
         favoritosAdapter.notifyDataSetChanged();
 
         int quantidade = favoritosExibidos.size();
-
         textoNumeroFavoritosConta.setText(String.valueOf(quantidade));
-        textoNumeroPostsConta.setText("0");
-        textoNumeroAvaliacoesConta.setText("0");
 
         if (quantidade == 0) {
             textoResumoFavoritosConta.setText("Seus destinos favoritos aparecerão aqui");
@@ -474,7 +469,225 @@ public class ContaActivity extends AppCompatActivity {
             textoVazioFavoritosConta.setVisibility(View.GONE);
             listaFavoritosConta.setVisibility(View.VISIBLE);
         }
+    }
 
+    private void atualizarResumoDoUsuario() {
+        String emailUsuario = sessionManager.getEmailUsuario();
+        if (emailUsuario == null || emailUsuario.trim().isEmpty()) {
+            textoNumeroPostsConta.setText("0");
+            textoNumeroAvaliacoesConta.setText("0");
+            return;
+        }
 
+        int quantidadePosts = 0;
+        List<PostForum> posts = forumStorage.carregarPosts();
+        for (PostForum post : posts) {
+            if (post != null
+                    && post.getAutorEmail() != null
+                    && post.getAutorEmail().equalsIgnoreCase(emailUsuario)) {
+                quantidadePosts++;
+            }
+        }
+
+        int quantidadeAvaliacoes = 0;
+        List<Destino> destinos = destinoStorage.carregarDestinos();
+        for (Destino destino : destinos) {
+            if (destino == null || destino.getListaAvaliacoes() == null) {
+                continue;
+            }
+
+            for (AvaliacaoDestino avaliacao : destino.getListaAvaliacoes()) {
+                if (avaliacao != null
+                        && avaliacao.getAutorEmail() != null
+                        && avaliacao.getAutorEmail().equalsIgnoreCase(emailUsuario)) {
+                    quantidadeAvaliacoes++;
+                }
+            }
+        }
+
+        textoNumeroPostsConta.setText(String.valueOf(quantidadePosts));
+        textoNumeroAvaliacoesConta.setText(String.valueOf(quantidadeAvaliacoes));
+    }
+
+    private String obterSubtituloHeroLogado() {
+        String username = sessionManager.getUsernameUsuario();
+        if (username != null && !username.isEmpty()) {
+            return "Seu perfil • @" + username;
+        }
+        return "Seu perfil no Mapa do Intercambista";
+    }
+
+    private void tentarSincronizarPerfilApi() {
+        if (!sessionManager.estaLogado() || !sessionManager.isModoApi()) {
+            return;
+        }
+
+        String username = sessionManager.getUsernameUsuario();
+        if (username == null || username.trim().isEmpty()) {
+            return;
+        }
+
+        if (sincronizandoPerfil) {
+            return;
+        }
+
+        sincronizandoPerfil = true;
+
+        ApiService apiService = ApiClient.getApiService(this);
+        apiService.getIntercambista(username).enqueue(new Callback<IntercambistaResponseDto>() {
+            @Override
+            public void onResponse(Call<IntercambistaResponseDto> call, Response<IntercambistaResponseDto> response) {
+                sincronizandoPerfil = false;
+
+                if (!response.isSuccessful() || response.body() == null) {
+                    return;
+                }
+
+                IntercambistaResponseDto body = response.body();
+
+                String usernameRemoto = body.getUsername() != null ? body.getUsername() : username;
+                String nomeRemoto = body.getNome() != null ? body.getNome() : sessionManager.getPrimeiroNomeUsuario();
+                int idadeRemota = body.getIdade();
+
+                sessionManager.salvarPerfilApi(
+                        nomeRemoto,
+                        sessionManager.getEmailUsuario(),
+                        usernameRemoto,
+                        sessionManager.getSobrenomeUsuario(),
+                        idadeRemota
+                );
+
+                if (!isFinishing() && !isDestroyed()) {
+                    preencherDadosUsuario();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<IntercambistaResponseDto> call, Throwable t) {
+                sincronizandoPerfil = false;
+            }
+        });
+    }
+
+    private void abrirDialogEditarUsername() {
+        String usernameAtual = sessionManager.getUsernameUsuario();
+
+        if (usernameAtual == null || usernameAtual.trim().isEmpty()) {
+            Toast.makeText(this, "Seu username ainda não está disponível para edição.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        View view = getLayoutInflater().inflate(R.layout.dialog_input_simples, null);
+        EditText input = view.findViewById(R.id.inputDialogSimples);
+
+        input.setHint("Novo username");
+        input.setText(usernameAtual);
+        input.setFilters(new InputFilter[]{new InputFilter.LengthFilter(30)});
+
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Editar username")
+                .setView(view)
+                .setNegativeButton("Cancelar", null)
+                .setPositiveButton("Salvar", (dialog, which) -> {
+                    String novoUsername = normalizarUsername(input.getText().toString());
+
+                    if (atualizandoUsername) {
+                        return;
+                    }
+
+                    if (novoUsername.isEmpty()) {
+                        Toast.makeText(this, "Digite um username.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (novoUsername.length() < 3) {
+                        Toast.makeText(this, "O username deve ter pelo menos 3 caracteres.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (!usernameValido(novoUsername)) {
+                        Toast.makeText(this, "Use apenas letras, números, ponto e underline.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (novoUsername.equalsIgnoreCase(usernameAtual)) {
+                        Toast.makeText(this, "Digite um username diferente do atual.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (!sessionManager.usernameDisponivelLocalmente(novoUsername)) {
+                        Toast.makeText(this, "Esse username já está em uso localmente.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (!sessionManager.isModoApi()) {
+                        sessionManager.atualizarUsernameUsuario(usernameAtual, novoUsername);
+                        preencherDadosUsuario();
+                        Toast.makeText(this, "Username atualizado localmente.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    atualizarUsernameApi(usernameAtual, novoUsername);
+                })
+                .show();
+    }
+
+    private void atualizarUsernameApi(String usernameAtual, String novoUsername) {
+        if (atualizandoUsername) {
+            return;
+        }
+
+        atualizandoUsername = true;
+
+        ApiService apiService = ApiClient.getApiService(this);
+        IntercambistaUpdtRequestDto request = new IntercambistaUpdtRequestDto(usernameAtual, novoUsername);
+
+        apiService.updateIntercambista(request).enqueue(new Callback<IntercambistaResponseDto>() {
+            @Override
+            public void onResponse(Call<IntercambistaResponseDto> call, Response<IntercambistaResponseDto> response) {
+                atualizandoUsername = false;
+
+                if (!response.isSuccessful() || response.body() == null) {
+                    Toast.makeText(ContaActivity.this, "Não foi possível atualizar o username.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                IntercambistaResponseDto body = response.body();
+                String usernameFinal = body.getUsername() != null && !body.getUsername().trim().isEmpty()
+                        ? body.getUsername().trim().toLowerCase()
+                        : novoUsername;
+
+                sessionManager.atualizarUsernameUsuario(usernameAtual, usernameFinal);
+                sessionManager.salvarPerfilApi(
+                        body.getNome() != null ? body.getNome() : sessionManager.getPrimeiroNomeUsuario(),
+                        sessionManager.getEmailUsuario(),
+                        usernameFinal,
+                        sessionManager.getSobrenomeUsuario(),
+                        body.getIdade()
+                );
+
+                preencherDadosUsuario();
+                textoSubtituloHeroConta.setText(obterSubtituloHeroLogado());
+
+                Toast.makeText(ContaActivity.this, "Username atualizado com sucesso.", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Call<IntercambistaResponseDto> call, Throwable t) {
+                atualizandoUsername = false;
+                Toast.makeText(ContaActivity.this, "Falha ao conectar para atualizar username.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private String normalizarUsername(String valor) {
+        if (valor == null) {
+            return "";
+        }
+        return valor.trim().toLowerCase();
+    }
+
+    private boolean usernameValido(String username) {
+        return username.matches("^[a-z0-9._]+$");
     }
 }

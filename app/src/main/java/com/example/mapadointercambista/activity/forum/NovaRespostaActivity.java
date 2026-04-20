@@ -1,10 +1,12 @@
 package com.example.mapadointercambista.activity.forum;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -156,6 +158,7 @@ public class NovaRespostaActivity extends AppCompatActivity {
             boolean sucesso = forumStorage.adicionarResposta(postId, novaResposta);
 
             if (sucesso) {
+                fecharTeclado();
                 Toast.makeText(this, "Resposta publicada com sucesso.", Toast.LENGTH_SHORT).show();
                 setResult(RESULT_OK);
                 finish();
@@ -168,6 +171,20 @@ public class NovaRespostaActivity extends AppCompatActivity {
             Toast.makeText(this, "Erro ao responder no momento.", Toast.LENGTH_SHORT).show();
             setRespondendo(false);
         }
+    }
+
+    private void fecharTeclado() {
+        View viewAtual = getCurrentFocus();
+        if (viewAtual == null) {
+            viewAtual = getWindow().getDecorView();
+        }
+
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(viewAtual.getWindowToken(), 0);
+        }
+
+        inputMensagem.clearFocus();
     }
 
     private void setRespondendo(boolean respondendo) {

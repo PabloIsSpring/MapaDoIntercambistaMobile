@@ -1,19 +1,18 @@
 package com.example.mapadointercambista.adapter.forum;
 
-import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.text.InputFilter;
 import android.util.LruCache;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
@@ -32,10 +31,10 @@ import com.example.mapadointercambista.model.forum.PostForum;
 import com.example.mapadointercambista.model.user.SessionManager;
 import com.example.mapadointercambista.util.AnimationUtils;
 import com.example.mapadointercambista.util.AvatarUtils;
-import com.example.mapadointercambista.util.ForumLimits;
 import com.example.mapadointercambista.util.InputSecurityUtils;
 import com.example.mapadointercambista.util.TransitionHelper;
 import com.google.android.material.imageview.ShapeableImageView;
+import com.example.mapadointercambista.activity.forum.NovaPublicacaoActivity;
 
 import java.util.List;
 
@@ -74,6 +73,9 @@ public class PostForumAdapter extends RecyclerView.Adapter<PostForumAdapter.View
         ImageView iconeLike;
         ImageView iconeDislike;
 
+        FrameLayout containerImagemPost;
+        ImageView imagemPost;
+
         public ViewHolder(View itemView) {
             super(itemView);
             fotoPerfil = itemView.findViewById(R.id.fotoPerfil);
@@ -91,6 +93,9 @@ public class PostForumAdapter extends RecyclerView.Adapter<PostForumAdapter.View
             botaoOpcoesPost = itemView.findViewById(R.id.botaoOpcoesPost);
             iconeLike = itemView.findViewById(R.id.iconeLike);
             iconeDislike = itemView.findViewById(R.id.iconeDislike);
+
+            containerImagemPost = itemView.findViewById(R.id.containerImagemPost);
+            imagemPost = itemView.findViewById(R.id.imagemPost);
         }
     }
 
@@ -123,6 +128,7 @@ public class PostForumAdapter extends RecyclerView.Adapter<PostForumAdapter.View
         holder.textoRespostas.setText(post.getQuantidadeRespostas() + " respostas");
 
         aplicarAvatar(holder.fotoPerfil, post.getAutorFotoUri(), post.getAutorNome());
+        aplicarImagemPost(holder, post);
 
         boolean ehAutor = sessionManager.estaLogado()
                 && sessionManager.getEmailUsuario() != null
@@ -213,6 +219,39 @@ public class PostForumAdapter extends RecyclerView.Adapter<PostForumAdapter.View
         });
     }
 
+    private void aplicarImagemPost(ViewHolder holder, PostForum post) {
+        String imagemUri = post.getImagemUri();
+
+        if (imagemUri == null || imagemUri.trim().isEmpty()) {
+            holder.containerImagemPost.setVisibility(View.GONE);
+            Glide.with(context).clear(holder.imagemPost);
+            holder.imagemPost.setOnClickListener(null);
+            return;
+        }
+
+        holder.containerImagemPost.setVisibility(View.VISIBLE);
+
+        Glide.with(context)
+                .load(Uri.parse(imagemUri))
+                .centerCrop()
+                .placeholder(R.drawable.logo)
+                .error(R.drawable.logo)
+                .into(holder.imagemPost);
+
+        holder.imagemPost.setOnClickListener(v -> abrirImagemExterna(imagemUri));
+    }
+
+    private void abrirImagemExterna(String imagemUri) {
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setDataAndType(Uri.parse(imagemUri), "image/*");
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            context.startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(context, "Não foi possível abrir a imagem.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     private int dpToPxInt(int dp) {
         return (int) TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP,
@@ -294,7 +333,7 @@ public class PostForumAdapter extends RecyclerView.Adapter<PostForumAdapter.View
             String titulo = item.getTitle().toString();
 
             if ("Editar".equals(titulo)) {
-                abrirDialogEditarPost(post);
+                abrirTelaEditarPost(post);
                 return true;
             }
 
@@ -309,90 +348,15 @@ public class PostForumAdapter extends RecyclerView.Adapter<PostForumAdapter.View
         popupMenu.show();
     }
 
-    private void abrirDialogEditarPost(PostForum post) {
-        LinearLayout container = new LinearLayout(context);
-        container.setOrientation(LinearLayout.VERTICAL);
-        container.setPadding(dpToPxInt(16), dpToPxInt(12), dpToPxInt(16), dpToPxInt(8));
+    private void abrirTelaEditarPost(PostForum post) {
+        Intent intent = new Intent(context, NovaPublicacaoActivity.class);
+        intent.putExtra(NovaPublicacaoActivity.EXTRA_MODO_EDICAO, true);
+        intent.putExtra(NovaPublicacaoActivity.EXTRA_POST_ID, post.getId());
+        context.startActivity(intent);
 
-        EditText inputTitulo = new EditText(context);
-        inputTitulo.setInputType(android.text.InputType.TYPE_CLASS_TEXT
-                | android.text.InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
-        inputTitulo.setSingleLine(false);
-        inputTitulo.setHint("Título");
-        inputTitulo.setText(textoSeguro(post.getTitulo(), ""));
-        inputTitulo.setFilters(new InputFilter[]{
-                new InputFilter.LengthFilter(ForumLimits.MAX_TITULO_POST)
-        });
-
-        EditText inputMensagem = new EditText(context);
-        inputMensagem.setInputType(android.text.InputType.TYPE_CLASS_TEXT
-                | android.text.InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
-                | android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE
-                | android.text.InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
-        inputMensagem.setHint("Mensagem");
-        inputMensagem.setText(textoSeguro(post.getMensagem(), ""));
-        inputMensagem.setMinLines(4);
-        inputMensagem.setFilters(new InputFilter[]{
-                new InputFilter.LengthFilter(ForumLimits.MAX_TEXTO_POST)
-        });
-
-        container.addView(inputTitulo);
-        container.addView(inputMensagem);
-
-        new AlertDialog.Builder(context)
-                .setTitle("Editar post")
-                .setView(container)
-                .setNegativeButton("Cancelar", null)
-                .setPositiveButton("Salvar", (dialog, which) -> {
-                    String novoTitulo = InputSecurityUtils.sanitizeUserText(inputTitulo.getText().toString());
-                    String novaMensagem = InputSecurityUtils.sanitizeUserText(inputMensagem.getText().toString());
-
-                    if (InputSecurityUtils.isNullOrBlank(novoTitulo)) {
-                        Toast.makeText(context, "Digite um título.", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    if (InputSecurityUtils.isNullOrBlank(novaMensagem)) {
-                        Toast.makeText(context, "Digite uma mensagem.", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    if (novoTitulo.length() < 3) {
-                        Toast.makeText(context, "Digite um título mais completo.", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    if (novaMensagem.length() < 5) {
-                        Toast.makeText(context, "Digite uma mensagem mais completa.", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    if (InputSecurityUtils.exceedsMaxLength(novoTitulo, ForumLimits.MAX_TITULO_POST)) {
-                        Toast.makeText(context, "Título muito longo.", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    if (InputSecurityUtils.exceedsMaxLength(novaMensagem, ForumLimits.MAX_TEXTO_POST)) {
-                        Toast.makeText(context, "Mensagem muito longa.", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    if (InputSecurityUtils.containsSuspiciousPattern(novoTitulo)
-                            || InputSecurityUtils.containsSuspiciousPattern(novaMensagem)) {
-                        Toast.makeText(context, "Conteúdo inválido detectado.", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    boolean sucesso = forumStorage.editarPost(post.getId(), novoTitulo, novaMensagem);
-
-                    if (sucesso) {
-                        Toast.makeText(context, "Post editado com sucesso.", Toast.LENGTH_SHORT).show();
-                        atualizarListaCompleta();
-                    } else {
-                        Toast.makeText(context, "Não foi possível editar o post.", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .show();
+        if (context instanceof Activity) {
+            TransitionHelper.slideForward((Activity) context);
+        }
     }
 
     private void confirmarExclusaoPost(PostForum post) {

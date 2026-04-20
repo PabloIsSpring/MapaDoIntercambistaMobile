@@ -34,6 +34,81 @@ public class ForumStorage {
         prefs.edit().putString(KEY_POSTS, gson.toJson(cachePosts)).apply();
     }
 
+    private List<PostForum> criarPostsExemplo() {
+        List<PostForum> posts = new ArrayList<>();
+
+        long agora = System.currentTimeMillis();
+
+        PostForum post1 = new PostForum(
+                "Marina Alves",
+                "marina.alves@email.com",
+                "",
+                "Vale a pena fazer intercâmbio no Canadá?",
+                "Estou pesquisando opções para estudar e trabalhar no Canadá. Queria saber como foi a experiência de vocês com custo de vida, adaptação e qualidade das escolas.",
+                agora - (2 * 60 * 60 * 1000L)
+        );
+
+        List<RespostaForum> respostas1 = new ArrayList<>();
+        respostas1.add(new RespostaForum("Lucas Ferreira", "lucas.ferreira@email.com", "",
+                "Vale bastante a pena. Toronto é mais cara, mas tem muita oportunidade e estrutura muito boa.",
+                agora - (90 * 60 * 1000L), 0, true, false));
+        respostas1.add(new RespostaForum("Ana Souza", "ana.souza@email.com", "",
+                "Eu fui para Vancouver e gostei muito da segurança e da organização da cidade.",
+                agora - (70 * 60 * 1000L), 0, true, false));
+        respostas1.add(new RespostaForum("Pedro Lima", "pedro.lima@email.com", "",
+                "Só recomendo planejar bem o orçamento porque moradia pesa bastante no início.",
+                agora - (50 * 60 * 1000L), 0, true, false));
+        post1.setRespostas(respostas1);
+
+        PostForum post2 = new PostForum(
+                "Fernanda Costa",
+                "fernanda.costa@email.com",
+                "",
+                "Intercâmbio na Austrália compensa para inglês?",
+                "Queria melhorar meu inglês e também ter uma experiência internacional. A Austrália parece interessante, mas ainda estou em dúvida.",
+                agora - (5 * 60 * 60 * 1000L)
+        );
+
+        List<RespostaForum> respostas2 = new ArrayList<>();
+        respostas2.add(new RespostaForum("Rafael Gomes", "rafael.gomes@email.com", "",
+                "Compensa sim. Sydney é incrível e o contato diário com o idioma ajuda demais.",
+                agora - (4 * 60 * 60 * 1000L), 0, true, false));
+        respostas2.add(new RespostaForum("Juliana Martins", "juliana.martins@email.com", "",
+                "Eu gostei muito, principalmente pela possibilidade de conciliar estudo e rotina mais leve.",
+                agora - (3 * 60 * 60 * 1000L), 0, true, false));
+        respostas2.add(new RespostaForum("Caio Henrique", "caio.henrique@email.com", "",
+                "O único ponto é que o custo de vida pode ser alto dependendo da cidade.",
+                agora - (2 * 60 * 60 * 1000L), 0, true, false));
+        post2.setRespostas(respostas2);
+
+        PostForum post3 = new PostForum(
+                "Beatriz Rocha",
+                "beatriz.rocha@email.com",
+                "",
+                "Qual país vocês indicam para o primeiro intercâmbio?",
+                "Estou querendo fazer meu primeiro intercâmbio e queria uma opção com boa adaptação, segurança e custo razoável.",
+                agora - (8 * 60 * 60 * 1000L)
+        );
+
+        List<RespostaForum> respostas3 = new ArrayList<>();
+        respostas3.add(new RespostaForum("Gustavo Nunes", "gustavo.nunes@email.com", "",
+                "Irlanda costuma ser uma porta de entrada muito boa para quem vai pela primeira vez.",
+                agora - (7 * 60 * 60 * 1000L), 0, true, false));
+        respostas3.add(new RespostaForum("Larissa Melo", "larissa.melo@email.com", "",
+                "Canadá também é excelente, principalmente para quem busca organização e qualidade de vida.",
+                agora - (6 * 60 * 60 * 1000L), 0, true, false));
+        respostas3.add(new RespostaForum("Thiago Barros", "thiago.barros@email.com", "",
+                "Eu olharia muito para o objetivo: idioma, trabalho, faculdade ou experiência cultural.",
+                agora - (5 * 60 * 60 * 1000L), 0, true, false));
+        post3.setRespostas(respostas3);
+
+        posts.add(sanitizarPost(post1));
+        posts.add(sanitizarPost(post2));
+        posts.add(sanitizarPost(post3));
+
+        return posts;
+    }
+
     public synchronized List<PostForum> carregarPosts() {
         if (cachePosts != null) {
             return new ArrayList<>(cachePosts);
@@ -41,8 +116,9 @@ public class ForumStorage {
 
         String json = prefs.getString(KEY_POSTS, null);
         if (json == null || json.trim().isEmpty()) {
-            cachePosts = new ArrayList<>();
-            return new ArrayList<>();
+            cachePosts = criarPostsExemplo();
+            salvarPosts(cachePosts);
+            return new ArrayList<>(cachePosts);
         }
 
         try {
@@ -73,13 +149,14 @@ public class ForumStorage {
         return true;
     }
 
-    public synchronized boolean editarPost(String postId, String novoTitulo, String novaMensagem) {
+    public synchronized boolean editarPost(String postId, String novoTitulo, String novaMensagem, String novaImagemUri) {
         if (InputSecurityUtils.isNullOrBlank(postId)) {
             return false;
         }
 
         String titulo = InputSecurityUtils.sanitizeUserText(novoTitulo);
         String mensagem = InputSecurityUtils.sanitizeUserText(novaMensagem);
+        String imagemUri = novaImagemUri != null ? novaImagemUri.trim() : "";
 
         if (InputSecurityUtils.isNullOrBlank(titulo)
                 || InputSecurityUtils.isNullOrBlank(mensagem)
@@ -92,12 +169,17 @@ public class ForumStorage {
             return false;
         }
 
+        if (imagemUri.length() > ForumLimits.MAX_FOTO_URI) {
+            imagemUri = imagemUri.substring(0, ForumLimits.MAX_FOTO_URI);
+        }
+
         List<PostForum> posts = carregarPosts();
 
         for (PostForum post : posts) {
             if (postId.equals(post.getId())) {
                 post.setTitulo(titulo);
                 post.setMensagem(mensagem);
+                post.setImagemUri(imagemUri);
                 salvarPosts(posts);
                 return true;
             }
@@ -315,6 +397,8 @@ public class ForumStorage {
                     dislikes.remove(emailNormalizado);
                 }
 
+                post.setUsuariosLike(likes);
+                post.setUsuariosDislike(dislikes);
                 salvarPosts(posts);
                 return true;
             }
@@ -347,6 +431,8 @@ public class ForumStorage {
                     likes.remove(emailNormalizado);
                 }
 
+                post.setUsuariosLike(likes);
+                post.setUsuariosDislike(dislikes);
                 salvarPosts(posts);
                 return true;
             }
@@ -389,6 +475,8 @@ public class ForumStorage {
                             dislikes.remove(emailNormalizado);
                         }
 
+                        resposta.setUsuariosLike(likes);
+                        resposta.setUsuariosDislike(dislikes);
                         salvarPosts(posts);
                         return true;
                     }
@@ -433,6 +521,8 @@ public class ForumStorage {
                             likes.remove(emailNormalizado);
                         }
 
+                        resposta.setUsuariosLike(likes);
+                        resposta.setUsuariosDislike(dislikes);
                         salvarPosts(posts);
                         return true;
                     }
@@ -502,6 +592,7 @@ public class ForumStorage {
             ));
 
             post.setAutorFotoUri(limitar(post.getAutorFotoUri(), ForumLimits.MAX_FOTO_URI));
+            post.setImagemUri(limitar(post.getImagemUri(), ForumLimits.MAX_FOTO_URI));
             post.setTitulo(InputSecurityUtils.sanitizeUserText(post.getTitulo()));
             post.setMensagem(InputSecurityUtils.sanitizeUserText(post.getMensagem()));
 
@@ -576,6 +667,7 @@ public class ForumStorage {
                 limitar(post.getAutorFotoUri(), ForumLimits.MAX_FOTO_URI),
                 limitar(InputSecurityUtils.sanitizeUserText(post.getTitulo()), ForumLimits.MAX_TITULO_POST),
                 limitar(InputSecurityUtils.sanitizeUserText(post.getMensagem()), ForumLimits.MAX_TEXTO_POST),
+                limitar(post.getImagemUri(), ForumLimits.MAX_FOTO_URI),
                 post.getCriadoEm(),
                 garantirLista(post.getUsuariosLike()),
                 garantirLista(post.getUsuariosDislike()),

@@ -102,11 +102,90 @@
                     android:background="@drawable/bg_input"
                     android:hint="Digite seu nome"
                     android:importantForAutofill="yes"
+                    android:inputType="textCapWords|textPersonName"
+                    android:maxLines="1"
                     android:paddingStart="14dp"
                     android:paddingEnd="14dp"
                     android:textColor="@color/text_primary"
                     android:textColorHint="@color/text_secondary"
-                    android:textSize="15sp" />
+                    android:textSize="15sp"
+                    android:imeOptions="actionNext" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Sobrenome"
+                    android:textColor="@color/text_primary"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/inputSobrenomeCadastro"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_input"
+                    android:hint="Digite seu sobrenome"
+                    android:importantForAutofill="yes"
+                    android:inputType="textCapWords|textPersonName"
+                    android:maxLines="1"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp"
+                    android:textColor="@color/text_primary"
+                    android:textColorHint="@color/text_secondary"
+                    android:textSize="15sp"
+                    android:imeOptions="actionNext" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Username"
+                    android:textColor="@color/text_primary"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/inputUsernameCadastro"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_input"
+                    android:hint="Escolha seu username"
+                    android:importantForAutofill="no"
+                    android:inputType="textNoSuggestions"
+                    android:maxLines="1"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp"
+                    android:textColor="@color/text_primary"
+                    android:textColorHint="@color/text_secondary"
+                    android:textSize="15sp"
+                    android:imeOptions="actionNext" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Idade"
+                    android:textColor="@color/text_primary"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/inputIdadeCadastro"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_input"
+                    android:hint="Digite sua idade"
+                    android:importantForAutofill="yes"
+                    android:inputType="number"
+                    android:maxLength="3"
+                    android:maxLines="1"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp"
+                    android:textColor="@color/text_primary"
+                    android:textColorHint="@color/text_secondary"
+                    android:textSize="15sp"
+                    android:imeOptions="actionNext" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -125,11 +204,13 @@
                     android:hint="Digite seu e-mail"
                     android:importantForAutofill="yes"
                     android:inputType="textEmailAddress"
+                    android:maxLines="1"
                     android:paddingStart="14dp"
                     android:paddingEnd="14dp"
                     android:textColor="@color/text_primary"
                     android:textColorHint="@color/text_secondary"
-                    android:textSize="15sp" />
+                    android:textSize="15sp"
+                    android:imeOptions="actionNext" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -158,6 +239,8 @@
                         android:hint="Digite sua senha"
                         android:importantForAutofill="yes"
                         android:inputType="textPassword"
+                        android:imeOptions="actionNext"
+                        android:maxLines="1"
                         android:paddingStart="14dp"
                         android:paddingEnd="12dp"
                         android:textColor="@color/text_primary"
@@ -199,6 +282,8 @@
                         android:hint="Confirme sua senha"
                         android:importantForAutofill="yes"
                         android:inputType="textPassword"
+                        android:imeOptions="actionDone"
+                        android:maxLines="1"
                         android:paddingStart="14dp"
                         android:paddingEnd="12dp"
                         android:textColor="@color/text_primary"

@@ -33,9 +33,13 @@ public class CadastroActivity extends AppCompatActivity {
     private boolean confirmarSenhaVisivel = false;
 
     private EditText inputNome;
+    private EditText inputSobrenome;
+    private EditText inputUsername;
+    private EditText inputIdade;
     private EditText inputEmail;
     private EditText inputSenha;
     private EditText inputConfirmarSenha;
+
     private ImageView olhoSenha;
     private ImageView olhoConfirmarSenha;
     private MaterialButton botaoCadastrar;
@@ -51,6 +55,9 @@ public class CadastroActivity extends AppCompatActivity {
         SessionManager sessionManager = new SessionManager(this);
 
         inputNome = findViewById(R.id.inputNomeCadastro);
+        inputSobrenome = findViewById(R.id.inputSobrenomeCadastro);
+        inputUsername = findViewById(R.id.inputUsernameCadastro);
+        inputIdade = findViewById(R.id.inputIdadeCadastro);
         inputEmail = findViewById(R.id.inputEmailCadastro);
         inputSenha = findViewById(R.id.inputSenhaCadastro);
         inputConfirmarSenha = findViewById(R.id.inputConfirmarSenhaCadastro);
@@ -77,6 +84,9 @@ public class CadastroActivity extends AppCompatActivity {
 
         botaoCadastrar.setOnClickListener(v -> {
             String nome = inputNome.getText().toString().trim();
+            String sobrenome = inputSobrenome.getText().toString().trim();
+            String username = normalizarUsername(inputUsername.getText().toString());
+            String idadeTexto = inputIdade.getText().toString().trim();
             String email = inputEmail.getText().toString().trim();
             String senha = inputSenha.getText().toString();
             String confirmarSenha = inputConfirmarSenha.getText().toString();
@@ -90,6 +100,63 @@ public class CadastroActivity extends AppCompatActivity {
             if (nome.length() < 2) {
                 inputNome.setError("Digite um nome válido");
                 inputNome.requestFocus();
+                return;
+            }
+
+            if (sobrenome.isEmpty()) {
+                inputSobrenome.setError("Digite seu sobrenome");
+                inputSobrenome.requestFocus();
+                return;
+            }
+
+            if (sobrenome.length() < 2) {
+                inputSobrenome.setError("Digite um sobrenome válido");
+                inputSobrenome.requestFocus();
+                return;
+            }
+
+            if (username.isEmpty()) {
+                inputUsername.setError("Digite um username");
+                inputUsername.requestFocus();
+                return;
+            }
+
+            if (username.length() < 3) {
+                inputUsername.setError("O username deve ter pelo menos 3 caracteres");
+                inputUsername.requestFocus();
+                return;
+            }
+
+            if (username.length() > 30) {
+                inputUsername.setError("O username deve ter no máximo 30 caracteres");
+                inputUsername.requestFocus();
+                return;
+            }
+
+            if (!usernameValido(username)) {
+                inputUsername.setError("Use apenas letras, números, ponto e underline");
+                inputUsername.requestFocus();
+                return;
+            }
+
+            if (idadeTexto.isEmpty()) {
+                inputIdade.setError("Digite sua idade");
+                inputIdade.requestFocus();
+                return;
+            }
+
+            int idade;
+            try {
+                idade = Integer.parseInt(idadeTexto);
+            } catch (NumberFormatException e) {
+                inputIdade.setError("Digite uma idade válida");
+                inputIdade.requestFocus();
+                return;
+            }
+
+            if (idade < 0 || idade > 120) {
+                inputIdade.setError("Digite uma idade válida");
+                inputIdade.requestFocus();
                 return;
             }
 
@@ -117,9 +184,11 @@ public class CadastroActivity extends AppCompatActivity {
             }
 
             if (!SenhaUtils.senhaForte(senha)) {
-                Toast.makeText(this,
+                Toast.makeText(
+                        this,
                         "A senha deve ter 8 a 32 caracteres, com maiúscula, minúscula, número e símbolo",
-                        Toast.LENGTH_LONG).show();
+                        Toast.LENGTH_LONG
+                ).show();
                 return;
             }
 
@@ -129,7 +198,15 @@ public class CadastroActivity extends AppCompatActivity {
                 return;
             }
 
-            tentarCadastroApiComFallback(sessionManager, nome, email, senha);
+            tentarCadastroApiComFallback(
+                    sessionManager,
+                    nome,
+                    sobrenome,
+                    username,
+                    idade,
+                    email,
+                    senha
+            );
         });
     }
 
@@ -149,12 +226,7 @@ public class CadastroActivity extends AppCompatActivity {
 
     private void aplicarModoImersivo() {
         getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
         );
     }
 
@@ -189,19 +261,38 @@ public class CadastroActivity extends AppCompatActivity {
     private void setLoading(boolean loading) {
         botaoCadastrar.setEnabled(!loading);
         botaoCadastrar.setText(loading ? "Criando conta..." : "Criar conta");
+
         inputNome.setEnabled(!loading);
+        inputSobrenome.setEnabled(!loading);
+        inputUsername.setEnabled(!loading);
+        inputIdade.setEnabled(!loading);
         inputEmail.setEnabled(!loading);
         inputSenha.setEnabled(!loading);
         inputConfirmarSenha.setEnabled(!loading);
+
         olhoSenha.setEnabled(!loading);
         olhoConfirmarSenha.setEnabled(!loading);
     }
 
-    private void tentarCadastroApiComFallback(SessionManager sessionManager, String nome, String email, String senha) {
+    private void tentarCadastroApiComFallback(SessionManager sessionManager,
+                                              String nome,
+                                              String sobrenome,
+                                              String username,
+                                              int idade,
+                                              String email,
+                                              String senha) {
         setLoading(true);
 
         ApiService apiService = ApiClient.getApiService(CadastroActivity.this);
-        RegisterUserRequestDto request = new RegisterUserRequestDto(nome, email, senha);
+
+        RegisterUserRequestDto request = new RegisterUserRequestDto(
+                nome,
+                email,
+                senha,
+                username,
+                sobrenome,
+                idade
+        );
 
         apiService.registerUser(request).enqueue(new Callback<RegisterUserResponseDto>() {
             @Override
@@ -211,16 +302,37 @@ public class CadastroActivity extends AppCompatActivity {
                 }
 
                 if (response.isSuccessful()) {
-                    sessionManager.salvarUsuarioLocalSeNaoExistir(nome, email, senha);
+                    sessionManager.salvarUsuarioLocalSeNaoExistir(
+                            nome,
+                            sobrenome,
+                            username,
+                            idade,
+                            email,
+                            senha
+                    );
+
+                    sessionManager.salvarPerfilApi(nome, email, username, sobrenome, idade);
+
                     Toast.makeText(CadastroActivity.this, "Conta criada com sucesso!", Toast.LENGTH_SHORT).show();
                     finish();
                     return;
                 }
 
-                boolean cadastradoLocal = sessionManager.cadastrarUsuario(nome, email, senha);
+                boolean cadastradoLocal = sessionManager.cadastrarUsuario(
+                        nome,
+                        sobrenome,
+                        username,
+                        idade,
+                        email,
+                        senha
+                );
 
                 if (cadastradoLocal) {
-                    Toast.makeText(CadastroActivity.this, "API indisponível para cadastro remoto. Conta salva localmente.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(
+                            CadastroActivity.this,
+                            "API indisponível para cadastro remoto. Conta salva localmente.",
+                            Toast.LENGTH_LONG
+                    ).show();
                     finish();
                 } else {
                     Toast.makeText(CadastroActivity.this, "Já existe uma conta com este e-mail", Toast.LENGTH_SHORT).show();
@@ -233,15 +345,38 @@ public class CadastroActivity extends AppCompatActivity {
                     setLoading(false);
                 }
 
-                boolean cadastradoLocal = sessionManager.cadastrarUsuario(nome, email, senha);
+                boolean cadastradoLocal = sessionManager.cadastrarUsuario(
+                        nome,
+                        sobrenome,
+                        username,
+                        idade,
+                        email,
+                        senha
+                );
 
                 if (cadastradoLocal) {
-                    Toast.makeText(CadastroActivity.this, "API indisponível. Cadastro salvo localmente.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(
+                            CadastroActivity.this,
+                            "API indisponível. Cadastro salvo localmente.",
+                            Toast.LENGTH_LONG
+                    ).show();
                     finish();
                 } else {
                     Toast.makeText(CadastroActivity.this, "Já existe uma conta com este e-mail", Toast.LENGTH_SHORT).show();
                 }
             }
         });
+    }
+
+    private String normalizarUsername(String valor) {
+        if (valor == null) {
+            return "";
+        }
+
+        return valor.trim().toLowerCase();
+    }
+
+    private boolean usernameValido(String username) {
+        return username.matches("^[a-z0-9._]+$");
     }
 }

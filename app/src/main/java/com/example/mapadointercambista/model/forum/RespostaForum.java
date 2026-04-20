@@ -140,6 +140,14 @@ public class RespostaForum implements Serializable {
         this.nivel = nivel;
     }
 
+    public void setUsuariosLike(List<String> usuariosLike) {
+        this.usuariosLike = usuariosLike != null ? usuariosLike : new ArrayList<>();
+    }
+
+    public void setUsuariosDislike(List<String> usuariosDislike) {
+        this.usuariosDislike = usuariosDislike != null ? usuariosDislike : new ArrayList<>();
+    }
+
     public boolean usuarioCurtiu(String emailUsuario) {
         String emailNormalizado = normalizarEmail(emailUsuario);
         return !emailNormalizado.isEmpty()

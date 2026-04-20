@@ -107,7 +107,8 @@
                     android:paddingEnd="14dp"
                     android:textColor="@color/text_primary"
                     android:textColorHint="@color/text_secondary"
-                    android:textSize="15sp" />
+                    android:textSize="15sp"
+                    android:imeOptions="actionNext"/>
 
                 <TextView
                     android:layout_width="match_parent"
@@ -136,6 +137,8 @@
                         android:hint="Digite sua senha"
                         android:importantForAutofill="yes"
                         android:inputType="textPassword"
+                        android:imeOptions="actionDone"
+                        android:maxLines="1"
                         android:paddingStart="14dp"
                         android:paddingEnd="12dp"
                         android:textColor="@color/text_primary"

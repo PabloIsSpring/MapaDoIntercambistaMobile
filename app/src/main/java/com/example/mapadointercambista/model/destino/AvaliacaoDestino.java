@@ -88,15 +88,17 @@ public class AvaliacaoDestino implements Serializable {
     }
 
     public boolean usuarioCurtiu(String emailUsuario) {
-        return emailUsuario != null
+        String emailNormalizado = normalizarEmail(emailUsuario);
+        return !emailNormalizado.isEmpty()
                 && usuariosLike != null
-                && usuariosLike.contains(emailUsuario);
+                && usuariosLike.contains(emailNormalizado);
     }
 
     public boolean usuarioDescurtiu(String emailUsuario) {
-        return emailUsuario != null
+        String emailNormalizado = normalizarEmail(emailUsuario);
+        return !emailNormalizado.isEmpty()
                 && usuariosDislike != null
-                && usuariosDislike.contains(emailUsuario);
+                && usuariosDislike.contains(emailNormalizado);
     }
 
     public void setMensagem(String mensagem) {
@@ -109,5 +111,20 @@ public class AvaliacaoDestino implements Serializable {
 
     public void setAgenciaEscolhida(String agenciaEscolhida) {
         this.agenciaEscolhida = agenciaEscolhida;
+    }
+
+    public void setUsuariosLike(List<String> usuariosLike) {
+        this.usuariosLike = usuariosLike != null ? usuariosLike : new ArrayList<>();
+    }
+
+    public void setUsuariosDislike(List<String> usuariosDislike) {
+        this.usuariosDislike = usuariosDislike != null ? usuariosDislike : new ArrayList<>();
+    }
+
+    private String normalizarEmail(String email) {
+        if (email == null) {
+            return "";
+        }
+        return email.trim().toLowerCase();
     }
 }

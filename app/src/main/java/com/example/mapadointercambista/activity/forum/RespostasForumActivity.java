@@ -511,7 +511,12 @@ public class RespostasForumActivity extends AppCompatActivity {
                         return;
                     }
 
-                    boolean sucesso = forumStorage.editarPost(postAtual.getId(), novoTitulo, novaMensagem);
+                    boolean sucesso = forumStorage.editarPost(
+                            postAtual.getId(),
+                            novoTitulo,
+                            novaMensagem,
+                            postAtual.getImagemUri()
+                    );
 
                     if (sucesso) {
                         recarregarPostAtual();

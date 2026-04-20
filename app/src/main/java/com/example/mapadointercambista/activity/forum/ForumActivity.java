@@ -14,6 +14,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -39,6 +41,8 @@ public class ForumActivity extends AppCompatActivity {
 
     private static final String PREF_FORUM_UI = "forum_ui";
     private static final String KEY_ORDENACAO = "ordenacao";
+    private static final int MAX_BUSCA = 80;
+
     private RecyclerView listaTodosForuns;
     private ForumStorage forumStorage;
     private SessionManager sessionManager;
@@ -50,7 +54,8 @@ public class ForumActivity extends AppCompatActivity {
     private TextView textoResultadosForum;
     private TextView textoVazioForum;
     private View containerVazioForum;
-    private static final int MAX_BUSCA = 80;
+
+    private ActivityResultLauncher<Intent> launcherNovoPost;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +67,8 @@ public class ForumActivity extends AppCompatActivity {
 
         forumStorage = new ForumStorage(this);
         sessionManager = new SessionManager(this);
+
+        configurarLauncherNovoPost();
 
         listaTodosForuns = findViewById(R.id.listaTodosForuns);
         listaTodosForuns.setLayoutManager(new LinearLayoutManager(this));
@@ -113,19 +120,21 @@ public class ForumActivity extends AppCompatActivity {
 
         carregarPostsIniciais();
 
-        findViewById(R.id.botaoNovoForum).setOnClickListener(v -> {
+        View botaoNovoForum = findViewById(R.id.botaoNovoForum);
+        AnimationUtils.applyPressAnimation(botaoNovoForum);
+
+        botaoNovoForum.setOnClickListener(v -> {
             if (!sessionManager.estaLogado()) {
                 Toast.makeText(this, "Entre em uma conta para publicar.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             AnimationUtils.playBounce(v);
-            startActivity(new Intent(this, NovaPublicacaoActivity.class));
+
+            Intent intent = new Intent(this, NovaPublicacaoActivity.class);
+            launcherNovoPost.launch(intent);
             TransitionHelper.slideForward(this);
         });
-
-        View botaoNovoForum = findViewById(R.id.botaoNovoForum);
-        AnimationUtils.applyPressAnimation(botaoNovoForum);
 
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavigation);
         NavigationHelper.configurarBottomNavigation(this, bottomNav, R.id.nav_forum);
@@ -144,6 +153,17 @@ public class ForumActivity extends AppCompatActivity {
         if (hasFocus) {
             aplicarModoImersivo();
         }
+    }
+
+    private void configurarLauncherNovoPost() {
+        launcherNovoPost = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK) {
+                        sincronizarPosts();
+                    }
+                }
+        );
     }
 
     private void aplicarModoImersivo() {
@@ -185,7 +205,8 @@ public class ForumActivity extends AppCompatActivity {
                         || antigo.getDislikes() != novo.getDislikes()
                         || antigo.getQuantidadeRespostas() != novo.getQuantidadeRespostas()
                         || !textoSeguro(antigo.getTitulo()).equals(textoSeguro(novo.getTitulo()))
-                        || !textoSeguro(antigo.getMensagem()).equals(textoSeguro(novo.getMensagem()))) {
+                        || !textoSeguro(antigo.getMensagem()).equals(textoSeguro(novo.getMensagem()))
+                        || !textoSeguro(antigo.getImagemUri()).equals(textoSeguro(novo.getImagemUri()))) {
                     mudou = true;
                     break;
                 }

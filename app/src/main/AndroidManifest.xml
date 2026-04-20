@@ -14,25 +14,37 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MapaDoIntercambista"
         android:usesCleartextTraffic="true">
-
+        <activity
+            android:name=".activity.perfil.SuporteActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.perfil.TermosUsoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.perfil.ConfiguracoesActivity"
+            android:exported="false" />
         <activity
             android:name=".activity.destinos.DetalheDestinoActivity"
             android:exported="false" />
         <activity
             android:name=".activity.forum.NovaRespostaActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
             android:name=".activity.forum.NovaPublicacaoActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
             android:name=".activity.perfil.ContaActivity"
             android:exported="false" />
         <activity
             android:name=".activity.auth.CadastroActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
             android:name=".activity.auth.LoginActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
             android:name=".activity.forum.RespostasForumActivity"
             android:exported="false" />
@@ -50,6 +62,7 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
