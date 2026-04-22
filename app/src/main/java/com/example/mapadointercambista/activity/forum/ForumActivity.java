@@ -120,10 +120,10 @@ public class ForumActivity extends AppCompatActivity {
 
         carregarPostsIniciais();
 
-        View botaoNovoForum = findViewById(R.id.botaoNovoForum);
-        AnimationUtils.applyPressAnimation(botaoNovoForum);
+        View fabNovoPost = findViewById(R.id.fabNovoPost);
+        AnimationUtils.applyPressAnimation(fabNovoPost);
 
-        botaoNovoForum.setOnClickListener(v -> {
+        fabNovoPost.setOnClickListener(v -> {
             if (!sessionManager.estaLogado()) {
                 Toast.makeText(this, "Entre em uma conta para publicar.", Toast.LENGTH_SHORT).show();
                 return;

@@ -1,36 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    android:id="@+id/main"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_secondary">
+
+    <include layout="@layout/menu_superior"/>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
         android:fillViewport="true"
-        android:paddingBottom="110dp">
+        android:paddingBottom="110dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="16dp"
+            android:paddingTop="18dp"
             android:paddingBottom="24dp">
 
             <TextView
+                android:id="@+id/textoTituloConta"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:text="Sua conta"
+                android:text="Perfil do usuário"
                 android:textColor="@color/text_primary"
                 android:textSize="28sp"
                 android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/textoDescricaoConta"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
@@ -43,25 +48,42 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
                 app:cardBackgroundColor="@android:color/transparent"
-                app:cardCornerRadius="28dp"
+                app:cardCornerRadius="24dp"
                 app:cardElevation="4dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
                     android:background="@drawable/bg_profile_hero"
-                    android:padding="20dp">
+                    android:orientation="vertical"
+                    android:padding="18dp">
 
-                    <TextView
-                        android:id="@+id/textoSubtituloHeroConta"
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Seu perfil no Mapa do Intercambista"
-                        android:textColor="@color/text_on_primary"
-                        android:textSize="13sp"
-                        android:textStyle="bold"
-                        android:alpha="0.92" />
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/textoSubtituloHeroConta"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Seu perfil no Mapa do Intercambista"
+                            android:textColor="@color/text_on_primary"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            android:alpha="0.92" />
+
+                        <ImageView
+                            android:layout_width="82dp"
+                            android:layout_height="20dp"
+                            android:adjustViewBounds="true"
+                            android:alpha="0.95"
+                            android:contentDescription="Logo do aplicativo"
+                            android:scaleType="fitEnd"
+                            android:src="@drawable/logo" />
+                    </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -72,11 +94,11 @@
 
                         <com.google.android.material.imageview.ShapeableImageView
                             android:id="@+id/imagemPerfilConta"
-                            android:layout_width="84dp"
-                            android:layout_height="84dp"
+                            android:layout_width="78dp"
+                            android:layout_height="78dp"
                             android:backgroundTint="@color/overlay_dark_soft"
                             android:contentDescription="Foto de perfil"
-                            android:padding="5dp"
+                            android:padding="4dp"
                             android:scaleType="centerCrop"
                             android:src="@drawable/ic_user"
                             app:shapeAppearanceOverlay="@style/CircleImageShape"
@@ -94,9 +116,11 @@
                                 android:id="@+id/textoNomeUsuarioConta"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:ellipsize="end"
+                                android:maxLines="2"
                                 android:text="Nome do usuário"
                                 android:textColor="@color/text_on_primary"
-                                android:textSize="21sp"
+                                android:textSize="20sp"
                                 android:textStyle="bold" />
 
                             <TextView
@@ -104,10 +128,50 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="6dp"
+                                android:ellipsize="end"
+                                android:maxLines="2"
                                 android:text="email@teste.com"
                                 android:textColor="@color/text_on_primary"
                                 android:textSize="14sp"
                                 android:alpha="0.92" />
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/textoUsernameConta"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@usuario"
+                                    android:textColor="@color/text_on_primary"
+                                    android:textSize="13sp"
+                                    android:textStyle="bold"
+                                    android:alpha="0.95" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="8dp"
+                                    android:text="•"
+                                    android:textColor="@color/text_on_primary"
+                                    android:textSize="13sp"
+                                    android:alpha="0.75" />
+
+                                <TextView
+                                    android:id="@+id/textoIdadeConta"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="8dp"
+                                    android:text="18 anos"
+                                    android:textColor="@color/text_on_primary"
+                                    android:textSize="13sp"
+                                    android:textStyle="bold"
+                                    android:alpha="0.95" />
+                            </LinearLayout>
 
                             <TextView
                                 android:id="@+id/textoAlterarFoto"
@@ -116,7 +180,7 @@
                                 android:layout_marginTop="10dp"
                                 android:text="Alterar foto de perfil"
                                 android:textColor="@color/text_on_primary"
-                                android:textSize="12sp"
+                                android:textSize="13sp"
                                 android:textStyle="bold"
                                 android:alpha="0.88"
                                 android:clickable="true"
@@ -166,7 +230,7 @@
                 android:id="@+id/secaoAcoesLogado"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="14dp"
                 android:orientation="vertical"
                 android:visibility="gone">
 
@@ -281,105 +345,35 @@
                     </androidx.cardview.widget.CardView>
                 </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginEnd="6dp"
-                        app:cardBackgroundColor="@color/card_background"
-                        app:cardCornerRadius="20dp"
-                        app:cardElevation="2dp">
-
-                        <LinearLayout
-                            android:id="@+id/atalhoFavoritos"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:minHeight="96dp"
-                            android:orientation="vertical"
-                            android:padding="16dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Destinos favoritos"
-                                android:textColor="@color/brand_blue"
-                                android:textSize="16sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:text="Veja seus destinos salvos"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="13sp" />
-                        </LinearLayout>
-                    </androidx.cardview.widget.CardView>
-
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="6dp"
-                        app:cardBackgroundColor="@color/card_background"
-                        app:cardCornerRadius="20dp"
-                        app:cardElevation="2dp">
-
-                        <LinearLayout
-                            android:id="@+id/atalhoConversas"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:minHeight="96dp"
-                            android:orientation="vertical"
-                            android:padding="16dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Suas conversas"
-                                android:textColor="@color/brand_blue"
-                                android:textSize="16sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:text="Novidades em breve"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="13sp" />
-                        </LinearLayout>
-                    </androidx.cardview.widget.CardView>
-                </LinearLayout>
-
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
                     app:cardBackgroundColor="@color/card_background"
-                    app:cardCornerRadius="20dp"
+                    app:cardCornerRadius="18dp"
                     app:cardElevation="2dp">
 
                     <LinearLayout
-                        android:id="@+id/atalhoEditarPerfil"
+                        android:id="@+id/atalhoConversas"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:minHeight="72dp"
+                        android:layout_height="60dp"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
-                        android:padding="16dp">
+                        android:paddingStart="18dp"
+                        android:paddingEnd="18dp">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_chat"
+                            app:tint="@color/brand_blue" />
 
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
                             android:layout_weight="1"
-                            android:text="Editar username"
-                            android:textColor="@color/text_primary"
+                            android:text="Suas conversas"
+                            android:textColor="@color/brand_blue"
                             android:textSize="16sp"
                             android:textStyle="bold" />
 
@@ -393,89 +387,49 @@
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
-            </LinearLayout>
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardInformacoesPerfilConta"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:visibility="gone"
-                app:cardBackgroundColor="@color/card_background"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="2dp">
-
-                <LinearLayout
+                <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="18dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Informações do perfil"
-                        style="@style/TextSectionTitle" />
+                    android:layout_marginTop="12dp"
+                    app:cardBackgroundColor="@color/card_background"
+                    app:cardCornerRadius="18dp"
+                    app:cardElevation="2dp">
 
                     <LinearLayout
+                        android:id="@+id/atalhoEditarPerfil"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:orientation="horizontal">
+                        android:layout_height="60dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingStart="18dp"
+                        android:paddingEnd="18dp">
 
-                        <LinearLayout
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_user"
+                            app:tint="@color/text_secondary" />
+
+                        <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
                             android:layout_weight="1"
-                            android:orientation="vertical">
+                            android:text="Editar perfil"
+                            android:textColor="@color/text_primary"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Username"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="13sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:id="@+id/textoUsernameConta"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:text="@usuario"
-                                android:textColor="@color/text_primary"
-                                android:textSize="16sp"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="0dp"
+                        <TextView
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Idade"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="13sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:id="@+id/textoIdadeConta"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:text="Não informado"
-                                android:textColor="@color/text_primary"
-                                android:textSize="16sp"
-                                android:textStyle="bold" />
-                        </LinearLayout>
+                            android:text=">"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
                     </LinearLayout>
-
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardVisitanteConta"
@@ -514,7 +468,7 @@
                 android:id="@+id/cardFavoritosConta"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
+                android:layout_marginTop="16dp"
                 app:cardBackgroundColor="@color/card_background"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="2dp">
@@ -525,11 +479,49 @@
                     android:orientation="vertical"
                     android:padding="18dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Meus favoritos"
-                        style="@style/TextSectionTitle" />
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/textoTituloSecaoFavoritosConta"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Destinos favoritos"
+                            style="@style/TextSectionTitle" />
+
+                        <LinearLayout
+                            android:id="@+id/atalhoFavoritos"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingStart="6dp"
+                            android:paddingTop="4dp"
+                            android:paddingEnd="6dp"
+                            android:paddingBottom="4dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Ver todos"
+                                android:textColor="@color/brand_blue"
+                                android:textSize="13sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="6dp"
+                                android:text=">"
+                                android:textColor="@color/brand_blue"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </LinearLayout>
 
                     <TextView
                         android:id="@+id/textoResumoFavoritosConta"
@@ -567,7 +559,7 @@
                 android:layout_marginBottom="10dp"
                 android:text="Configurações"
                 android:textColor="@color/text_primary"
-                android:textSize="28sp"
+                android:textSize="24sp"
                 android:textStyle="bold" />
 
             <LinearLayout
@@ -580,21 +572,28 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:cardBackgroundColor="@color/card_background"
-                    app:cardCornerRadius="20dp"
+                    app:cardCornerRadius="18dp"
                     app:cardElevation="2dp">
 
                     <LinearLayout
                         android:id="@+id/itemAbrirConfiguracoes"
                         android:layout_width="match_parent"
-                        android:layout_height="64dp"
+                        android:layout_height="60dp"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
                         android:paddingStart="18dp"
                         android:paddingEnd="18dp">
 
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_more_vert"
+                            app:tint="@color/text_secondary" />
+
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
                             android:layout_weight="1"
                             android:text="Abrir configurações"
                             android:textColor="@color/text_primary"
@@ -629,10 +628,15 @@
                 app:iconPadding="10dp"
                 app:iconTint="@color/text_on_primary" />
 
+            <View
+                android:id="@+id/cardInformacoesPerfilConta"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone" />
         </LinearLayout>
     </ScrollView>
 
     <include
         layout="@layout/menu_inferior"
         android:layout_gravity="bottom" />
-</FrameLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -6,9 +6,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="6dp"
+    app:cardBackgroundColor="@color/card_background"
     app:cardCornerRadius="22dp"
-    app:cardElevation="3dp"
-    app:cardBackgroundColor="@color/card_background">
+    app:cardElevation="3dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -29,8 +29,8 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/overlay_dark_soft"
-                android:alpha="0.10" />
+                android:alpha="0.10"
+                android:background="@color/overlay_dark_soft" />
 
             <ImageView
                 android:id="@+id/iconeFavoritoDestino"
@@ -57,8 +57,8 @@
                 android:id="@+id/textoDestino"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:maxLines="1"
                 android:ellipsize="end"
+                android:maxLines="1"
                 android:textColor="@color/text_primary"
                 android:textSize="16sp"
                 android:textStyle="bold" />
@@ -68,8 +68,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:maxLines="1"
                 android:ellipsize="end"
+                android:maxLines="1"
                 android:text="País • Idioma"
                 android:textColor="@color/text_secondary"
                 android:textSize="13sp" />
@@ -88,6 +88,8 @@
                     android:layout_height="wrap_content"
                     android:isIndicator="true"
                     android:numStars="5"
+                    android:progressTint="@color/favorite_active"
+                    android:secondaryProgressTint="@color/favorite_active"
                     android:stepSize="0.5" />
 
                 <TextView
@@ -95,8 +97,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:maxLines="1"
                     android:ellipsize="end"
+                    android:maxLines="1"
                     android:text="4.8 (120 avaliações)"
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp" />

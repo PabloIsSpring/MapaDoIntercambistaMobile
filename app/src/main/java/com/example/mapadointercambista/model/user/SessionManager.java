@@ -30,17 +30,21 @@ public class SessionManager {
     private static final String KEY_API_SOBRENOME = "api_sobrenome";
     private static final String KEY_API_IDADE = "api_idade";
     private static final String KEY_API_FOTO_URI = "api_foto_uri";
-
     private static final String AUTH_MODE_API = "api";
     private static final String AUTH_MODE_LOCAL = "local";
-
     private static final int PBKDF2_ITERATIONS = 120000;
     private static final int HASH_SIZE_BITS = 256;
     private static final int SALT_SIZE_BYTES = 16;
-
     private final SharedPreferences prefs;
     private final SharedPreferences.Editor editor;
     private final Gson gson;
+    private static final String KEY_ACCOUNT_TYPE = "account_type";
+    private static final String ACCOUNT_TYPE_USER = "user";
+    private static final String ACCOUNT_TYPE_AGENCIA = "agencia";
+    private static final String KEY_API_AGENCIA_NOME_FANTASIA = "api_agencia_nome_fantasia";
+    private static final String KEY_API_AGENCIA_RAZAO_SOCIAL = "api_agencia_razao_social";
+    private static final String KEY_API_AGENCIA_CNPJ = "api_agencia_cnpj";
+    private static final String KEY_API_AGENCIA_USERNAME = "api_agencia_username";
 
     public SessionManager(Context context) {
         prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
@@ -96,6 +100,7 @@ public class SessionManager {
                 editor.remove(KEY_TOKEN);
                 editor.remove(KEY_TOKEN_EXPIRATION);
                 limparCachePerfilApi();
+                editor.putString(KEY_ACCOUNT_TYPE, ACCOUNT_TYPE_USER);
                 editor.apply();
                 return true;
             }
@@ -104,6 +109,65 @@ public class SessionManager {
         return false;
     }
 
+    public void salvarTipoConta(String tipoConta) {
+        editor.putString(KEY_ACCOUNT_TYPE, tipoConta);
+        editor.apply();
+    }
+
+    public String getTipoConta() {
+        return prefs.getString(KEY_ACCOUNT_TYPE, ACCOUNT_TYPE_USER);
+    }
+
+    public boolean isContaAgencia() {
+        return ACCOUNT_TYPE_AGENCIA.equals(getTipoConta());
+    }
+
+    public boolean isContaUsuario() {
+        return ACCOUNT_TYPE_USER.equals(getTipoConta());
+    }
+
+    public void salvarPerfilAgenciaApi(String email,
+                                       String username,
+                                       String nomeFantasia,
+                                       String razaoSocial,
+                                       String cnpj) {
+        editor.putString(KEY_EMAIL_LOGADO, valorSeguro(email));
+        editor.putString(KEY_API_AGENCIA_USERNAME, valorSeguro(username).toLowerCase());
+        editor.putString(KEY_API_AGENCIA_NOME_FANTASIA, valorSeguro(nomeFantasia));
+        editor.putString(KEY_API_AGENCIA_RAZAO_SOCIAL, valorSeguro(razaoSocial));
+        editor.putString(KEY_API_AGENCIA_CNPJ, valorSeguro(cnpj));
+        editor.putString(KEY_ACCOUNT_TYPE, ACCOUNT_TYPE_AGENCIA);
+        editor.apply();
+    }
+
+    public String getAgenciaUsername() {
+        return prefs.getString(KEY_API_AGENCIA_USERNAME, "");
+    }
+
+    public String getAgenciaNomeFantasia() {
+        return prefs.getString(KEY_API_AGENCIA_NOME_FANTASIA, "");
+    }
+
+    public String getAgenciaRazaoSocial() {
+        return prefs.getString(KEY_API_AGENCIA_RAZAO_SOCIAL, "");
+    }
+
+    public String getAgenciaCnpj() {
+        return prefs.getString(KEY_API_AGENCIA_CNPJ, "");
+    }
+
+    public void salvarLoginApiAgencia(String email, String token, long duracaoMillis) {
+        long expirationTime = System.currentTimeMillis() + duracaoMillis;
+
+        editor.putString(KEY_EMAIL_LOGADO, valorSeguro(email));
+        editor.putString(KEY_TOKEN, valorSeguro(token));
+        editor.putLong(KEY_TOKEN_EXPIRATION, expirationTime);
+        editor.putString(KEY_AUTH_MODE, AUTH_MODE_API);
+        editor.putString(KEY_ACCOUNT_TYPE, ACCOUNT_TYPE_AGENCIA);
+        editor.apply();
+    }
+
+
     public void salvarLoginApi(String email, String token, long duracaoMillis) {
         long expirationTime = System.currentTimeMillis() + duracaoMillis;
 
@@ -111,6 +175,7 @@ public class SessionManager {
         editor.putString(KEY_TOKEN, valorSeguro(token));
         editor.putLong(KEY_TOKEN_EXPIRATION, expirationTime);
         editor.putString(KEY_AUTH_MODE, AUTH_MODE_API);
+        editor.putString(KEY_ACCOUNT_TYPE, ACCOUNT_TYPE_USER);
         editor.apply();
     }
 
@@ -123,6 +188,7 @@ public class SessionManager {
         editor.putString(KEY_API_USERNAME, valorSeguro(username).toLowerCase());
         editor.putString(KEY_API_SOBRENOME, valorSeguro(sobrenome));
         editor.putInt(KEY_API_IDADE, Math.max(idade, 0));
+        editor.putString(KEY_ACCOUNT_TYPE, ACCOUNT_TYPE_USER);
         editor.apply();
     }
 
@@ -137,6 +203,7 @@ public class SessionManager {
 
         String primeiroNome = extrairPrimeiroNome(nomeSeguro);
         String sobrenome = extrairSobrenome(nomeSeguro);
+        String usernameGerado = gerarUsernameBase(emailSeguro, primeiroNome);
 
         List<Usuario> usuarios = carregarUsuarios();
         Usuario usuarioExistente = null;
@@ -155,7 +222,7 @@ public class SessionManager {
             usuarios.add(new Usuario(
                     primeiroNome,
                     sobrenome,
-                    "",
+                    usernameGerado,
                     0,
                     emailSeguro,
                     senhaDummyHash,
@@ -175,6 +242,11 @@ public class SessionManager {
                 alterado = true;
             }
 
+            if (usuarioExistente.getUsername().trim().isEmpty()) {
+                usuarioExistente.setUsername(gerarUsernameDisponivelLocalmente(usernameGerado, usuarios, usuarioExistente.getEmail()));
+                alterado = true;
+            }
+
             if (!fotoSegura.isEmpty()) {
                 usuarioExistente.setFotoUri(fotoSegura);
                 alterado = true;
@@ -190,7 +262,70 @@ public class SessionManager {
         editor.remove(KEY_TOKEN);
         editor.remove(KEY_TOKEN_EXPIRATION);
         limparCachePerfilApi();
+        editor.putString(KEY_ACCOUNT_TYPE, ACCOUNT_TYPE_USER);
         editor.apply();
+    }
+
+    private String gerarUsernameBase(String email, String primeiroNome) {
+        String base;
+
+        if (primeiroNome != null && !primeiroNome.trim().isEmpty()) {
+            base = primeiroNome.trim().toLowerCase();
+        } else if (email != null && email.contains("@")) {
+            base = email.substring(0, email.indexOf("@")).toLowerCase();
+        } else {
+            base = "usuario";
+        }
+
+        base = base.replaceAll("[^a-z0-9._]", "");
+        if (base.length() < 3) {
+            base = base + "user";
+        }
+
+        if (base.length() > 20) {
+            base = base.substring(0, 20);
+        }
+
+        return base;
+    }
+
+    private String gerarUsernameDisponivelLocalmente(String base,
+                                                     List<Usuario> usuarios,
+                                                     String emailDoUsuarioAtual) {
+        String usernameBase = valorSeguro(base).toLowerCase();
+        if (usernameBase.isEmpty()) {
+            usernameBase = "usuario";
+        }
+
+        String candidato = usernameBase;
+        int contador = 1;
+
+        while (!usernameLivreNaLista(candidato, usuarios, emailDoUsuarioAtual)) {
+            candidato = usernameBase + contador;
+            contador++;
+        }
+
+        return candidato;
+    }
+
+    private boolean usernameLivreNaLista(String username,
+                                         List<Usuario> usuarios,
+                                         String emailDoUsuarioAtual) {
+        for (Usuario usuario : usuarios) {
+            if (usuario == null) {
+                continue;
+            }
+
+            normalizarUsuarioLegado(usuario);
+
+            boolean mesmoUsuario = emailDoUsuarioAtual != null
+                    && usuario.getEmail().equalsIgnoreCase(emailDoUsuarioAtual);
+
+            if (!mesmoUsuario && usuario.getUsername().equalsIgnoreCase(username)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private String extrairPrimeiroNome(String nomeCompleto) {
@@ -258,6 +393,13 @@ public class SessionManager {
         editor.remove(KEY_TOKEN);
         editor.remove(KEY_TOKEN_EXPIRATION);
         editor.remove(KEY_AUTH_MODE);
+        editor.remove(KEY_ACCOUNT_TYPE);
+
+        editor.remove(KEY_API_AGENCIA_NOME_FANTASIA);
+        editor.remove(KEY_API_AGENCIA_RAZAO_SOCIAL);
+        editor.remove(KEY_API_AGENCIA_CNPJ);
+        editor.remove(KEY_API_AGENCIA_USERNAME);
+
         limparCachePerfilApi();
         editor.apply();
     }

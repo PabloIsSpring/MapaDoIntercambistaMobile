@@ -23,12 +23,12 @@ android {
     buildTypes {
         debug {
             buildConfigField("String", "API_BASE_URL", "\"http://10.0.2.2:8080/\"")
-            buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"COLOQUE_AQUI_O_WEB_CLIENT_ID\"")
+            buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"1090947788749-ujae9br6b670aa5uepkd3j58hgs9iuum.apps.googleusercontent.com\"")
         }
 
         release {
             buildConfigField("String", "API_BASE_URL", "\"http://10.0.2.2:8080/\"")
-            buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"COLOQUE_AQUI_O_WEB_CLIENT_ID\"")
+            buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"1090947788749-ujae9br6b670aa5uepkd3j58hgs9iuum.apps.googleusercontent.com\"")
             isMinifyEnabled = true
             isShrinkResources = true
         }

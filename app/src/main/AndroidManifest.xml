@@ -15,6 +15,18 @@
         android:theme="@style/Theme.MapaDoIntercambista"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".activity.auth.CadastroAgenciaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.auth.LoginAgenciaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.auth.EscolhaAcessoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.auth.CompletarPerfilGoogleActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.perfil.SuporteActivity"
             android:exported="false" />
         <activity

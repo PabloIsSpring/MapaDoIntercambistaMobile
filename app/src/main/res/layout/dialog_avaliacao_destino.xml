@@ -21,6 +21,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:numStars="5"
+        android:progressTint="@color/favorite_active"
+        android:secondaryProgressTint="@color/favorite_active"
         android:stepSize="0.5" />
 
     <TextView

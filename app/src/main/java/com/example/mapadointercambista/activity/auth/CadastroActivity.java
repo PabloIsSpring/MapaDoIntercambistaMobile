@@ -1,5 +1,6 @@
 package com.example.mapadointercambista.activity.auth;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.InputType;
@@ -318,7 +319,9 @@ public class CadastroActivity extends AppCompatActivity {
     }
 
     private void iniciarCadastroGoogle() {
-        if ("COLOQUE_AQUI_O_WEB_CLIENT_ID".equals(BuildConfig.GOOGLE_WEB_CLIENT_ID)) {
+        if (BuildConfig.GOOGLE_WEB_CLIENT_ID == null
+                || BuildConfig.GOOGLE_WEB_CLIENT_ID.trim().isEmpty()
+                || "COLOQUE_AQUI_O_WEB_CLIENT_ID".equals(BuildConfig.GOOGLE_WEB_CLIENT_ID)) {
             Toast.makeText(this, "Falta configurar o Google Cloud client ID.", Toast.LENGTH_LONG).show();
             return;
         }
@@ -353,7 +356,15 @@ public class CadastroActivity extends AppCompatActivity {
                         if (!isFinishing() && !isDestroyed()) {
                             setLoading(false);
                         }
-                        Toast.makeText(CadastroActivity.this, "Não foi possível cadastrar com Google.", Toast.LENGTH_SHORT).show();
+
+                        android.util.Log.e("GOOGLE_CADASTRO",
+                                "type=" + e.getType() + " message=" + e.getMessage(), e);
+
+                        Toast.makeText(
+                                CadastroActivity.this,
+                                "Erro Google: " + e.getType(),
+                                Toast.LENGTH_LONG
+                        ).show();
                     }
                 }
         );
@@ -383,11 +394,197 @@ public class CadastroActivity extends AppCompatActivity {
                 ? googleCredential.getProfilePictureUri().toString()
                 : "";
 
-        SessionManager sessionManager = new SessionManager(this);
-        sessionManager.entrarComGoogle(nomeCompleto, email, foto);
+        String nome = extrairPrimeiroNome(nomeCompleto);
+        String sobrenome = extrairSobrenome(nomeCompleto);
+        String usernameSugerido = gerarUsernameSugerido(email, nome);
 
-        Toast.makeText(this, "Conta Google vinculada com sucesso!", Toast.LENGTH_SHORT).show();
-        finish();
+        abrirDialogCompletarCadastroGoogle(nome, sobrenome, usernameSugerido, email, foto);
+    }
+
+    private void abrirDialogCompletarCadastroGoogle(String nome,
+                                                    String sobrenome,
+                                                    String usernameSugerido,
+                                                    String email,
+                                                    String foto) {
+        View view = getLayoutInflater().inflate(R.layout.dialog_completar_google, null);
+
+        EditText inputUsernameDialog = view.findViewById(R.id.inputUsernameDialogGoogle);
+        EditText inputIdadeDialog = view.findViewById(R.id.inputIdadeDialogGoogle);
+
+        inputUsernameDialog.setText(usernameSugerido);
+        inputUsernameDialog.setFilters(new InputFilter[]{new InputFilter.LengthFilter(30)});
+        inputIdadeDialog.setFilters(new InputFilter[]{new InputFilter.LengthFilter(3)});
+
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Complete seu perfil")
+                .setView(view)
+                .setCancelable(false)
+                .setNegativeButton("Cancelar", null)
+                .setPositiveButton("Continuar", (dialog, which) -> {
+                    String username = normalizarUsername(inputUsernameDialog.getText().toString());
+                    String idadeTexto = inputIdadeDialog.getText().toString().trim();
+
+                    if (username.isEmpty()) {
+                        Toast.makeText(this, "Digite um username.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (username.length() < 3) {
+                        Toast.makeText(this, "O username deve ter pelo menos 3 caracteres.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (!usernameValido(username)) {
+                        Toast.makeText(this, "Use apenas letras, números, ponto e underline.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    int idade = 0;
+                    if (!idadeTexto.isEmpty()) {
+                        try {
+                            idade = Integer.parseInt(idadeTexto);
+                        } catch (NumberFormatException e) {
+                            Toast.makeText(this, "Digite uma idade válida.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        if (idade < 0 || idade > 120) {
+                            Toast.makeText(this, "Digite uma idade válida.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
+
+                    concluirCadastroGoogle(nome, sobrenome, username, idade, email, foto);
+                })
+                .show();
+    }
+
+    private void concluirCadastroGoogle(String nome,
+                                        String sobrenome,
+                                        String username,
+                                        int idade,
+                                        String email,
+                                        String foto) {
+        SessionManager sessionManager = new SessionManager(this);
+
+        String senhaInterna = "Google@" + System.currentTimeMillis();
+
+        setLoading(true);
+
+        ApiService apiService = ApiClient.getApiService(this);
+        RegisterUserRequestDto request = new RegisterUserRequestDto(
+                nome,
+                email,
+                senhaInterna,
+                username,
+                sobrenome,
+                idade
+        );
+
+        apiService.registerIntercambista(request).enqueue(new Callback<RegisterUserResponseDto>() {
+            @Override
+            public void onResponse(Call<RegisterUserResponseDto> call, Response<RegisterUserResponseDto> response) {
+                if (!isFinishing() && !isDestroyed()) {
+                    setLoading(false);
+                }
+
+                sessionManager.salvarUsuarioLocalSeNaoExistir(
+                        nome,
+                        sobrenome,
+                        username,
+                        idade,
+                        email,
+                        senhaInterna
+                );
+
+                sessionManager.entrarComGoogle(nome + " " + sobrenome, email, foto);
+
+                if (response.isSuccessful()) {
+                    sessionManager.salvarPerfilApi(nome, email, username, sobrenome, idade);
+                    Toast.makeText(CadastroActivity.this, "Conta Google cadastrada com sucesso!", Toast.LENGTH_SHORT).show();
+                    abrirCompletarPerfilGoogle();
+                    return;
+                }
+
+                Toast.makeText(
+                        CadastroActivity.this,
+                        "Conta Google salva localmente. API indisponível no momento.",
+                        Toast.LENGTH_LONG
+                ).show();
+                abrirCompletarPerfilGoogle();
+            }
+
+            private void abrirCompletarPerfilGoogle() {
+                Intent intent = new Intent(CadastroActivity.this, CompletarPerfilGoogleActivity.class);
+                startActivity(intent);
+                finish();
+            }
+
+            @Override
+            public void onFailure(Call<RegisterUserResponseDto> call, Throwable t) {
+                if (!isFinishing() && !isDestroyed()) {
+                    setLoading(false);
+                }
+
+                sessionManager.salvarUsuarioLocalSeNaoExistir(
+                        nome,
+                        sobrenome,
+                        username,
+                        idade,
+                        email,
+                        senhaInterna
+                );
+
+                sessionManager.entrarComGoogle(nome + " " + sobrenome, email, foto);
+
+                Toast.makeText(
+                        CadastroActivity.this,
+                        "Conta Google salva localmente. API indisponível no momento.",
+                        Toast.LENGTH_LONG
+                ).show();
+                finish();
+            }
+        });
+    }
+
+    private String extrairPrimeiroNome(String nomeCompleto) {
+        if (nomeCompleto == null || nomeCompleto.trim().isEmpty()) {
+            return "Usuário";
+        }
+
+        String[] partes = nomeCompleto.trim().split("\\s+");
+        return partes.length > 0 ? partes[0] : "Usuário";
+    }
+
+    private String extrairSobrenome(String nomeCompleto) {
+        if (nomeCompleto == null || nomeCompleto.trim().isEmpty()) {
+            return "";
+        }
+
+        String[] partes = nomeCompleto.trim().split("\\s+", 2);
+        return partes.length > 1 ? partes[1] : "";
+    }
+
+    private String gerarUsernameSugerido(String email, String nome) {
+        String base;
+
+        if (nome != null && !nome.trim().isEmpty()) {
+            base = nome.trim().toLowerCase();
+        } else if (email != null && email.contains("@")) {
+            base = email.substring(0, email.indexOf("@")).toLowerCase();
+        } else {
+            base = "usuario";
+        }
+
+        base = base.replaceAll("[^a-z0-9._]", "");
+        if (base.length() < 3) {
+            base = base + "user";
+        }
+        if (base.length() > 20) {
+            base = base.substring(0, 20);
+        }
+
+        return base;
     }
 
     private void tentarCadastroApiComFallback(SessionManager sessionManager,
@@ -410,7 +607,7 @@ public class CadastroActivity extends AppCompatActivity {
                 idade
         );
 
-        apiService.registerUser(request).enqueue(new Callback<RegisterUserResponseDto>() {
+        apiService.registerIntercambista(request).enqueue(new Callback<RegisterUserResponseDto>() {
             @Override
             public void onResponse(Call<RegisterUserResponseDto> call, Response<RegisterUserResponseDto> response) {
                 if (!isFinishing() && !isDestroyed()) {
@@ -430,7 +627,7 @@ public class CadastroActivity extends AppCompatActivity {
                     sessionManager.salvarPerfilApi(nome, email, username, sobrenome, idade);
 
                     Toast.makeText(CadastroActivity.this, "Conta criada com sucesso!", Toast.LENGTH_SHORT).show();
-                    finish();
+                    abrirConta();
                     return;
                 }
 
@@ -449,7 +646,7 @@ public class CadastroActivity extends AppCompatActivity {
                             "API indisponível para cadastro remoto. Conta salva localmente.",
                             Toast.LENGTH_LONG
                     ).show();
-                    finish();
+                    abrirConta();
                 } else {
                     Toast.makeText(CadastroActivity.this, "Já existe uma conta com este e-mail", Toast.LENGTH_SHORT).show();
                 }
@@ -490,6 +687,13 @@ public class CadastroActivity extends AppCompatActivity {
         }
 
         return valor.trim().toLowerCase();
+    }
+
+    private void abrirConta() {
+        Intent intent = new Intent(CadastroActivity.this, com.example.mapadointercambista.activity.perfil.ContaActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
+        finish();
     }
 
     private boolean usernameValido(String username) {

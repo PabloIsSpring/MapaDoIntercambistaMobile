@@ -2,11 +2,11 @@
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/scrollCadastroAgencia"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_topbar_gradient"
-    android:fillViewport="true"
-    android:id="@+id/scrollCadastro">
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,7 +18,7 @@
         android:paddingBottom="28dp">
 
         <ImageView
-            android:id="@+id/botaoVoltarCadastro"
+            android:id="@+id/botaoVoltarCadastroAgencia"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/ic_arrow_left"
@@ -42,7 +42,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="18dp"
-                android:text="Crie sua conta"
+                android:text="Cadastre sua agência"
                 android:textColor="@color/text_on_primary"
                 android:textSize="30sp"
                 android:textStyle="bold" />
@@ -53,7 +53,7 @@
                 android:layout_marginTop="8dp"
                 android:alpha="0.94"
                 android:lineSpacingExtra="2dp"
-                android:text="Cadastre-se para responder publicações, favoritar destinos e personalizar sua jornada."
+                android:text="Crie a conta da sua agência para divulgar e gerenciar pacotes de intercâmbio."
                 android:textColor="@color/text_on_primary"
                 android:textSize="15sp" />
         </LinearLayout>
@@ -74,7 +74,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Criar conta"
+                    android:text="Criar conta de agência"
                     android:textColor="@color/text_primary"
                     android:textSize="20sp"
                     android:textStyle="bold" />
@@ -83,7 +83,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="Preencha seus dados para começar"
+                    android:text="Preencha os dados obrigatórios da agência"
                     android:textColor="@color/text_secondary"
                     android:textSize="14sp" />
 
@@ -91,19 +91,18 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
-                    android:text="Nome"
+                    android:text="Razão social"
                     android:textColor="@color/text_primary"
                     android:textStyle="bold" />
 
                 <EditText
-                    android:id="@+id/inputNomeCadastro"
+                    android:id="@+id/inputRazaoSocialCadastroAgencia"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:layout_marginTop="8dp"
                     android:background="@drawable/bg_input"
-                    android:hint="Digite seu nome"
-                    android:importantForAutofill="yes"
-                    android:inputType="textCapWords|textPersonName"
+                    android:hint="Digite a razão social"
+                    android:inputType="textCapWords"
                     android:maxLines="1"
                     android:paddingStart="14dp"
                     android:paddingEnd="14dp"
@@ -116,19 +115,42 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="Sobrenome"
+                    android:text="Nome fantasia"
                     android:textColor="@color/text_primary"
                     android:textStyle="bold" />
 
                 <EditText
-                    android:id="@+id/inputSobrenomeCadastro"
+                    android:id="@+id/inputNomeFantasiaCadastroAgencia"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:layout_marginTop="8dp"
                     android:background="@drawable/bg_input"
-                    android:hint="Digite seu sobrenome"
-                    android:importantForAutofill="yes"
-                    android:inputType="textCapWords|textPersonName"
+                    android:hint="Digite o nome fantasia"
+                    android:inputType="textCapWords"
+                    android:maxLines="1"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp"
+                    android:textColor="@color/text_primary"
+                    android:textColorHint="@color/text_secondary"
+                    android:textSize="15sp"
+                    android:imeOptions="actionNext" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="CNPJ"
+                    android:textColor="@color/text_primary"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/inputCnpjCadastroAgencia"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_input"
+                    android:hint="Digite o CNPJ"
+                    android:inputType="number"
                     android:maxLines="1"
                     android:paddingStart="14dp"
                     android:paddingEnd="14dp"
@@ -146,40 +168,13 @@
                     android:textStyle="bold" />
 
                 <EditText
-                    android:id="@+id/inputUsernameCadastro"
+                    android:id="@+id/inputUsernameCadastroAgencia"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:layout_marginTop="8dp"
                     android:background="@drawable/bg_input"
-                    android:hint="Escolha seu username"
-                    android:importantForAutofill="no"
+                    android:hint="Escolha o username da agência"
                     android:inputType="textNoSuggestions"
-                    android:maxLines="1"
-                    android:paddingStart="14dp"
-                    android:paddingEnd="14dp"
-                    android:textColor="@color/text_primary"
-                    android:textColorHint="@color/text_secondary"
-                    android:textSize="15sp"
-                    android:imeOptions="actionNext" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="Idade"
-                    android:textColor="@color/text_primary"
-                    android:textStyle="bold" />
-
-                <EditText
-                    android:id="@+id/inputIdadeCadastro"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:layout_marginTop="8dp"
-                    android:background="@drawable/bg_input"
-                    android:hint="Digite sua idade"
-                    android:importantForAutofill="yes"
-                    android:inputType="number"
-                    android:maxLength="3"
                     android:maxLines="1"
                     android:paddingStart="14dp"
                     android:paddingEnd="14dp"
@@ -197,13 +192,12 @@
                     android:textStyle="bold" />
 
                 <EditText
-                    android:id="@+id/inputEmailCadastro"
+                    android:id="@+id/inputEmailCadastroAgencia"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:layout_marginTop="8dp"
                     android:background="@drawable/bg_input"
-                    android:hint="Digite seu e-mail"
-                    android:importantForAutofill="yes"
+                    android:hint="Digite o e-mail da agência"
                     android:inputType="textEmailAddress"
                     android:maxLines="1"
                     android:paddingStart="14dp"
@@ -231,14 +225,12 @@
                     android:paddingEnd="14dp">
 
                     <EditText
-                        android:id="@+id/inputSenhaCadastro"
+                        android:id="@+id/inputSenhaCadastroAgencia"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:autofillHints="password"
                         android:background="@null"
                         android:hint="Digite sua senha"
-                        android:importantForAutofill="yes"
                         android:inputType="textPassword"
                         android:imeOptions="actionNext"
                         android:maxLines="1"
@@ -249,7 +241,7 @@
                         android:textSize="15sp" />
 
                     <ImageView
-                        android:id="@+id/iconeOlhoSenhaCadastro"
+                        android:id="@+id/iconeOlhoSenhaCadastroAgencia"
                         android:layout_width="22dp"
                         android:layout_height="22dp"
                         android:src="@drawable/ic_eye"
@@ -274,14 +266,12 @@
                     android:paddingEnd="14dp">
 
                     <EditText
-                        android:id="@+id/inputConfirmarSenhaCadastro"
+                        android:id="@+id/inputConfirmarSenhaCadastroAgencia"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:autofillHints="password"
                         android:background="@null"
                         android:hint="Confirme sua senha"
-                        android:importantForAutofill="yes"
                         android:inputType="textPassword"
                         android:imeOptions="actionDone"
                         android:maxLines="1"
@@ -292,7 +282,7 @@
                         android:textSize="15sp" />
 
                     <ImageView
-                        android:id="@+id/iconeOlhoConfirmarSenhaCadastro"
+                        android:id="@+id/iconeOlhoConfirmarSenhaCadastroAgencia"
                         android:layout_width="22dp"
                         android:layout_height="22dp"
                         android:src="@drawable/ic_eye"
@@ -304,44 +294,22 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:lineSpacingExtra="2dp"
-                    android:text="Sua senha deve ter entre 8 e 32 caracteres, incluindo maiúscula, minúscula, número e símbolo."
+                    android:text="A senha deve ter entre 8 e 32 caracteres, incluindo maiúscula, minúscula, número e símbolo."
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp" />
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/botaoCadastrar"
+                    android:id="@+id/botaoCadastrarAgencia"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:layout_marginTop="22dp"
-                    android:text="Criar conta"
+                    android:text="Criar conta de agência"
                     android:textAllCaps="false"
                     android:textColor="@color/text_on_primary"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     app:backgroundTint="@color/color_accent"
                     app:cornerRadius="18dp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/botaoGoogleCadastro"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:layout_marginTop="12dp"
-                    android:backgroundTint="@android:color/white"
-                    android:elevation="0dp"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:text="Cadastrar com Google"
-                    android:textAllCaps="false"
-                    android:textColor="@color/text_primary"
-                    android:textSize="15sp"
-                    android:textStyle="bold"
-                    app:cornerRadius="18dp"
-                    app:icon="@drawable/ic_google"
-                    app:iconGravity="textStart"
-                    app:iconPadding="12dp"
-                    app:iconTint="@null"
-                    app:strokeColor="@color/divider_color"
-                    app:strokeWidth="1dp" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
     </LinearLayout>

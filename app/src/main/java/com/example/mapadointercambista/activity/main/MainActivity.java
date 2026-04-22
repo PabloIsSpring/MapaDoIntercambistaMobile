@@ -8,7 +8,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -183,19 +182,6 @@ public class MainActivity extends AppCompatActivity {
 
         carrossel.setOffscreenPageLimit(1);
 
-        ImageView setaEsquerda = findViewById(R.id.setaEsquerda);
-        ImageView setaDireita = findViewById(R.id.setaDireita);
-
-        setaDireita.setOnClickListener(v -> {
-            AnimationUtils.playBounce(v);
-            avancarCarrossel();
-        });
-
-        setaEsquerda.setOnClickListener(v -> {
-            AnimationUtils.playBounce(v);
-            voltarCarrossel();
-        });
-
         autoSlideRunnable = () -> {
             if (carrossel == null || carrossel.getAdapter() == null) return;
 
@@ -318,11 +304,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void aplicarMicrointeracoesHome() {
-        ImageView setaEsquerda = findViewById(R.id.setaEsquerda);
-        ImageView setaDireita = findViewById(R.id.setaDireita);
-
-        AnimationUtils.applyPressAnimation(setaEsquerda);
-        AnimationUtils.applyPressAnimation(setaDireita);
         AnimationUtils.applyPressAnimation(verTodosDestinos);
         AnimationUtils.applyPressAnimation(verTodosForum);
         AnimationUtils.applyPressAnimation(barraPesquisa);
@@ -505,27 +486,6 @@ public class MainActivity extends AppCompatActivity {
 
         secaoDestinosHome.setVisibility(destinosHome.isEmpty() ? View.GONE : View.VISIBLE);
         secaoForumHome.setVisibility(postsHome.isEmpty() ? View.GONE : View.VISIBLE);
-    }
-
-    private void avancarCarrossel() {
-        if (carrossel.getAdapter() == null) return;
-
-        int total = carrossel.getAdapter().getItemCount();
-        if (total == 0) return;
-
-        int atual = carrossel.getCurrentItem();
-        carrossel.setCurrentItem((atual + 1) % total, true);
-    }
-
-    private void voltarCarrossel() {
-        if (carrossel.getAdapter() == null) return;
-
-        int total = carrossel.getAdapter().getItemCount();
-        if (total == 0) return;
-
-        int atual = carrossel.getCurrentItem();
-        int anterior = (atual - 1 + total) % total;
-        carrossel.setCurrentItem(anterior, true);
     }
 
     private void aplicarModoImersivo() {

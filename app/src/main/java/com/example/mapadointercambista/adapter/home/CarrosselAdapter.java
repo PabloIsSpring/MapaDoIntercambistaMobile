@@ -3,7 +3,6 @@ package com.example.mapadointercambista.adapter.home;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -15,6 +14,7 @@ import com.example.mapadointercambista.R;
 public class CarrosselAdapter extends RecyclerView.Adapter<CarrosselAdapter.ViewHolder> {
 
     private final int[] imagens;
+
     private final String[] titulos = {
             "Seu próximo intercâmbio começa aqui",
             "Descubra novos destinos",
@@ -44,10 +44,6 @@ public class CarrosselAdapter extends RecyclerView.Adapter<CarrosselAdapter.View
         holder.imagem.setImageResource(imagens[position]);
         holder.titulo.setText(titulos[position]);
         holder.subtitulo.setText(subtitulos[position]);
-
-        holder.botao.setOnClickListener(v -> {
-            // Pode abrir a tela de destinos depois
-        });
     }
 
     @Override
@@ -59,14 +55,12 @@ public class CarrosselAdapter extends RecyclerView.Adapter<CarrosselAdapter.View
         ImageView imagem;
         TextView titulo;
         TextView subtitulo;
-        Button botao;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             imagem = itemView.findViewById(R.id.imagemBanner);
             titulo = itemView.findViewById(R.id.tituloBanner);
             subtitulo = itemView.findViewById(R.id.subtituloBanner);
-            botao = itemView.findViewById(R.id.botaoBanner);
         }
     }
 }

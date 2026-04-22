@@ -7,7 +7,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_secondary"
+    android:background="@color/background_primary"
     tools:context=".activity.main.MainActivity">
 
     <include layout="@layout/menu_superior"/>
@@ -15,8 +15,8 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/background_primary"
         android:fillViewport="true"
-        android:background="@color/background_secondary"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
@@ -25,16 +25,15 @@
             android:orientation="vertical"
             android:paddingBottom="92dp">
 
-            <!-- Banner principal -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="230dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
+                app:cardBackgroundColor="@color/card_background"
                 app:cardCornerRadius="20dp"
-                app:cardElevation="6dp"
-                app:cardBackgroundColor="@color/card_background">
+                app:cardElevation="5dp">
 
                 <FrameLayout
                     android:id="@+id/carrosselContainer"
@@ -44,29 +43,7 @@
                     <androidx.viewpager2.widget.ViewPager2
                         android:id="@+id/carrossel"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"/>
-
-                    <ImageView
-                        android:id="@+id/setaEsquerda"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_gravity="start|center_vertical"
-                        android:layout_marginStart="10dp"
-                        android:background="@drawable/bg_carrossel_nav"
-                        android:padding="10dp"
-                        android:src="@drawable/ic_arrow_left"
-                        app:tint="@color/text_on_primary"/>
-
-                    <ImageView
-                        android:id="@+id/setaDireita"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_gravity="end|center_vertical"
-                        android:layout_marginEnd="10dp"
-                        android:background="@drawable/bg_carrossel_nav"
-                        android:padding="10dp"
-                        android:src="@drawable/ic_arrow_right"
-                        app:tint="@color/text_on_primary"/>
+                        android:layout_height="match_parent" />
 
                     <LinearLayout
                         android:id="@+id/indicadorCarrossel"
@@ -75,35 +52,34 @@
                         android:layout_gravity="bottom|center_horizontal"
                         android:layout_marginBottom="14dp"
                         android:gravity="center"
-                        android:orientation="horizontal"/>
+                        android:orientation="horizontal" />
                 </FrameLayout>
 
             </androidx.cardview.widget.CardView>
 
-            <!-- Busca -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="18dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
+                app:cardBackgroundColor="@color/card_background"
                 app:cardCornerRadius="18dp"
-                app:cardElevation="3dp"
-                app:cardBackgroundColor="@color/card_background">
+                app:cardElevation="2dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="56dp"
+                    android:layout_height="52dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp">
 
                     <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
                         android:src="@android:drawable/ic_menu_search"
-                        app:tint="@color/text_secondary"/>
+                        app:tint="@color/text_secondary" />
 
                     <EditText
                         android:id="@+id/barraPesquisa"
@@ -112,10 +88,10 @@
                         android:layout_weight="1"
                         android:background="@null"
                         android:hint="Buscar destinos, idiomas ou temas do fórum"
-                        android:paddingStart="12dp"
+                        android:paddingStart="10dp"
                         android:textColor="@color/text_primary"
                         android:textColorHint="@color/text_secondary"
-                        android:textSize="15sp"/>
+                        android:textSize="13sp" />
                 </LinearLayout>
 
             </androidx.cardview.widget.CardView>
@@ -124,11 +100,11 @@
                 android:id="@+id/secaoFavoritosHome"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
                 android:layout_marginTop="20dp"
-                android:paddingTop="18dp"
-                android:paddingBottom="18dp"
                 android:background="@color/background_primary"
+                android:orientation="vertical"
+                android:paddingTop="6dp"
+                android:paddingBottom="18dp"
                 android:visibility="gone">
 
                 <LinearLayout
@@ -148,7 +124,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Seus favoritos"
-                            style="@style/TextSectionTitle"/>
+                            style="@style/TextSectionTitle" />
 
                         <TextView
                             android:id="@+id/textoResumoFavoritosHome"
@@ -156,7 +132,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
                             android:text="Destinos salvos por você"
-                            style="@style/TextBodySecondary"/>
+                            style="@style/TextBodySecondary" />
                     </LinearLayout>
 
                 </LinearLayout>
@@ -191,18 +167,16 @@
                     android:layout_marginTop="14dp"
                     android:clipToPadding="false"
                     android:paddingStart="16dp"
-                    android:paddingEnd="8dp"/>
+                    android:paddingEnd="8dp" />
             </LinearLayout>
 
-            <!-- Destinos -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@color/background_primary"
                 android:orientation="vertical"
-                android:layout_marginTop="20dp"
-                android:paddingTop="18dp"
-                android:paddingBottom="18dp"
-                android:background="@color/background_primary">
+                android:paddingTop="6dp"
+                android:paddingBottom="18dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -221,14 +195,14 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Destinos populares"
-                            style="@style/TextSectionTitle"/>
+                            style="@style/TextSectionTitle" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
                             android:text="Confira lugares bem avaliados pela comunidade"
-                            style="@style/TextBodySecondary"/>
+                            style="@style/TextBodySecondary" />
                     </LinearLayout>
 
                     <TextView
@@ -236,8 +210,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:text="Ver todos"
-                        style="@style/TextActionLink"/>
+                        android:text="Ver todos >"
+                        style="@style/TextActionLink" />
                 </LinearLayout>
 
                 <com.facebook.shimmer.ShimmerFrameLayout
@@ -270,18 +244,16 @@
                     android:layout_marginTop="14dp"
                     android:clipToPadding="false"
                     android:paddingStart="16dp"
-                    android:paddingEnd="8dp"/>
+                    android:paddingEnd="8dp" />
             </LinearLayout>
 
-            <!-- Fórum -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@color/background_primary"
                 android:orientation="vertical"
-                android:layout_marginTop="12dp"
-                android:paddingTop="18dp"
-                android:paddingBottom="12dp"
-                android:background="@color/background_primary">
+                android:paddingTop="6dp"
+                android:paddingBottom="12dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -300,14 +272,14 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Fórum"
-                            style="@style/TextSectionTitle"/>
+                            style="@style/TextSectionTitle" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
                             android:text="Veja dúvidas, relatos e experiências reais"
-                            style="@style/TextBodySecondary"/>
+                            style="@style/TextBodySecondary" />
                     </LinearLayout>
 
                     <TextView
@@ -315,8 +287,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:text="Ver todos"
-                        style="@style/TextActionLink"/>
+                        android:text="Ver todos >"
+                        style="@style/TextActionLink" />
                 </LinearLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -324,15 +296,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="14dp"
-                    android:nestedScrollingEnabled="false"/>
+                    android:nestedScrollingEnabled="false" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/containerVazioHome"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
                 android:layout_marginStart="16dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="20dp"
                 android:gravity="center"

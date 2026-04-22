@@ -11,6 +11,8 @@ import android.widget.ScrollView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.mapadointercambista.BuildConfig;
@@ -57,6 +59,7 @@ public class LoginActivity extends AppCompatActivity {
     private ScrollView scrollLogin;
     private MaterialButton botaoGoogleLogin;
     private CredentialManager credentialManager;
+    private ActivityResultLauncher<Intent> launcherCompletarPerfilGoogle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +77,7 @@ public class LoginActivity extends AppCompatActivity {
         botaoEntrar = findViewById(R.id.botaoEntrar);
         botaoGoogleLogin = findViewById(R.id.botaoGoogleLogin);
         credentialManager = CredentialManager.create(this);
+        configurarLauncherCompletarPerfilGoogle();
 
         botaoGoogleLogin.setOnClickListener(v -> iniciarLoginGoogle());
 
@@ -89,9 +93,10 @@ public class LoginActivity extends AppCompatActivity {
             TransitionHelper.slideBack(this);
         });
 
-        findViewById(R.id.textoCriarConta).setOnClickListener(v ->
-                startActivity(new Intent(LoginActivity.this, CadastroActivity.class))
-        );
+        findViewById(R.id.textoCriarConta).setOnClickListener(v -> {
+            startActivity(new Intent(LoginActivity.this, EscolhaAcessoActivity.class));
+            TransitionHelper.slideForward(this);
+        });
 
         scrollLogin = findViewById(R.id.scrollLogin);
         configurarScrollCampoSenha(inputSenha, scrollLogin);
@@ -146,6 +151,13 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    private void configurarLauncherCompletarPerfilGoogle() {
+        launcherCompletarPerfilGoogle = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> abrirConta()
+        );
+    }
+
     private void configurarScrollCampoSenha(EditText campo, ScrollView scrollView) {
         campo.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
@@ -192,7 +204,9 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void iniciarLoginGoogle() {
-        if ("COLOQUE_AQUI_O_WEB_CLIENT_ID".equals(BuildConfig.GOOGLE_WEB_CLIENT_ID)) {
+        if (BuildConfig.GOOGLE_WEB_CLIENT_ID == null
+                || BuildConfig.GOOGLE_WEB_CLIENT_ID.trim().isEmpty()
+                || "COLOQUE_AQUI_O_WEB_CLIENT_ID".equals(BuildConfig.GOOGLE_WEB_CLIENT_ID)) {
             Toast.makeText(this, "Falta configurar o Google Cloud client ID.", Toast.LENGTH_LONG).show();
             return;
         }
@@ -227,7 +241,15 @@ public class LoginActivity extends AppCompatActivity {
                         if (!isFinishing() && !isDestroyed()) {
                             setLoading(false);
                         }
-                        Toast.makeText(LoginActivity.this, "Não foi possível entrar com Google.", Toast.LENGTH_SHORT).show();
+
+                        android.util.Log.e("GOOGLE_LOGIN",
+                                "type=" + e.getType() + " message=" + e.getMessage(), e);
+
+                        Toast.makeText(
+                                LoginActivity.this,
+                                "Erro Google: " + e.getType(),
+                                Toast.LENGTH_LONG
+                        ).show();
                     }
                 }
         );
@@ -261,7 +283,20 @@ public class LoginActivity extends AppCompatActivity {
         sessionManager.entrarComGoogle(nome, email, foto);
 
         Toast.makeText(this, "Login com Google realizado com sucesso!", Toast.LENGTH_SHORT).show();
-        abrirConta();
+
+        if (perfilPrecisaSerCompletado(sessionManager)) {
+            Intent intent = new Intent(this, CompletarPerfilGoogleActivity.class);
+            launcherCompletarPerfilGoogle.launch(intent);
+        } else {
+            abrirConta();
+        }
+    }
+
+    private boolean perfilPrecisaSerCompletado(SessionManager sessionManager) {
+        String username = sessionManager.getUsernameUsuario();
+        int idade = sessionManager.getIdadeUsuario();
+
+        return username == null || username.trim().isEmpty() || idade <= 0;
     }
 
     private void tentarLoginApiComFallback(SessionManager sessionManager, String email, String senha) {

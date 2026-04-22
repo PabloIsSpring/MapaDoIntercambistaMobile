@@ -97,6 +97,8 @@ public class ContaActivity extends AppCompatActivity {
 
     private boolean sincronizandoPerfil = false;
     private boolean atualizandoUsername = false;
+    private TextView textoTituloConta;
+    private TextView textoDescricaoConta;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -183,6 +185,8 @@ public class ContaActivity extends AppCompatActivity {
         textoVazioFavoritosConta = findViewById(R.id.textoVazioFavoritosConta);
         textoTituloSecaoConfiguracoes = findViewById(R.id.textoTituloSecaoConfiguracoes);
         textoSubtituloHeroConta = findViewById(R.id.textoSubtituloHeroConta);
+        textoTituloConta = findViewById(R.id.textoTituloConta);
+        textoDescricaoConta = findViewById(R.id.textoDescricaoConta);
 
         textoUsernameConta = findViewById(R.id.textoUsernameConta);
         textoIdadeConta = findViewById(R.id.textoIdadeConta);
@@ -230,15 +234,9 @@ public class ContaActivity extends AppCompatActivity {
             selecionarFoto();
         });
 
-        botaoEntrarConta.setOnClickListener(v -> {
-            startActivity(new Intent(this, LoginActivity.class));
-            TransitionHelper.slideForward(this);
-        });
+        botaoEntrarConta.setOnClickListener(v -> abrirEscolhaAcesso());
 
-        botaoCriarConta.setOnClickListener(v -> {
-            startActivity(new Intent(this, CadastroActivity.class));
-            TransitionHelper.slideForward(this);
-        });
+        botaoCriarConta.setOnClickListener(v -> abrirEscolhaAcesso());
 
         botaoSairConta.setOnClickListener(v -> {
             AnimationUtils.playBounce(v);
@@ -274,7 +272,7 @@ public class ContaActivity extends AppCompatActivity {
             }
 
             AnimationUtils.playBounce(v);
-            abrirDialogEditarUsername();
+            abrirDialogCompletarPerfil();
         });
 
         itemAbrirConfiguracoes.setOnClickListener(v -> {
@@ -282,6 +280,101 @@ public class ContaActivity extends AppCompatActivity {
             startActivity(new Intent(this, ConfiguracoesActivity.class));
             TransitionHelper.slideForward(this);
         });
+    }
+
+    private void abrirEscolhaAcesso() {
+        startActivity(new Intent(this, com.example.mapadointercambista.activity.auth.EscolhaAcessoActivity.class));
+        TransitionHelper.slideForward(this);
+    }
+
+    private void salvarComplementoPerfil(String novoUsername, int novaIdade) {
+        String usernameAtual = sessionManager.getUsernameUsuario();
+
+        if (!sessionManager.usernameDisponivelLocalmente(novoUsername)
+                && (usernameAtual == null || !usernameAtual.equalsIgnoreCase(novoUsername))) {
+            Toast.makeText(this, "Esse username já está em uso localmente.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (sessionManager.isModoApi() && usernameAtual != null && !usernameAtual.trim().isEmpty()
+                && !usernameAtual.equalsIgnoreCase(novoUsername)) {
+            atualizarUsernameApi(usernameAtual, novoUsername);
+        } else {
+            sessionManager.atualizarUsernameUsuario(usernameAtual, novoUsername);
+        }
+
+        sessionManager.salvarPerfilApi(
+                sessionManager.getPrimeiroNomeUsuario(),
+                sessionManager.getEmailUsuario(),
+                novoUsername,
+                sessionManager.getSobrenomeUsuario(),
+                novaIdade
+        );
+
+        preencherDadosUsuario();
+        textoSubtituloHeroConta.setText(obterSubtituloHeroLogado());
+
+        Toast.makeText(this, "Perfil atualizado com sucesso.", Toast.LENGTH_SHORT).show();
+    }
+
+    private void abrirDialogCompletarPerfil() {
+        View view = getLayoutInflater().inflate(R.layout.dialog_completar_perfil_conta, null);
+
+        EditText inputUsername = view.findViewById(R.id.inputUsernameCompletarPerfil);
+        EditText inputIdade = view.findViewById(R.id.inputIdadeCompletarPerfil);
+
+        String usernameAtual = sessionManager.getUsernameUsuario();
+        int idadeAtual = sessionManager.getIdadeUsuario();
+
+        inputUsername.setText(usernameAtual != null ? usernameAtual : "");
+        if (idadeAtual > 0) {
+            inputIdade.setText(String.valueOf(idadeAtual));
+        }
+
+        inputUsername.setFilters(new InputFilter[]{new InputFilter.LengthFilter(30)});
+        inputIdade.setFilters(new InputFilter[]{new InputFilter.LengthFilter(3)});
+
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Completar perfil")
+                .setView(view)
+                .setNegativeButton("Cancelar", null)
+                .setPositiveButton("Salvar", (dialog, which) -> {
+                    String novoUsername = normalizarUsername(inputUsername.getText().toString());
+                    String idadeTexto = inputIdade.getText().toString().trim();
+
+                    if (novoUsername.isEmpty()) {
+                        Toast.makeText(this, "Digite um username.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (novoUsername.length() < 3) {
+                        Toast.makeText(this, "O username deve ter pelo menos 3 caracteres.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (!usernameValido(novoUsername)) {
+                        Toast.makeText(this, "Use apenas letras, números, ponto e underline.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    int novaIdade = 0;
+                    if (!idadeTexto.isEmpty()) {
+                        try {
+                            novaIdade = Integer.parseInt(idadeTexto);
+                        } catch (NumberFormatException e) {
+                            Toast.makeText(this, "Digite uma idade válida.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        if (novaIdade < 0 || novaIdade > 120) {
+                            Toast.makeText(this, "Digite uma idade válida.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
+
+                    salvarComplementoPerfil(novoUsername, novaIdade);
+                })
+                .show();
     }
 
     private void aplicarMicrointeracoesConta() {
@@ -316,10 +409,105 @@ public class ContaActivity extends AppCompatActivity {
         }
 
         if (sessionManager.estaLogado()) {
-            aplicarEstadoLogado();
+            if (sessionManager.isContaAgencia()) {
+                aplicarEstadoLogadoAgencia();
+            } else {
+                aplicarEstadoLogado();
+            }
         } else {
             aplicarEstadoVisitante();
         }
+    }
+
+    private void aplicarEstadoLogadoAgencia() {
+        secaoAcoesVisitante.setVisibility(View.GONE);
+        secaoAcoesLogado.setVisibility(View.VISIBLE);
+        cardVisitanteConta.setVisibility(View.GONE);
+        cardFavoritosConta.setVisibility(View.GONE);
+        blocoConfiguracoesConta.setVisibility(View.VISIBLE);
+        cardInformacoesPerfilConta.setVisibility(View.GONE);
+
+        textoTituloConta.setText("Perfil da agência");
+        textoDescricaoConta.setText("Gerencie os dados da sua agência e as preferências da conta");
+
+        textoTituloSecaoConfiguracoes.setText("Configurações");
+        textoSubtituloHeroConta.setText("Conta comercial no Mapa do Intercambista");
+        textoAlterarFoto.setText("Alterar foto da agência");
+        botaoSairConta.setVisibility(View.VISIBLE);
+
+        preencherDadosAgencia();
+        atualizarResumoDaAgencia();
+    }
+
+    private void preencherDadosAgencia() {
+        String nomeFantasia = sessionManager.getAgenciaNomeFantasia();
+        String email = sessionManager.getEmailUsuario();
+        String username = sessionManager.getAgenciaUsername();
+        String cnpj = sessionManager.getAgenciaCnpj();
+        String fotoUri = sessionManager.getFotoUsuario();
+
+        textoNomeUsuarioConta.setText(
+                nomeFantasia != null && !nomeFantasia.trim().isEmpty()
+                        ? nomeFantasia
+                        : "Agência"
+        );
+
+        textoEmailUsuarioConta.setText(
+                email != null && !email.trim().isEmpty()
+                        ? email
+                        : "Conta comercial ativa"
+        );
+
+        textoUsernameConta.setText(
+                username != null && !username.trim().isEmpty()
+                        ? "@" + username.trim().toLowerCase()
+                        : "@agencia"
+        );
+
+        textoIdadeConta.setText(
+                cnpj != null && !cnpj.trim().isEmpty()
+                        ? "CNPJ: " + cnpj
+                        : "CNPJ não informado"
+        );
+
+        Glide.with(this).clear(imagemPerfilConta);
+        imagemPerfilConta.setImageDrawable(null);
+        imagemPerfilConta.setImageTintList(null);
+
+        if (fotoUri != null && !fotoUri.isEmpty()) {
+            Glide.with(this)
+                    .load(Uri.parse(fotoUri))
+                    .placeholder(R.drawable.ic_user)
+                    .error(R.drawable.ic_user)
+                    .override(240, 240)
+                    .thumbnail(0.25f)
+                    .circleCrop()
+                    .dontAnimate()
+                    .into(imagemPerfilConta);
+        } else {
+            Bitmap avatar = AvatarUtils.criarAvatarComInicial(this, nomeFantasia, 120);
+            imagemPerfilConta.setImageBitmap(avatar);
+        }
+    }
+
+    private void atualizarResumoDaAgencia() {
+        textoNumeroFavoritosConta.setText("0");
+        textoNumeroPostsConta.setText("0");
+        textoNumeroAvaliacoesConta.setText("0");
+    }
+
+    private String formatarUsernameExibicao(String username) {
+        if (username == null || username.trim().isEmpty()) {
+            return "Defina seu username";
+        }
+        return "@" + username.trim().toLowerCase();
+    }
+
+    private String formatarIdadeExibicao(int idade) {
+        if (idade <= 0) {
+            return "Complete seu perfil";
+        }
+        return idade + " anos";
     }
 
     private void aplicarEstadoLogado() {
@@ -328,8 +516,10 @@ public class ContaActivity extends AppCompatActivity {
         cardVisitanteConta.setVisibility(View.GONE);
         cardFavoritosConta.setVisibility(View.VISIBLE);
         blocoConfiguracoesConta.setVisibility(View.VISIBLE);
-        cardInformacoesPerfilConta.setVisibility(View.VISIBLE);
+        cardInformacoesPerfilConta.setVisibility(View.GONE);
 
+        textoTituloConta.setText("Perfil do usuário");
+        textoDescricaoConta.setText("Gerencie seu perfil, favoritos e preferências");
         textoTituloSecaoConfiguracoes.setText("Configurações");
         textoSubtituloHeroConta.setText(obterSubtituloHeroLogado());
         textoAlterarFoto.setText("Alterar foto de perfil");
@@ -348,12 +538,17 @@ public class ContaActivity extends AppCompatActivity {
         blocoConfiguracoesConta.setVisibility(View.VISIBLE);
         cardInformacoesPerfilConta.setVisibility(View.GONE);
 
+        textoTituloConta.setText("Perfil do usuário");
+        textoDescricaoConta.setText("Gerencie seu perfil, favoritos e preferências");
         textoNomeUsuarioConta.setText("Visitante");
         textoEmailUsuarioConta.setText("Entre para salvar favoritos, participar do fórum e personalizar seu perfil");
         textoAlterarFoto.setText("Faça login para personalizar seu perfil");
         textoSubtituloHeroConta.setText("Seu espaço no Mapa do Intercambista");
         textoTituloSecaoConfiguracoes.setText("Configurações");
         botaoSairConta.setVisibility(View.GONE);
+
+        textoUsernameConta.setText("@visitante");
+        textoIdadeConta.setText("Sem conta ativa");
 
         Glide.with(this).clear(imagemPerfilConta);
         imagemPerfilConta.setImageDrawable(null);
@@ -395,30 +590,22 @@ public class ContaActivity extends AppCompatActivity {
         String username = sessionManager.getUsernameUsuario();
         int idade = sessionManager.getIdadeUsuario();
 
-        textoNomeUsuarioConta.setText(nomeCompleto);
+        textoNomeUsuarioConta.setText(
+                nomeCompleto != null && !nomeCompleto.trim().isEmpty()
+                        ? nomeCompleto
+                        : "Usuário"
+        );
 
-        StringBuilder descricao = new StringBuilder();
-        if (email != null && !email.isEmpty()) {
-            descricao.append(email);
-        }
+        textoEmailUsuarioConta.setText(
+                email != null && !email.trim().isEmpty()
+                        ? email
+                        : "Conta ativa no aplicativo"
+        );
 
-        if (username != null && !username.isEmpty()) {
-            if (descricao.length() > 0) {
-                descricao.append("\n");
-            }
-            descricao.append("@").append(username);
-        }
-
-        textoEmailUsuarioConta.setText(descricao.length() > 0 ? descricao.toString() : "Perfil ativo");
         textoAlterarFoto.setText("Alterar foto de perfil");
 
-        textoUsernameConta.setText(
-                username != null && !username.isEmpty() ? "@" + username : "Não informado"
-        );
-
-        textoIdadeConta.setText(
-                idade > 0 ? idade + " anos" : "Não informado"
-        );
+        textoUsernameConta.setText(formatarUsernameExibicao(username));
+        textoIdadeConta.setText(formatarIdadeExibicao(idade));
 
         Glide.with(this).clear(imagemPerfilConta);
         imagemPerfilConta.setImageDrawable(null);
@@ -511,14 +698,25 @@ public class ContaActivity extends AppCompatActivity {
 
     private String obterSubtituloHeroLogado() {
         String username = sessionManager.getUsernameUsuario();
-        if (username != null && !username.isEmpty()) {
-            return "Seu perfil • @" + username;
+        int idade = sessionManager.getIdadeUsuario();
+
+        if (username != null && !username.isEmpty() && idade > 0) {
+            return "@" + username + " • " + idade + " anos";
         }
-        return "Seu perfil no Mapa do Intercambista";
+
+        if (username != null && !username.isEmpty()) {
+            return "@" + username + " • Perfil em configuração";
+        }
+
+        if (idade > 0) {
+            return "Perfil ativo • " + idade + " anos";
+        }
+
+        return "Complete seu perfil no Mapa do Intercambista";
     }
 
     private void tentarSincronizarPerfilApi() {
-        if (!sessionManager.estaLogado() || !sessionManager.isModoApi()) {
+        if (!sessionManager.estaLogado() || !sessionManager.isModoApi() || sessionManager.isContaAgencia()) {
             return;
         }
 

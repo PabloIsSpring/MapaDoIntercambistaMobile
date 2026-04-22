@@ -149,14 +149,13 @@
                         android:id="@+id/botaoLikeContainer"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/bg_action_chip_soft"
                         android:gravity="center_vertical"
+                        android:minHeight="0dp"
                         android:orientation="horizontal"
-                        android:minHeight="32dp"
-                        android:paddingStart="10dp"
-                        android:paddingTop="7dp"
-                        android:paddingEnd="10dp"
-                        android:paddingBottom="7dp">
+                        android:paddingStart="2dp"
+                        android:paddingTop="4dp"
+                        android:paddingEnd="2dp"
+                        android:paddingBottom="4dp">
 
                         <ImageView
                             android:id="@+id/iconeLike"
@@ -179,15 +178,14 @@
                         android:id="@+id/botaoDislikeContainer"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:background="@drawable/bg_action_chip_soft"
+                        android:layout_marginStart="14dp"
                         android:gravity="center_vertical"
+                        android:minHeight="0dp"
                         android:orientation="horizontal"
-                        android:minHeight="32dp"
-                        android:paddingStart="10dp"
-                        android:paddingTop="7dp"
-                        android:paddingEnd="10dp"
-                        android:paddingBottom="7dp">
+                        android:paddingStart="2dp"
+                        android:paddingTop="4dp"
+                        android:paddingEnd="2dp"
+                        android:paddingBottom="4dp">
 
                         <ImageView
                             android:id="@+id/iconeDislike"
@@ -210,15 +208,14 @@
                         android:id="@+id/botaoRespostas"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:background="@drawable/bg_action_chip_soft"
+                        android:layout_marginStart="14dp"
                         android:gravity="center_vertical"
+                        android:minHeight="0dp"
                         android:orientation="horizontal"
-                        android:minHeight="32dp"
-                        android:paddingStart="10dp"
-                        android:paddingTop="7dp"
-                        android:paddingEnd="10dp"
-                        android:paddingBottom="7dp">
+                        android:paddingStart="2dp"
+                        android:paddingTop="4dp"
+                        android:paddingEnd="2dp"
+                        android:paddingBottom="4dp">
 
                         <ImageView
                             android:id="@+id/iconeRespostas"
