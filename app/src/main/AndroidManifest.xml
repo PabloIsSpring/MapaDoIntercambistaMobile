@@ -15,6 +15,9 @@
         android:theme="@style/Theme.MapaDoIntercambista"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".activity.chatbot.ChatbotActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.auth.CadastroAgenciaActivity"
             android:exported="false" />
         <activity

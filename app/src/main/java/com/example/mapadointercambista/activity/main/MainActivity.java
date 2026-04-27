@@ -25,6 +25,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.mapadointercambista.R;
 import com.example.mapadointercambista.activity.auth.LoginActivity;
+import com.example.mapadointercambista.activity.chatbot.ChatbotActivity;
 import com.example.mapadointercambista.activity.destinos.DestinosActivity;
 import com.example.mapadointercambista.activity.forum.ForumActivity;
 import com.example.mapadointercambista.adapter.destino.DestinoAdapter;
@@ -272,6 +273,15 @@ public class MainActivity extends AppCompatActivity {
         verTodosForum.setOnClickListener(v -> {
                 startActivity(new Intent(MainActivity.this, ForumActivity.class));
                 TransitionHelper.slideForward(this);
+        });
+
+        View fabChatbot = findViewById(R.id.fabChatbot);
+        AnimationUtils.applyPressAnimation(fabChatbot);
+
+        fabChatbot.setOnClickListener(v -> {
+            AnimationUtils.playBounce(v);
+            startActivity(new Intent(MainActivity.this, ChatbotActivity.class));
+            TransitionHelper.slideForward(this);
         });
     }
 
